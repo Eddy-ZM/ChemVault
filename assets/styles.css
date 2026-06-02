@@ -952,14 +952,20 @@ body.page-is-leaving .site-header {
 
 .motion-available [data-motion-bound="true"] {
   opacity: 0;
-  transform: translateY(14px);
+  transform: translateY(var(--motion-enter-y, 10px));
   transition:
-    opacity var(--motion-slow) var(--ease-out),
-    transform var(--motion-slow) var(--ease-out),
+    opacity var(--motion-reveal-duration, 360ms) var(--ease-out),
+    transform var(--motion-reveal-duration, 360ms) var(--ease-out),
     border-color var(--motion-fast) ease,
     background var(--motion-fast) ease,
     box-shadow var(--motion-fast) ease;
-  transition-delay: calc(var(--motion-order, 0) * 30ms);
+  transition-delay: calc(var(--motion-order, 0) * var(--motion-reveal-stagger, 18ms));
+}
+
+.motion-available [data-motion-profile="compact"] {
+  --motion-enter-y: 5px;
+  --motion-reveal-duration: 220ms;
+  --motion-reveal-stagger: 7ms;
 }
 
 .motion-available [data-motion-bound="true"].is-visible {

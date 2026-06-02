@@ -48,6 +48,7 @@
   const visitedKey = "chemvault-visited-pages";
   const suppressStartupKey = "chemvault-suppress-next-boot";
   const heavyPageNames = new Set(["app.html", "workbench.html", "search.html", "record.html"]);
+  const compactRevealPages = new Set(["app.html", "workbench.html", "search.html", "reagents.html", "materials.html", "methods.html", "spectroscopy.html", "dossiers.html"]);
   const genericLabels = new Set([
     "open page",
     "open source page",
@@ -328,13 +329,21 @@
   function prepareReveal(root) {
     if (reduceMotion.matches || !revealObserver) return;
     const nodes = root.querySelectorAll(revealSelector);
+    const compact = shouldUseCompactReveal(nodes.length);
     nodes.forEach((node, index) => {
       if (node.dataset.motionBound === "true") return;
       if (node.closest(".page-transition")) return;
       node.dataset.motionBound = "true";
-      node.style.setProperty("--motion-order", String(index % 8));
+      if (compact) node.dataset.motionProfile = "compact";
+      node.style.setProperty("--motion-order", String(compact ? Math.min(index, 4) : index % 6));
       revealObserver.observe(node);
     });
+  }
+
+  function shouldUseCompactReveal(count) {
+    if (document.body.classList.contains("page-ready")) return true;
+    if (compactRevealPages.has(pageName(new URL(window.location.href)))) return true;
+    return count > 44;
   }
 
   function wireRipples() {
