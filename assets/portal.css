@@ -450,6 +450,29 @@ body.light-mode .graph-board {
   transition: transform var(--motion-medium) var(--ease-spring), border-color var(--motion-fast) ease, box-shadow var(--motion-medium) ease;
 }
 
+.external-source-card::before,
+.local-result-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(120% 85% at 0% 12%, rgba(0, 113, 227, 0.16), transparent 52%),
+    radial-gradient(80% 70% at 100% 0%, rgba(82, 199, 184, 0.13), transparent 58%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.025) 46%, transparent 78%);
+  opacity: 0.74;
+  transition: opacity var(--motion-medium) ease, transform var(--motion-medium) var(--ease-out);
+}
+
+.external-source-card::after,
+.local-result-card::after {
+  z-index: 0;
+  background:
+    linear-gradient(115deg, rgba(255, 255, 255, 0.045) 0%, rgba(255, 255, 255, 0.13) 46%, rgba(255, 255, 255, 0.035) 76%, transparent 100%);
+  transform: translateX(-8%);
+}
+
 .external-source-card:hover,
 .external-source-card:focus-visible,
 .local-result-card:hover,
@@ -459,9 +482,23 @@ body.light-mode .graph-board {
   box-shadow: 0 16px 36px rgba(0, 0, 0, 0.12);
 }
 
+.external-source-card:hover::before,
+.external-source-card:focus-visible::before,
+.local-result-card:hover::before,
+.local-result-card:focus-visible::before {
+  opacity: 1;
+  transform: scale(1.02);
+}
+
 .external-source-card strong,
 .local-result-card strong {
   font-size: 1rem;
+}
+
+.external-source-card > *,
+.local-result-card > * {
+  position: relative;
+  z-index: 1;
 }
 
 .external-source-card span:last-child,
@@ -2343,6 +2380,20 @@ html.dark-mode body:not(.page-shell) :where(.portal-card-featured, .nih-import-p
 body.dark-mode:not(.page-shell) :where(.portal-card-featured, .nih-import-panel) {
   background: linear-gradient(180deg, rgba(0, 113, 227, 0.16), rgba(25, 27, 32, 0.96));
   border-color: rgba(0, 113, 227, 0.32);
+}
+
+html.dark-mode body:not(.page-shell) :where(.external-source-card, .local-result-card)::before,
+body.dark-mode:not(.page-shell) :where(.external-source-card, .local-result-card)::before {
+  background:
+    radial-gradient(118% 84% at 0% 10%, rgba(0, 113, 227, 0.22), transparent 54%),
+    radial-gradient(90% 78% at 100% 0%, rgba(82, 199, 184, 0.14), transparent 60%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.035) 48%, transparent 82%);
+  opacity: 0.88;
+}
+
+html.dark-mode body:not(.page-shell) :where(.external-source-card, .local-result-card)::after,
+body.dark-mode:not(.page-shell) :where(.external-source-card, .local-result-card)::after {
+  background: linear-gradient(115deg, rgba(255, 255, 255, 0.055) 0%, rgba(255, 255, 255, 0.11) 46%, rgba(255, 255, 255, 0.04) 76%, transparent 100%);
 }
 
 html.dark-mode body:not(.page-shell) :where(.home-search-card input, .home-search-row input),
