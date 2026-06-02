@@ -33,6 +33,7 @@
 .page-index-card {
   position: relative;
   overflow: hidden;
+  isolation: isolate;
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background:
@@ -58,6 +59,7 @@
 .portal-card {
   position: relative;
   overflow: hidden;
+  isolation: isolate;
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background:
@@ -77,12 +79,16 @@
   content: "";
   position: absolute;
   inset: 0;
+  z-index: 0;
   pointer-events: none;
   border-radius: inherit;
-  background: linear-gradient(120deg, transparent 0%, rgba(255, 255, 255, 0.34) 42%, transparent 68%);
+  --card-highlight-gradient: linear-gradient(120deg, transparent 0%, rgba(255, 255, 255, 0.34) 42%, transparent 68%);
+  background: var(--card-highlight-gradient);
+  background-size: 240% 100%;
+  background-position: 135% 50%;
   opacity: 0;
-  transform: translateX(-18%);
-  transition: opacity var(--motion-medium) ease, transform var(--motion-medium) var(--ease-out);
+  transform: none;
+  transition: opacity var(--motion-medium) ease, background-position var(--motion-medium) var(--ease-out);
 }
 
 .portal-card:hover,
@@ -102,7 +108,16 @@
 .external-source-card:hover::after,
 .external-source-card:focus-visible::after {
   opacity: 1;
-  transform: translateX(14%);
+  background-position: -35% 50%;
+}
+
+.portal-card > *,
+.page-index-card > *,
+.data-window > *,
+.local-result-card > *,
+.external-source-card > * {
+  position: relative;
+  z-index: 1;
 }
 
 .portal-card span {
@@ -220,6 +235,8 @@
 
 .data-window {
   position: relative;
+  overflow: hidden;
+  isolation: isolate;
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background: rgba(255, 255, 255, 0.035);
@@ -451,6 +468,7 @@ body.light-mode .graph-board {
 .local-result-card {
   position: relative;
   overflow: hidden;
+  isolation: isolate;
   display: grid;
   gap: 8px;
   border: 1px solid var(--line);
@@ -480,9 +498,8 @@ body.light-mode .graph-board {
 .external-source-card::after,
 .local-result-card::after {
   z-index: 0;
-  background:
+  --card-highlight-gradient:
     linear-gradient(115deg, rgba(255, 255, 255, 0.045) 0%, rgba(255, 255, 255, 0.13) 46%, rgba(255, 255, 255, 0.035) 76%, transparent 100%);
-  transform: translateX(-8%);
 }
 
 .external-source-card:hover,
@@ -2405,7 +2422,7 @@ body.dark-mode:not(.page-shell) :where(.external-source-card, .local-result-card
 
 html.dark-mode body:not(.page-shell) :where(.external-source-card, .local-result-card)::after,
 body.dark-mode:not(.page-shell) :where(.external-source-card, .local-result-card)::after {
-  background: linear-gradient(115deg, rgba(255, 255, 255, 0.055) 0%, rgba(255, 255, 255, 0.11) 46%, rgba(255, 255, 255, 0.04) 76%, transparent 100%);
+  --card-highlight-gradient: linear-gradient(115deg, rgba(255, 255, 255, 0.055) 0%, rgba(255, 255, 255, 0.11) 46%, rgba(255, 255, 255, 0.04) 76%, transparent 100%);
 }
 
 html.dark-mode body:not(.page-shell) :where(.home-search-card input, .home-search-row input),

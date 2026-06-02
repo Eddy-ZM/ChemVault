@@ -73,7 +73,7 @@
         return;
       }
 
-      fetch("../data/chemvault-data.json?v=20260602q")
+      fetch("../data/chemvault-data.json?v=20260602r")
         .then((response) => {
           if (!response.ok) throw new Error(`Dataset request failed with ${response.status}`);
           return response.json();
