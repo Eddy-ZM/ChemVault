@@ -2540,8 +2540,7 @@ body.dark-mode .site-header {
 
 body.dark-mode .brand-mark,
 body.dark-mode .search-shell,
-body.dark-mode .theme-toggle,
-body.dark-mode .site-nav a {
+body.dark-mode .theme-toggle {
   background: rgba(25, 27, 32, 0.82);
   border-color: rgba(255, 255, 255, 0.13);
 }
@@ -2658,25 +2657,26 @@ html.dark-mode body .search-shell input::placeholder {
 body.dark-mode .site-nav a[aria-current],
 html.dark-mode body .site-nav a[aria-current] {
   color: #ffffff;
-  background: transparent;
-  border-color: rgba(255, 255, 255, 0.88);
+  background: linear-gradient(180deg, #005fbd 0%, #003f86 100%);
+  border-color: rgba(104, 178, 255, 0.72);
   box-shadow:
-    inset 0 -2px 0 rgba(64, 156, 255, 0.82),
-    0 0 0 1px rgba(255, 255, 255, 0.08);
+    inset 0 -2px 0 rgba(104, 178, 255, 0.46),
+    0 0 0 1px rgba(0, 113, 227, 0.18),
+    0 8px 22px rgba(0, 0, 0, 0.22);
 }
 
-body.dark-mode .site-nav a,
-html.dark-mode body .site-nav a {
+body.dark-mode .site-nav a:not([aria-current]),
+html.dark-mode body .site-nav a:not([aria-current]) {
   color: #ffffff;
   background: transparent;
   border-color: rgba(255, 255, 255, 0.42);
   box-shadow: none;
 }
 
-body.dark-mode .site-nav a:hover,
-body.dark-mode .site-nav a:focus-visible,
-html.dark-mode body .site-nav a:hover,
-html.dark-mode body .site-nav a:focus-visible {
+body.dark-mode .site-nav a:not([aria-current]):hover,
+body.dark-mode .site-nav a:not([aria-current]):focus-visible,
+html.dark-mode body .site-nav a:not([aria-current]):hover,
+html.dark-mode body .site-nav a:not([aria-current]):focus-visible {
   color: #ffffff;
   background: transparent;
   border-color: rgba(255, 255, 255, 0.78);
