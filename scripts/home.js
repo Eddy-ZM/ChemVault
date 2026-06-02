@@ -35,7 +35,7 @@
       button.addEventListener("click", () => {
         const next = nextThemeSetting(button.dataset.themeState || readThemeSetting());
         startThemeTransition(button, next);
-        scheduleThemeApply(next);
+        applyTheme(next);
       });
     });
 
@@ -82,18 +82,7 @@
     window.clearTimeout(window.CHEMVAULT_THEME_TIMER);
     window.CHEMVAULT_THEME_TIMER = window.setTimeout(() => {
       root.classList.remove("theme-switching");
-    }, 620);
-  }
-
-  function scheduleThemeApply(theme) {
-    let applied = false;
-    const apply = () => {
-      if (applied) return;
-      applied = true;
-      applyTheme(theme);
-    };
-    window.requestAnimationFrame?.(apply);
-    window.setTimeout(apply, 32);
+    }, 380);
   }
 
   function readThemeSetting() {

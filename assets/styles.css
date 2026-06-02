@@ -172,25 +172,18 @@ html.theme-switching :where(
   .theme-toggle,
   .site-nav a,
   .home-search-card,
-  .home-status-panel,
   .portal-card,
   .page-panel,
-  .page-index-card,
-  .result-panel,
-  .academic-result-item,
-  .data-window,
   .record-panel,
-  .site-footer,
-  .site-version,
   input,
   select,
   textarea
 ) {
   transition:
-    background-color 420ms var(--ease-out),
-    color 420ms var(--ease-out),
-    border-color 420ms var(--ease-out),
-    box-shadow 420ms var(--ease-out);
+    background-color 260ms var(--ease-out),
+    color 260ms var(--ease-out),
+    border-color 260ms var(--ease-out),
+    box-shadow 260ms var(--ease-out);
 }
 
 html.theme-switching::before {
@@ -200,38 +193,37 @@ html.theme-switching::before {
   z-index: 1080;
   pointer-events: none;
   background:
-    radial-gradient(circle at var(--theme-x, 50%) var(--theme-y, 50%), rgba(0, 113, 227, 0.24), transparent 36%),
-    rgba(16, 17, 20, 0.94);
-  clip-path: circle(0 at var(--theme-x, 50%) var(--theme-y, 50%));
-  animation: chemvault-theme-reveal 720ms var(--ease-out) both;
+    radial-gradient(circle 180px at var(--theme-x, 50%) var(--theme-y, 50%), rgba(0, 113, 227, 0.18), transparent 72%),
+    rgba(16, 17, 20, 0.22);
+  opacity: 0;
+  transform: translateZ(0);
+  will-change: opacity;
+  animation: chemvault-theme-reveal 360ms var(--ease-out) both;
 }
 
 html.theme-switching[data-theme-target="light"]::before {
   background:
-    radial-gradient(circle at var(--theme-x, 50%) var(--theme-y, 50%), rgba(0, 113, 227, 0.16), transparent 36%),
-    rgba(245, 245, 247, 0.96);
+    radial-gradient(circle 180px at var(--theme-x, 50%) var(--theme-y, 50%), rgba(0, 113, 227, 0.14), transparent 72%),
+    rgba(245, 245, 247, 0.32);
 }
 
 html.theme-switching[data-theme-target="dark"]::before {
   background:
-    radial-gradient(circle at var(--theme-x, 50%) var(--theme-y, 50%), rgba(0, 113, 227, 0.26), transparent 36%),
-    rgba(16, 17, 20, 0.96);
+    radial-gradient(circle 180px at var(--theme-x, 50%) var(--theme-y, 50%), rgba(0, 113, 227, 0.2), transparent 72%),
+    rgba(16, 17, 20, 0.34);
 }
 
 @keyframes chemvault-theme-reveal {
   0% {
-    opacity: 0.96;
-    clip-path: circle(0 at var(--theme-x, 50%) var(--theme-y, 50%));
+    opacity: 0;
   }
 
-  62% {
-    opacity: 0.92;
-    clip-path: circle(150vmax at var(--theme-x, 50%) var(--theme-y, 50%));
+  42% {
+    opacity: 1;
   }
 
   100% {
     opacity: 0;
-    clip-path: circle(150vmax at var(--theme-x, 50%) var(--theme-y, 50%));
   }
 }
 
@@ -358,19 +350,27 @@ body.page-is-leaving .site-header {
   justify-content: center;
   align-items: center;
   flex-wrap: nowrap;
-  gap: 2px;
+  gap: 4px;
   min-width: 0;
 }
 
 .site-nav a {
   position: relative;
-  color: var(--muted);
-  padding: 7px 7px;
+  color: #4c515b;
+  padding: 8px 8px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 6px;
   font-size: 0.82rem;
+  font-weight: 650;
   line-height: 1.1;
   white-space: nowrap;
-  transition: color var(--motion-fast) ease, background var(--motion-fast) ease, transform var(--motion-fast) ease;
+  background: rgba(255, 255, 255, 0.56);
+  transition:
+    color var(--motion-fast) ease,
+    background var(--motion-fast) ease,
+    border-color var(--motion-fast) ease,
+    box-shadow var(--motion-fast) ease,
+    transform var(--motion-fast) ease;
 }
 
 .site-nav a::after {
@@ -389,14 +389,18 @@ body.page-is-leaving .site-header {
 
 .site-nav a:hover,
 .site-nav a:focus-visible {
-  color: var(--text);
-  background: rgba(0, 0, 0, 0.05);
+  color: #1d1d1f;
+  background: #ffffff;
+  border-color: rgba(0, 113, 227, 0.22);
+  box-shadow: 0 8px 20px rgba(0, 43, 84, 0.08);
   transform: translateY(-1px);
 }
 
 .site-nav a[aria-current] {
-  color: var(--text);
-  background: rgba(0, 113, 227, 0.07);
+  color: #0057b8;
+  background: rgba(0, 113, 227, 0.11);
+  border-color: rgba(0, 113, 227, 0.28);
+  box-shadow: inset 0 -1px 0 rgba(0, 113, 227, 0.12);
 }
 
 .site-nav a[aria-current]::after,
@@ -2643,8 +2647,32 @@ html.dark-mode body .search-shell input::placeholder {
 
 body.dark-mode .site-nav a[aria-current],
 html.dark-mode body .site-nav a[aria-current] {
-  background: rgba(0, 113, 227, 0.18);
-  color: #f5f5f7;
+  background: rgba(0, 113, 227, 0.26);
+  border-color: rgba(64, 156, 255, 0.48);
+  color: #eaf3ff;
+  box-shadow: inset 0 -1px 0 rgba(64, 156, 255, 0.18);
+}
+
+body.dark-mode .site-nav a,
+html.dark-mode body .site-nav a {
+  color: #d8dde7;
+  background: rgba(31, 34, 40, 0.88);
+  border-color: rgba(255, 255, 255, 0.16);
+}
+
+body.dark-mode .site-nav a:hover,
+body.dark-mode .site-nav a:focus-visible,
+html.dark-mode body .site-nav a:hover,
+html.dark-mode body .site-nav a:focus-visible {
+  color: #ffffff;
+  background: #252932;
+  border-color: rgba(64, 156, 255, 0.42);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.22);
+}
+
+body.dark-mode .site-nav a::after,
+html.dark-mode body .site-nav a::after {
+  background: #409cff;
 }
 
 body.dark-mode :where(.home-hero, .workspace-hero, .page-hero, .section, .section-tint),

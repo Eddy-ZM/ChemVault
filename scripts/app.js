@@ -886,7 +886,7 @@
     const button = document.querySelector("[data-action='theme']");
     const next = nextThemeSetting(button?.dataset.themeState || readThemeSetting());
     startThemeTransition(button, next);
-    scheduleLegacyThemeApply(next);
+    applyLegacyTheme(next);
   }
 
   function applyLegacyTheme(theme, options = {}) {
@@ -924,18 +924,7 @@
     window.clearTimeout(window.CHEMVAULT_THEME_TIMER);
     window.CHEMVAULT_THEME_TIMER = window.setTimeout(() => {
       root.classList.remove("theme-switching");
-    }, 620);
-  }
-
-  function scheduleLegacyThemeApply(theme) {
-    let applied = false;
-    const apply = () => {
-      if (applied) return;
-      applied = true;
-      applyLegacyTheme(theme);
-    };
-    window.requestAnimationFrame?.(apply);
-    window.setTimeout(apply, 32);
+    }, 380);
   }
 
   function readThemeSetting() {
