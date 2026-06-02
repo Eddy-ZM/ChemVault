@@ -78,6 +78,7 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
+  border-radius: inherit;
   background: linear-gradient(120deg, transparent 0%, rgba(255, 255, 255, 0.34) 42%, transparent 68%);
   opacity: 0;
   transform: translateX(-18%);
@@ -140,6 +141,8 @@
 
 .page-panel {
   position: relative;
+  overflow: hidden;
+  isolation: isolate;
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background:
@@ -148,6 +151,15 @@
   box-shadow: var(--shadow);
   padding: 16px;
   min-width: 0;
+}
+
+.page-panel::after {
+  z-index: 0;
+}
+
+.page-panel > * {
+  position: relative;
+  z-index: 1;
 }
 
 .dense-list {
