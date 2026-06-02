@@ -181,7 +181,7 @@
 
     if (!useLoader) {
       showSoftNavigation();
-      window.setTimeout(go, 180);
+      window.setTimeout(go, 70);
       return;
     }
 
@@ -224,7 +224,7 @@
     }
     document.documentElement.classList.remove("motion-boot");
     document.documentElement.classList.remove("motion-boot-timeout");
-    window.setTimeout(() => document.documentElement.classList.remove("motion-soft-enter"), 420);
+    window.setTimeout(() => document.documentElement.classList.remove("motion-soft-enter"), 220);
     document.body.classList.remove("site-is-booting");
   }
 

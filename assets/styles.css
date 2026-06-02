@@ -63,18 +63,6 @@ html {
   scroll-behavior: smooth;
 }
 
-@view-transition {
-  navigation: auto;
-}
-
-::view-transition-old(root) {
-  animation: chemvault-view-out 220ms var(--ease-out) both;
-}
-
-::view-transition-new(root) {
-  animation: chemvault-view-in 340ms var(--ease-out) both;
-}
-
 body {
   margin: 0;
   color: var(--text);
@@ -109,8 +97,8 @@ html.motion-soft-enter body:not(.page-ready) .site-header,
 html.motion-soft-enter body:not(.page-ready) main,
 html.motion-soft-enter body:not(.page-ready) .site-footer,
 html.motion-soft-enter body:not(.page-ready) .site-version {
-  opacity: 0;
-  transform: translateY(6px);
+  opacity: 0.985;
+  transform: translateY(2px);
 }
 
 html.motion-boot:not(.motion-boot-timeout) body:not(.page-ready)::before {
@@ -160,9 +148,20 @@ body.page-is-soft-leaving .site-header,
 body.page-is-soft-leaving main,
 body.page-is-soft-leaving .site-footer,
 body.page-is-soft-leaving .site-version {
-  opacity: 0;
-  transform: translateY(-6px);
-  transition: opacity 180ms ease, transform 180ms ease;
+  opacity: 0.985;
+  transform: translateY(-2px);
+  transition: opacity 90ms ease, transform 90ms ease;
+}
+
+body.page-is-soft-leaving::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  pointer-events: none;
+  background: var(--bg);
+  opacity: 0.08;
+  transition: opacity 90ms ease;
 }
 
 html.theme-switching body,
@@ -1030,20 +1029,6 @@ body.page-is-leaving .site-header {
   100% {
     opacity: 0;
     transform: translate(-50%, -50%) scale(1);
-  }
-}
-
-@keyframes chemvault-view-out {
-  to {
-    opacity: 0;
-    transform: translateY(-8px) scale(0.995);
-  }
-}
-
-@keyframes chemvault-view-in {
-  from {
-    opacity: 0;
-    transform: translateY(10px) scale(1.005);
   }
 }
 
