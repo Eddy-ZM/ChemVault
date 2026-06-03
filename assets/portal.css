@@ -82,13 +82,16 @@
   z-index: 0;
   pointer-events: none;
   border-radius: inherit;
-  --card-highlight-gradient: linear-gradient(120deg, transparent 0%, rgba(255, 255, 255, 0.34) 42%, transparent 68%);
-  background: var(--card-highlight-gradient);
-  background-size: 240% 100%;
-  background-position: 135% 50%;
+  --card-highlight-radial: radial-gradient(120% 95% at 18% 10%, rgba(255, 255, 255, 0.1), transparent 54%);
+  --card-highlight-base: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.018) 46%, rgba(255, 255, 255, 0.07));
+  --card-highlight-sweep:
+    linear-gradient(115deg, transparent 0%, transparent 40%, rgba(255, 255, 255, 0.2) 50%, transparent 60%, transparent 100%);
+  background-image: var(--card-highlight-radial), var(--card-highlight-base), var(--card-highlight-sweep);
+  background-size: 100% 100%, 100% 100%, 220% 100%;
+  background-position: 0 0, 0 0, -140% 50%;
   opacity: 0;
   transform: none;
-  transition: opacity var(--motion-medium) ease, background-position var(--motion-medium) var(--ease-out);
+  transition: opacity 180ms ease;
 }
 
 .portal-card:hover,
@@ -108,7 +111,7 @@
 .external-source-card:hover::after,
 .external-source-card:focus-visible::after {
   opacity: 1;
-  background-position: -35% 50%;
+  animation: chemvault-card-highlight-sweep 760ms var(--ease-out) both;
 }
 
 .portal-card > *,
@@ -118,6 +121,16 @@
 .external-source-card > * {
   position: relative;
   z-index: 1;
+}
+
+@keyframes chemvault-card-highlight-sweep {
+  0% {
+    background-position: 0 0, 0 0, -140% 50%;
+  }
+
+  100% {
+    background-position: 0 0, 0 0, 180% 50%;
+  }
 }
 
 .portal-card span {
@@ -498,8 +511,10 @@ body.light-mode .graph-board {
 .external-source-card::after,
 .local-result-card::after {
   z-index: 0;
-  --card-highlight-gradient:
-    linear-gradient(115deg, rgba(255, 255, 255, 0.045) 0%, rgba(255, 255, 255, 0.13) 46%, rgba(255, 255, 255, 0.035) 76%, transparent 100%);
+  --card-highlight-radial: radial-gradient(112% 88% at 14% 10%, rgba(255, 255, 255, 0.08), transparent 54%);
+  --card-highlight-base: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.018) 46%, rgba(255, 255, 255, 0.04));
+  --card-highlight-sweep:
+    linear-gradient(115deg, transparent 0%, transparent 42%, rgba(255, 255, 255, 0.14) 50%, transparent 60%, transparent 100%);
 }
 
 .external-source-card:hover,
@@ -2422,7 +2437,10 @@ body.dark-mode:not(.page-shell) :where(.external-source-card, .local-result-card
 
 html.dark-mode body:not(.page-shell) :where(.external-source-card, .local-result-card)::after,
 body.dark-mode:not(.page-shell) :where(.external-source-card, .local-result-card)::after {
-  --card-highlight-gradient: linear-gradient(115deg, rgba(255, 255, 255, 0.055) 0%, rgba(255, 255, 255, 0.11) 46%, rgba(255, 255, 255, 0.04) 76%, transparent 100%);
+  --card-highlight-radial: radial-gradient(112% 88% at 14% 10%, rgba(255, 255, 255, 0.075), transparent 54%);
+  --card-highlight-base: linear-gradient(135deg, rgba(255, 255, 255, 0.052), rgba(255, 255, 255, 0.018) 46%, rgba(255, 255, 255, 0.04));
+  --card-highlight-sweep:
+    linear-gradient(115deg, transparent 0%, transparent 42%, rgba(255, 255, 255, 0.12) 50%, transparent 60%, transparent 100%);
 }
 
 html.dark-mode body:not(.page-shell) :where(.home-search-card input, .home-search-row input),
