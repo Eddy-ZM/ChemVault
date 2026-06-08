@@ -1,5 +1,5 @@
 (() => {
-  const SITE_VERSION = "v0.2.3";
+  const SITE_VERSION = "v0.2.4";
   const importedStoreKey = "chemvault-imported-records";
 
   const esc = (value) => String(value ?? "").replace(/[&<>"']/g, (char) => ({

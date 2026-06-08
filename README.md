@@ -9,7 +9,7 @@ All rights reserved.
 
 ChemVault is a Cloudflare Pages-ready chemistry portal with a local-first chemistry database, academic search enrichment and a D1-backed dynamic API route.
 
-Current version: `v0.2.3`.
+Current version: `v0.2.4`.
 
 The local database now builds to exactly `10000` searchable records for the D1 seed and browser-side search index. The record set combines curated chemistry content, safety-enriched compounds, systematic local catalog entries, materials records, mechanisms, methods, dossiers and source records.
 

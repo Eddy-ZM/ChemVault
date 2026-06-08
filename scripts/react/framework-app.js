@@ -204,7 +204,7 @@
     const chem = window.CHEMVAULT_DATA;
     if (!chem?.reactionSystems && !chem?.compounds) return null;
     return {
-      version: "0.2.3",
+      version: "0.2.4",
       generatedAt: new Date().toISOString(),
       chem,
       research: window.CHEMVAULT_RESEARCH || {},
