@@ -74,7 +74,7 @@ const payload = {
   records
 };
 
-fs.writeFileSync("data/public-record-index.json", `${JSON.stringify(payload, null, 2)}\n`);
+fs.writeFileSync("data/public-record-index.json", `${JSON.stringify(payload)}\n`);
 
 console.log(JSON.stringify({
   output: "data/public-record-index.json",
@@ -94,7 +94,7 @@ function publicRecord(record, api) {
     }))
     .filter((section) => section.title || section.items.length);
 
-  return {
+  const payload = {
     id,
     type,
     typeLabel: record.typeLabel || type,
@@ -114,7 +114,6 @@ function publicRecord(record, api) {
     safetySource: record.safetySource || "",
     sections,
     url: absoluteUrl(`/pages/record.html?type=${encodeURIComponent(type)}&id=${encodeURIComponent(id)}`),
-    sourceUrl: absoluteUrl(sourcePath),
     searchText: record.searchText || compact([
       type,
       record.typeLabel,
@@ -128,6 +127,10 @@ function publicRecord(record, api) {
       ...sections.flatMap((section) => [section.title, ...section.items])
     ].filter(Boolean).join(" "))
   };
+  if (/^https?:\/\//i.test(String(sourcePath || ""))) {
+    payload.sourceUrl = absoluteUrl(sourcePath);
+  }
+  return pruneEmpty(payload);
 }
 
 function absoluteUrl(path) {
@@ -144,4 +147,26 @@ function slug(value) {
 
 function compact(value) {
   return String(value || "").toLowerCase().replace(/[^a-z0-9.+-]/g, " ").replace(/\s+/g, " ").trim();
+}
+
+function pruneEmpty(value) {
+  if (Array.isArray(value)) {
+    const items = value.map(pruneEmpty).filter((item) => {
+      if (item === "" || item === null || item === undefined) return false;
+      if (Array.isArray(item)) return item.length > 0;
+      if (typeof item === "object") return Object.keys(item).length > 0;
+      return true;
+    });
+    return items;
+  }
+  if (!value || typeof value !== "object") return value;
+  return Object.fromEntries(Object.entries(value)
+    .map(([key, item]) => [key, pruneEmpty(item)])
+    .filter(([key, item]) => {
+      if (key === "maturity" && item === 0) return false;
+      if (item === "" || item === null || item === undefined) return false;
+      if (Array.isArray(item)) return item.length > 0;
+      if (typeof item === "object") return Object.keys(item).length > 0;
+      return true;
+    }));
 }
