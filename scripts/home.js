@@ -7,6 +7,7 @@
   const $ = (selector) => document.querySelector(selector);
   const encode = (value) => encodeURIComponent((value || "").trim());
   const normalise = (value) => String(value || "").toLowerCase();
+  const searchIntent = () => window.CHEMVAULT_SEARCH_INTENT;
 
   const count = (items) => Array.isArray(items) ? items.length : 0;
   const typeKey = (record, index) => `${record.type || record.typeLabel || "record"}:${record.id || record.title || index}`;
@@ -166,55 +167,88 @@
     const records = window.CHEMVAULT_RECORDS;
     if (records?.buildRecords) {
       return records.buildRecords({ includeImported: true }).map((item) => ({
+        id: item.id,
+        recordType: item.type,
         type: item.typeLabel || item.type,
         title: item.title,
         body: item.body || item.subtitle || "",
         href: item.external ? item.href : records.recordUrl(item.type, item.id),
         external: item.external,
-        imageUrl: item.imageUrl || item.raw?.imageUrl || ""
+        imageUrl: item.imageUrl || item.raw?.imageUrl || "",
+        formula: item.formula || "",
+        tags: item.tags || [],
+        domain: item.domain || "",
+        family: item.family || "",
+        raw: item.raw || {},
+        searchText: item.searchText || ""
       }));
     }
     const rows = [];
     (data.reagents || []).forEach((item) => rows.push({
+      id: item.id,
+      recordType: "reagent",
       type: "Reagent dossier",
       title: item.name,
       body: [item.category, item.use, item.mechanism].filter(Boolean).join(" | "),
+      formula: item.formula,
+      tags: item.tags || [],
+      searchText: [item.formula, item.name, item.focus, item.category, ...(item.tags || []), ...(item.transformations || [])].filter(Boolean).join(" "),
       href: `pages/reagents.html?id=${item.id}`
     }));
     (data.reactionSystems || []).forEach((item) => rows.push({
+      id: item.id,
+      recordType: "reaction",
       type: "Reaction system",
       title: item.name,
       body: [item.className, item.domain, ...(item.conditions || []), ...(item.readouts || [])].filter(Boolean).join(" | "),
+      tags: [item.domain, ...(item.substrates || []), ...(item.reagents || []), ...(item.mechanisms || [])].filter(Boolean),
       href: `pages/workbench.html?id=${item.id}`
     }));
     (data.reactants || []).forEach((item) => rows.push({
+      id: item.id,
+      recordType: "reactant",
       type: "Reactant class",
       title: item.name,
       body: [item.className, ...(item.functionalGroups || []), ...(item.compatibleMethods || [])].filter(Boolean).join(" | "),
+      tags: [...(item.functionalGroups || []), ...(item.compatibleMethods || [])],
       href: `pages/workbench.html?q=${encode(item.name)}`
     }));
     (data.compounds || []).forEach((item) => rows.push({
+      id: item.id,
+      recordType: "compound",
       type: "Compound record",
       title: item.name,
       body: [item.formula, item.family, item.summary, ...(item.synonyms || [])].filter(Boolean).join(" | "),
+      formula: item.formula,
+      tags: [...(item.synonyms || []), ...(item.tags || [])],
       href: `pages/search.html?q=${encode(item.name)}`
     }));
     (materialsData.materials || []).forEach((item) => rows.push({
+      id: item.id,
+      recordType: "material",
       type: "Material profile",
       title: item.name,
       body: [item.family, item.summary, (item.applications || []).slice(0, 2).join(", ")].filter(Boolean).join(" | "),
+      formula: item.formula,
+      tags: item.tags || [],
       href: `pages/materials.html?id=${item.id}`
     }));
     (data.mechanisms || []).forEach((item) => rows.push({
+      id: item.id,
+      recordType: "mechanism",
       type: "Mechanism atlas",
       title: item.name,
       body: [item.summary, (item.tags || []).join(", ")].filter(Boolean).join(" | "),
+      tags: item.tags || [],
       href: `pages/atlas.html?id=${item.id}`
     }));
     (data.concepts || []).forEach((item) => rows.push({
+      id: item.id,
+      recordType: "concept",
       type: "Concept note",
       title: item.term,
       body: item.definition,
+      tags: item.tags || [],
       href: `pages/library.html?q=${encode(item.term)}`
     }));
     return rows;
@@ -357,6 +391,44 @@
     `).join("");
   }
 
+  function localSearchText(item) {
+    return normalise([
+      item.searchText,
+      item.title,
+      item.type,
+      item.body,
+      item.formula,
+      item.domain,
+      item.family,
+      ...(item.tags || [])
+    ].filter(Boolean).join(" "));
+  }
+
+  function recordIdentity(item) {
+    return searchIntent()?.recordKey?.(item) || `${item.type}:${item.id || item.title}`;
+  }
+
+  function localHitsFor(query, limit) {
+    const term = normalise(query);
+    if (!term) return [];
+    const index = localIndex();
+    const seen = new Set();
+    const hits = [];
+    const addHit = (item) => {
+      const key = recordIdentity(item);
+      if (seen.has(key)) return;
+      seen.add(key);
+      hits.push(item);
+    };
+
+    (searchIntent()?.rank?.(query, index, { limit }) || []).forEach((match) => addHit(match.item));
+    index
+      .filter((item) => localSearchText(item).includes(term))
+      .slice(0, limit)
+      .forEach(addHit);
+    return hits.slice(0, limit);
+  }
+
   function renderQuickLinks(query = "") {
     const panel = $("#homeQuickLinks");
     if (!panel) return;
@@ -370,9 +442,7 @@
       return;
     }
 
-    const hits = localIndex()
-      .filter((item) => normalise(`${item.title} ${item.type} ${item.body}`).includes(term))
-      .slice(0, 4);
+    const hits = localHitsFor(query, 4);
     const localLinks = hits.map((item) => `
       <a class="home-quick-card" href="${item.href}">
         <img src="${escapeHTML(thumbnailFor(item))}" data-fallback-src="${escapeHTML(placeholderImage(item.type, item.title, item.formula || item.family || item.domain || ""))}" alt="" loading="lazy" referrerpolicy="no-referrer" />
@@ -412,10 +482,7 @@
         return;
       }
 
-      const localHits = localIndex()
-        .filter((item) => normalise(`${item.title} ${item.type} ${item.body}`).includes(term))
-        .slice(0, 6)
-        .map((item) => ({ ...item, external: false }));
+      const localHits = localHitsFor(rawQuery, 6).map((item) => ({ ...item, external: false }));
       const externalHits = (external.sources || []).slice(0, 4).map((source) => ({
         type: "External",
         title: `Search ${source.name}`,

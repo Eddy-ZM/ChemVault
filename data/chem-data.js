@@ -66,13 +66,13 @@ window.CHEMVAULT_DATA = {
       formula: "H2 / Pd-C",
       category: "Reduction",
       risk: "standard",
-      focus: "Unsaturation removal",
-      tags: ["alkene", "alkyne", "catalyst", "hydrogenation"],
-      transformations: ["Alkene to alkane", "Alkyne to alkane under full hydrogenation"],
+      focus: "Hydrogenation and reducible-group reduction",
+      tags: ["alkene", "alkyne", "catalyst", "hydrogenation", "ketone", "alcohol", "carbonyl"],
+      transformations: ["Alkene to alkane", "Alkyne to alkane under full hydrogenation", "Ketone to alcohol under suitable catalytic hydrogenation conditions"],
       conditions: ["Hydrogen gas with palladium catalyst", "Controlled conditions depending on substrate"],
-      scope: "Reduces carbon-carbon multiple bonds and sometimes other reducible groups.",
+      scope: "Reduces carbon-carbon multiple bonds and can reduce selected carbonyls under matched pressure, catalyst and substrate conditions.",
       mechanism: "Adsorption on metal surface, syn hydrogen delivery, product desorption.",
-      traps: ["Removes unsaturation rather than replacing a leaving group", "Catalyst poisoning can matter in advanced contexts"],
+      traps: ["Removes unsaturation readily; carbonyl hydrogenation needs condition context", "Catalyst poisoning can matter in advanced contexts"],
       safety: "Hydrogen and supported metal catalysts require proper controls."
     },
     {

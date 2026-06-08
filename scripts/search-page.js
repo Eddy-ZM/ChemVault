@@ -15,6 +15,7 @@
   let latestSearchRun = 0;
   let currentResultMap = new Map();
   const $ = (selector) => document.querySelector(selector);
+  const searchIntent = () => window.CHEMVAULT_SEARCH_INTENT;
   const esc = (value) => String(value || "").replace(/[&<>"']/g, (char) => ({
     "&": "&amp;",
     "<": "&lt;",
@@ -319,10 +320,11 @@
 
   function tokenScore(item, query) {
     const tokens = compact(query).split(" ").filter((token) => token.length > 2);
+    const intentScore = searchIntent()?.score?.(item, query) || 0;
     if (!tokens.length) return 1;
     const haystack = item.searchText || compact(`${item.title} ${item.type} ${item.body} ${(item.tags || []).join(" ")}`);
     const matches = tokens.filter((token) => haystack.includes(token)).length;
-    return matches ? matches + score(item, query) : 0;
+    return matches ? matches + score(item, query) + intentScore : intentScore;
   }
 
   function renderExternal(query) {
@@ -410,7 +412,8 @@
     if (summary) {
       const countText = rows.length === 1 ? "1 result" : `${rows.length} results`;
       const filterText = [scope !== "all" ? scope : "", filters.facet !== "all" ? filters.facet : "", filters.tag !== "all" ? filters.tag : ""].filter(Boolean).join(" · ");
-      summary.textContent = `${query ? `${countText} for "${query}"` : `${countText} across ChemVault and checked academic imports`}${filterText ? ` · ${filterText}` : ""}`;
+      const intent = searchIntent()?.detect?.(query);
+      summary.textContent = `${query ? `${countText} for "${query}"` : `${countText} across ChemVault and checked academic imports`}${intent ? ` · ${intent.label}` : ""}${filterText ? ` · ${filterText}` : ""}`;
     }
 
     if (!rows.length) {

@@ -154,6 +154,21 @@
       safety: "Nickel catalyst with pyrophoric risk if dry. Follow catalyst storage and disposal procedures."
     },
     {
+      id: "mpv-reduction",
+      name: "Meerwein-Ponndorf-Verley reduction",
+      formula: "Al(O-i-Pr)3 / i-PrOH",
+      category: "Reduction",
+      risk: "standard",
+      focus: "Transfer hydrogenation of carbonyls",
+      tags: ["ketone", "alcohol", "carbonyl", "transfer hydrogenation", "MPV", "selective"],
+      transformations: ["Ketone to secondary alcohol", "Aldehyde to primary alcohol", "Meerwein-Ponndorf-Verley reduction"],
+      conditions: ["Aluminium isopropoxide with isopropanol in classic examples", "Equilibrium control and removal of acetone can matter"],
+      scope: "Mild hydride-transfer option for aldehyde and ketone reduction when strong metal hydrides are not desired.",
+      mechanism: "Six-membered aluminium alkoxide transition state transfers hydride from isopropoxide to the carbonyl carbon.",
+      traps: ["Often slower than borohydride reductions", "Equilibrium and substrate sterics can limit conversion"],
+      safety: "Flammable alcohol solvent and metal alkoxide system. Follow SDS and approved ventilation controls."
+    },
+    {
       id: "sodium-cyanoborohydride",
       name: "Sodium cyanoborohydride",
       formula: "NaBH3CN",

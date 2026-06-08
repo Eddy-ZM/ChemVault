@@ -2,7 +2,7 @@ import fs from "node:fs";
 import vm from "node:vm";
 
 const SITE_ORIGIN = process.env.CHEMVAULT_SITE_ORIGIN || "https://chemvault.pages.dev";
-const LASTMOD = "2026-05-31";
+const LASTMOD = "2026-06-08";
 
 const dataFiles = [
   "data/chem-data.js",
@@ -35,7 +35,8 @@ const staticUrls = [
   { path: "/pages/library.html", priority: "0.7", changefreq: "monthly" },
   { path: "/pages/about.html", priority: "0.5", changefreq: "monthly" },
   { path: "/pages/team.html", priority: "0.5", changefreq: "monthly" },
-  { path: "/pages/developer.html", priority: "0.5", changefreq: "monthly" }
+  { path: "/pages/developer.html", priority: "0.5", changefreq: "monthly" },
+  { path: "/data/public-record-index.json", priority: "0.6", changefreq: "weekly" }
 ];
 
 const context = {

@@ -7,6 +7,8 @@
   <meta name="description" content="Search ChemVault local records and continue queries in NIH, NCBI, PubChem, NIST, IUPAC and DOI-level scholarly databases." />
   <meta name="theme-color" content="#f5f5f7" />
   <script src="/scripts/boot.js?v=20260603a"></script>
+  <link rel="canonical" href="https://chemvault.pages.dev/pages/search.html" />
+  <link rel="alternate" type="application/json" title="ChemVault public record index" href="/data/public-record-index.json" />
   <link rel="icon" href="/favicon.ico" sizes="any" />
   <link rel="icon" href="/assets/chemvault-icon-192.png" type="image/png" sizes="192x192" />
   <link rel="apple-touch-icon" href="/assets/chemvault-apple-touch-icon.png" />
@@ -26,10 +28,34 @@
   <script src="../data/local-catalog-10000.js?v=20260603a" defer></script>
   <script src="../data/external-sources.js?v=20260603a" defer></script>
   <script src="../scripts/record-utils.js?v=20260603a" defer></script>
+  <script src="../scripts/search-intent.js?v=20260608a" defer></script>
   <script src="../scripts/api.js?v=20260603a" defer></script>
   <script src="../scripts/motion.js?v=20260603a" defer></script>
   <script src="../scripts/site-shell.js?v=20260603a" defer></script>
   <script src="../scripts/search-page.js?v=20260603a" defer></script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": "ChemVault Academic Search",
+    "url": "https://chemvault.pages.dev/pages/search.html",
+    "description": "Search ChemVault records and continue chemistry queries in trusted academic databases.",
+    "isPartOf": {
+      "@id": "https://chemvault.pages.dev/#website"
+    },
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://chemvault.pages.dev/pages/search.html?q={search_term_string}",
+      "query-input": "required name=search_term_string"
+    },
+    "mainEntity": {
+      "@type": "Dataset",
+      "name": "ChemVault public record index",
+      "url": "https://chemvault.pages.dev/data/public-record-index.json",
+      "encodingFormat": "application/json"
+    }
+  }
+  </script>
 </head>
 <body class="page-shell" data-boot-label="Search">
   <a class="skip-link" href="#main">Skip to content</a>
@@ -63,6 +89,24 @@
         </aside>
       </div>
     </section>
+
+    <noscript>
+      <section class="section section-tint">
+        <div class="container">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">machine-readable data</p>
+              <h2>Search without page JavaScript</h2>
+            </div>
+            <p>The complete public ChemVault record index is available as JSON. External tools can search it directly and follow canonical record URLs.</p>
+          </div>
+          <div class="gateway-grid">
+            <a class="external-source-card" href="/data/public-record-index.json"><span class="eyebrow">complete public data</span><strong>Open JSON index</strong><span>Records, summaries, tags, safety notes and canonical URLs.</span></a>
+            <a class="external-source-card" href="/pages/search.html?q=ketone%20to%20alcohol"><span class="eyebrow">example query</span><strong>Ketone to alcohol</strong><span>Reduction intent query for NaBH4, LiAlH4, H2/Pd and MPV reduction.</span></a>
+          </div>
+        </div>
+      </section>
+    </noscript>
 
     <section class="section search-studio-section">
       <div class="container search-workbench-grid">

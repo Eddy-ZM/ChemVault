@@ -25,6 +25,7 @@ const excluded = new Set([
   "scripts/build-pages.mjs",
   "scripts/export-d1-seed.mjs",
   "scripts/export-data-json.mjs",
+  "scripts/generate-public-index.mjs",
   "scripts/generate-sitemap.mjs"
 ]);
 

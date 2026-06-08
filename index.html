@@ -10,6 +10,8 @@
   <meta property="og:title" content="ChemVault | Research Chemistry Portal" />
   <meta property="og:description" content="A concise public gateway to ChemVault's chemistry records, materials atlas and academic search tools." />
   <meta property="og:type" content="website" />
+  <link rel="canonical" href="https://chemvault.pages.dev/" />
+  <link rel="alternate" type="application/json" title="ChemVault public record index" href="/data/public-record-index.json" />
   <link rel="icon" href="/favicon.ico" sizes="any" />
   <link rel="icon" href="/assets/chemvault-icon-192.png" type="image/png" sizes="192x192" />
   <link rel="apple-touch-icon" href="/assets/chemvault-apple-touch-icon.png" />
@@ -29,9 +31,37 @@
   <script src="data/local-catalog-10000.js?v=20260603a" defer></script>
   <script src="data/external-sources.js?v=20260603a" defer></script>
   <script src="scripts/record-utils.js?v=20260603a" defer></script>
+  <script src="scripts/search-intent.js?v=20260608a" defer></script>
   <script src="scripts/api.js?v=20260603a" defer></script>
   <script src="scripts/motion.js?v=20260603a" defer></script>
   <script src="scripts/home.js?v=20260603a" defer></script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": "https://chemvault.pages.dev/#website",
+        "name": "ChemVault",
+        "url": "https://chemvault.pages.dev/",
+        "description": "Public research chemistry portal with searchable reagent, reaction, material, spectroscopy and source records.",
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": "https://chemvault.pages.dev/pages/search.html?q={search_term_string}",
+          "query-input": "required name=search_term_string"
+        }
+      },
+      {
+        "@type": "Dataset",
+        "@id": "https://chemvault.pages.dev/data/public-record-index.json#dataset",
+        "name": "ChemVault public record index",
+        "url": "https://chemvault.pages.dev/data/public-record-index.json",
+        "encodingFormat": "application/json",
+        "isAccessibleForFree": true
+      }
+    ]
+  }
+  </script>
 </head>
 <body data-boot-label="Home">
   <a class="skip-link" href="#main">Skip to content</a>
@@ -114,6 +144,24 @@
         </aside>
       </div>
     </section>
+
+    <noscript>
+      <section class="section section-tint">
+        <div class="container">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">machine-readable data</p>
+              <h2>Public ChemVault record index</h2>
+            </div>
+            <p>The complete public record index is available as JSON for search engines, external tools and visitors without page JavaScript.</p>
+          </div>
+          <div class="portal-grid home-portal-grid">
+            <a class="portal-card portal-card-featured" href="/data/public-record-index.json"><span>complete public data</span><strong>Open JSON index</strong><p>All public ChemVault records with titles, record types, summaries, tags, safety summaries and canonical record URLs.</p><em>Open data</em></a>
+            <a class="portal-card" href="/pages/search.html?q=ketone%20to%20alcohol"><span>example intent query</span><strong>Ketone to alcohol</strong><p>Search reduction options including NaBH4, LiAlH4, H2/Pd and Meerwein-Ponndorf-Verley reduction.</p><em>Open search</em></a>
+          </div>
+        </div>
+      </section>
+    </noscript>
 
     <section class="section section-tint">
       <div class="container">
