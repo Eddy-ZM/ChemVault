@@ -170,6 +170,8 @@ html.theme-switching :where(
   .search-shell,
   .theme-toggle,
   .site-nav a,
+  .nav-more > summary,
+  .nav-more-menu,
   .home-search-card,
   .portal-card,
   .page-panel,
@@ -353,7 +355,8 @@ body.page-is-leaving .site-header {
   min-width: 0;
 }
 
-.site-nav a {
+.site-nav a,
+.nav-more > summary {
   position: relative;
   color: #4c515b;
   padding: 8px 8px;
@@ -364,6 +367,7 @@ body.page-is-leaving .site-header {
   line-height: 1.1;
   white-space: nowrap;
   background: rgba(255, 255, 255, 0.56);
+  cursor: pointer;
   transition:
     color var(--motion-fast) ease,
     background var(--motion-fast) ease,
@@ -372,7 +376,48 @@ body.page-is-leaving .site-header {
     transform var(--motion-fast) ease;
 }
 
-.site-nav a::after {
+.nav-more {
+  position: relative;
+}
+
+.nav-more > summary {
+  display: block;
+  list-style: none;
+}
+
+.nav-more > summary::-webkit-details-marker {
+  display: none;
+}
+
+.nav-more > summary::before {
+  content: "+";
+  display: inline-block;
+  margin-right: 6px;
+  color: var(--amber);
+  font-weight: 850;
+}
+
+.nav-more[open] > summary::before {
+  content: "-";
+}
+
+.nav-more-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 50;
+  display: grid;
+  min-width: 220px;
+  gap: 4px;
+  padding: 8px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: var(--shadow);
+}
+
+.site-nav a::after,
+.nav-more > summary::after {
   content: "";
   position: absolute;
   left: 8px;
@@ -387,7 +432,9 @@ body.page-is-leaving .site-header {
 }
 
 .site-nav a:hover,
-.site-nav a:focus-visible {
+.site-nav a:focus-visible,
+.nav-more > summary:hover,
+.nav-more > summary:focus-visible {
   color: #1d1d1f;
   background: #ffffff;
   border-color: rgba(0, 113, 227, 0.22);
@@ -395,7 +442,8 @@ body.page-is-leaving .site-header {
   transform: translateY(-1px);
 }
 
-.site-nav a[aria-current] {
+.site-nav a[aria-current],
+.nav-more > summary[aria-current] {
   color: #0057b8;
   background: rgba(0, 113, 227, 0.11);
   border-color: rgba(0, 113, 227, 0.28);
@@ -404,12 +452,16 @@ body.page-is-leaving .site-header {
 
 .site-nav a[aria-current]::after,
 .site-nav a:hover::after,
-.site-nav a:focus-visible::after {
+.site-nav a:focus-visible::after,
+.nav-more > summary[aria-current]::after,
+.nav-more > summary:hover::after,
+.nav-more > summary:focus-visible::after {
   opacity: 1;
   transform: scaleX(1);
 }
 
-.site-nav a[aria-current]::after {
+.site-nav a[aria-current]::after,
+.nav-more > summary[aria-current]::after {
   height: 3px;
   background: #0071e3;
 }
@@ -497,7 +549,8 @@ body.page-is-leaving .site-header {
     padding-top: 2px;
   }
 
-  .site-header.nav-stacked .site-nav a {
+  .site-header.nav-stacked .site-nav a,
+  .site-header.nav-stacked .nav-more > summary {
     border: 1px solid var(--line);
     background: rgba(255, 255, 255, 0.56);
     padding: 8px 10px;
@@ -763,10 +816,11 @@ body.page-is-leaving .site-header {
 .primary-button:active,
 .secondary-button:active,
 .text-button:active,
-.segmented button:active,
-.calculator-tabs button:active,
-.site-nav a:active,
-.search-hit:active {
+	.segmented button:active,
+	.calculator-tabs button:active,
+	.site-nav a:active,
+	.nav-more > summary:active,
+	.search-hit:active {
   transform: translateY(0);
 }
 
@@ -2354,7 +2408,7 @@ td strong {
   }
 }
 
-@media (max-width: 1320px) {
+@media (max-width: 900px) {
   .nav-shell {
     grid-template-columns: auto minmax(0, 1fr) auto;
   }
@@ -2391,6 +2445,24 @@ td strong {
   .site-nav a {
     border: 1px solid var(--line);
     padding: 10px 11px;
+  }
+
+  .nav-more {
+    display: grid;
+  }
+
+  .nav-more > summary {
+    border: 1px solid var(--line);
+    padding: 10px 11px;
+  }
+
+  .nav-more-menu {
+    position: static;
+    min-width: 0;
+    margin-top: 4px;
+    padding: 4px;
+    background: rgba(255, 255, 255, 0.58);
+    box-shadow: none;
   }
 
   .header-actions {
@@ -2542,7 +2614,8 @@ body.dark-mode .theme-toggle:focus-visible {
   background: #1f2228;
 }
 
-body.dark-mode .site-nav a[aria-current] {
+body.dark-mode .site-nav a[aria-current],
+body.dark-mode .nav-more > summary[aria-current] {
   background: rgba(0, 113, 227, 0.18);
 }
 
@@ -2610,8 +2683,8 @@ html.dark-mode body .site-header {
   border-bottom-color: rgba(255, 255, 255, 0.12);
 }
 
-body.dark-mode :where(.brand-mark, .search-shell, .theme-toggle, .site-nav a),
-html.dark-mode body :where(.brand-mark, .search-shell, .theme-toggle, .site-nav a) {
+body.dark-mode :where(.brand-mark, .search-shell, .theme-toggle, .site-nav a, .nav-more > summary, .nav-more-menu),
+html.dark-mode body :where(.brand-mark, .search-shell, .theme-toggle, .site-nav a, .nav-more > summary, .nav-more-menu) {
   background: rgba(25, 27, 32, 0.84);
   border-color: rgba(255, 255, 255, 0.13);
   color: #f5f5f7;
@@ -2646,7 +2719,9 @@ html.dark-mode body .search-shell input::placeholder {
 }
 
 body.dark-mode .site-nav a[aria-current],
-html.dark-mode body .site-nav a[aria-current] {
+body.dark-mode .nav-more > summary[aria-current],
+html.dark-mode body .site-nav a[aria-current],
+html.dark-mode body .nav-more > summary[aria-current] {
   color: #ffffff;
   background: linear-gradient(180deg, #005fbd 0%, #003f86 100%);
   border-color: rgba(104, 178, 255, 0.72);
@@ -2657,7 +2732,9 @@ html.dark-mode body .site-nav a[aria-current] {
 }
 
 body.dark-mode .site-nav a:not([aria-current]),
-html.dark-mode body .site-nav a:not([aria-current]) {
+body.dark-mode .nav-more > summary:not([aria-current]),
+html.dark-mode body .site-nav a:not([aria-current]),
+html.dark-mode body .nav-more > summary:not([aria-current]) {
   color: #ffffff;
   background: transparent;
   border-color: rgba(255, 255, 255, 0.42);
@@ -2666,8 +2743,12 @@ html.dark-mode body .site-nav a:not([aria-current]) {
 
 body.dark-mode .site-nav a:not([aria-current]):hover,
 body.dark-mode .site-nav a:not([aria-current]):focus-visible,
+body.dark-mode .nav-more > summary:not([aria-current]):hover,
+body.dark-mode .nav-more > summary:not([aria-current]):focus-visible,
 html.dark-mode body .site-nav a:not([aria-current]):hover,
-html.dark-mode body .site-nav a:not([aria-current]):focus-visible {
+html.dark-mode body .site-nav a:not([aria-current]):focus-visible,
+html.dark-mode body .nav-more > summary:not([aria-current]):hover,
+html.dark-mode body .nav-more > summary:not([aria-current]):focus-visible {
   color: #ffffff;
   background: transparent;
   border-color: rgba(255, 255, 255, 0.78);
@@ -2675,7 +2756,9 @@ html.dark-mode body .site-nav a:not([aria-current]):focus-visible {
 }
 
 body.dark-mode .site-nav a::after,
-html.dark-mode body .site-nav a::after {
+body.dark-mode .nav-more > summary::after,
+html.dark-mode body .site-nav a::after,
+html.dark-mode body .nav-more > summary::after {
   background: #409cff;
 }
 

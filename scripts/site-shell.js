@@ -147,6 +147,12 @@
       if (target === current) link.setAttribute("aria-current", "page");
       else link.removeAttribute("aria-current");
     });
+    document.querySelectorAll(".nav-more").forEach((group) => {
+      const summary = group.querySelector("summary");
+      if (!summary) return;
+      if (group.querySelector("a[aria-current]")) summary.setAttribute("aria-current", "page");
+      else summary.removeAttribute("aria-current");
+    });
   }
 
   function applyTheme(theme, options = {}) {
@@ -264,15 +270,16 @@
     let queued = false;
     const measure = () => {
       queued = false;
-      if (window.matchMedia("(max-width: 1320px)").matches) {
+      if (window.matchMedia("(max-width: 900px)").matches) {
         header.classList.remove("nav-stacked");
         return;
       }
 
       const gap = parseFloat(getComputedStyle(shell).columnGap) || 0;
       const navGap = parseFloat(getComputedStyle(nav).columnGap) || 0;
-      const navWidth = [...nav.querySelectorAll("a")].reduce((total, link, index) => (
-        total + link.scrollWidth + (index ? navGap : 0)
+      const navItems = [...nav.children].map((item) => item.matches(".nav-more") ? item.querySelector("summary") : item).filter(Boolean);
+      const navWidth = navItems.reduce((total, item, index) => (
+        total + item.scrollWidth + (index ? navGap : 0)
       ), 0);
       const requiredWidth = brand.scrollWidth + navWidth + actions.scrollWidth + (gap * 2) + 28;
       header.classList.toggle("nav-stacked", requiredWidth > shell.clientWidth);

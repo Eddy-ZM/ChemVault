@@ -11,9 +11,9 @@
   <link rel="icon" href="/assets/chemvault-icon-192.png" type="image/png" sizes="192x192" />
   <link rel="apple-touch-icon" href="/assets/chemvault-apple-touch-icon.png" />
   <link rel="manifest" href="/site.webmanifest" />
-  <link rel="stylesheet" href="../assets/styles.css?v=20260603a" />
+  <link rel="stylesheet" href="../assets/styles.css?v=20260611a" />
   <link rel="stylesheet" href="../assets/research.css?v=20260603a" />
-  <link rel="stylesheet" href="../assets/portal.css?v=20260603a" />
+  <link rel="stylesheet" href="../assets/portal.css?v=20260611a" />
   <script src="../data/chem-data.js?v=20260603a" defer></script>
   <script src="../data/reagent-extension.js?v=20260603a" defer></script>
   <script src="../data/research-data.js?v=20260603a" defer></script>
@@ -29,7 +29,7 @@
   <script src="../scripts/record-utils.js?v=20260603a" defer></script>
   <script src="../scripts/api.js?v=20260603a" defer></script>
   <script src="../scripts/motion.js?v=20260603a" defer></script>
-  <script src="../scripts/site-shell.js?v=20260603a" defer></script>
+  <script src="../scripts/site-shell.js?v=20260611a" defer></script>
   <script src="../scripts/research-desk.js?v=20260603a" defer></script>
 </head>
 <body class="page-shell" data-boot-label="Research">
@@ -40,17 +40,25 @@
       <button class="icon-button menu-toggle" type="button" aria-label="Open navigation" aria-expanded="false"><span></span><span></span><span></span></button>
       <nav class="site-nav" aria-label="Main navigation">
         <a href="../index.html">Home</a>
-        <a href="app.html">App</a>
-        <a href="workbench.html">Workbench</a>
         <a href="search.html">Search</a>
-        <a href="research.html">Research</a>
-        <a href="dossiers.html">Dossiers</a>
-        <a href="methods.html">Methods</a>
-        <a href="spectroscopy.html">Spectroscopy</a>
-        <a href="materials.html">Materials</a>
+        <a href="workbench.html">Workbench</a>
         <a href="reagents.html">Reagents</a>
-        <a href="atlas.html">Atlas</a>
-        <a href="library.html">Library</a><a href="about.html">About</a><a href="team.html">Team</a><a href="developer.html">Developer</a>
+        <a href="materials.html">Materials</a>
+        <a href="methods.html">Methods</a>
+        <details class="nav-more">
+          <summary>More</summary>
+          <div class="nav-more-menu">
+            <a href="app.html">App</a>
+            <a href="research.html">Research</a>
+            <a href="dossiers.html">Dossiers</a>
+            <a href="spectroscopy.html">Spectroscopy</a>
+            <a href="atlas.html">Atlas</a>
+            <a href="library.html">Library</a>
+            <a href="about.html">About</a>
+            <a href="team.html">Team</a>
+            <a href="developer.html">Developer</a>
+          </div>
+        </details>
       </nav>
       <div class="header-actions">
         <label class="search-shell" for="shellSearch"><span>Search</span><input id="shellSearch" type="search" placeholder="Search local records..." /></label>

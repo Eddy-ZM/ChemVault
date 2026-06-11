@@ -13,8 +13,8 @@
   <link rel="icon" href="/assets/chemvault-icon-192.png" type="image/png" sizes="192x192" />
   <link rel="apple-touch-icon" href="/assets/chemvault-apple-touch-icon.png" />
   <link rel="manifest" href="/site.webmanifest" />
-  <link rel="stylesheet" href="../assets/styles.css?v=20260603a" />
-  <link rel="stylesheet" href="../assets/portal.css?v=20260603a" />
+  <link rel="stylesheet" href="../assets/styles.css?v=20260611a" />
+  <link rel="stylesheet" href="../assets/portal.css?v=20260611a" />
   <script src="../data/chem-data.js?v=20260603a" defer></script>
   <script src="../data/reagent-extension.js?v=20260603a" defer></script>
   <script src="../data/research-data.js?v=20260603a" defer></script>
@@ -31,8 +31,8 @@
   <script src="../scripts/search-intent.js?v=20260608a" defer></script>
   <script src="../scripts/api.js?v=20260603a" defer></script>
   <script src="../scripts/motion.js?v=20260603a" defer></script>
-  <script src="../scripts/site-shell.js?v=20260603a" defer></script>
-  <script src="../scripts/search-page.js?v=20260603a" defer></script>
+  <script src="../scripts/site-shell.js?v=20260611a" defer></script>
+  <script src="../scripts/search-page.js?v=20260611a" defer></script>
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -63,9 +63,28 @@
     <div class="container nav-shell">
       <a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true"><img src="../assets/chemvault-logo-mark.png" alt="" /></span><span><strong>ChemVault</strong><small>academic portal</small></span></a>
       <button class="icon-button menu-toggle" type="button" aria-label="Open navigation" aria-expanded="false"><span></span><span></span><span></span></button>
-      <nav class="site-nav" aria-label="Main navigation"><a href="../index.html">Home</a><a href="app.html">App</a>
+      <nav class="site-nav" aria-label="Main navigation">
+        <a href="../index.html">Home</a>
+        <a href="search.html">Search</a>
         <a href="workbench.html">Workbench</a>
-        <a href="search.html">Search</a><a href="research.html">Research</a><a href="dossiers.html">Dossiers</a><a href="methods.html">Methods</a><a href="spectroscopy.html">Spectroscopy</a><a href="materials.html">Materials</a><a href="reagents.html">Reagents</a><a href="atlas.html">Atlas</a><a href="library.html">Library</a><a href="about.html">About</a><a href="team.html">Team</a><a href="developer.html">Developer</a></nav>
+        <a href="reagents.html">Reagents</a>
+        <a href="materials.html">Materials</a>
+        <a href="methods.html">Methods</a>
+        <details class="nav-more">
+          <summary>More</summary>
+          <div class="nav-more-menu">
+            <a href="app.html">App</a>
+            <a href="research.html">Research</a>
+            <a href="dossiers.html">Dossiers</a>
+            <a href="spectroscopy.html">Spectroscopy</a>
+            <a href="atlas.html">Atlas</a>
+            <a href="library.html">Library</a>
+            <a href="about.html">About</a>
+            <a href="team.html">Team</a>
+            <a href="developer.html">Developer</a>
+          </div>
+        </details>
+      </nav>
       <div class="header-actions"><label class="search-shell" for="shellSearch"><span>Search</span><input id="shellSearch" type="search" placeholder="Search local records..." /></label><button class="theme-toggle" type="button" data-shell-action="theme" aria-label="Switch theme"><span class="theme-toggle__icon" aria-hidden="true"></span></button></div>
     </div>
     <div class="container shell-search-results" id="shellSearchResults" aria-live="polite"></div>
@@ -114,42 +133,40 @@
           <form id="academicSearchForm">
             <label for="academicSearch">Academic query</label>
             <input id="academicSearch" type="search" placeholder="graphene oxide, DMP, hydrogel, toxicology..." autocomplete="off" />
-            <label for="searchScope">Local scope</label>
-            <select id="searchScope">
-              <option value="all">All local records</option>
-              <option value="reaction">Reaction systems</option>
-              <option value="reactant">Reactant classes</option>
-              <option value="reagent">Reagents</option>
-              <option value="compound">Compounds</option>
-              <option value="material">Materials</option>
-              <option value="route">Routes</option>
-              <option value="mechanism">Mechanisms</option>
-              <option value="concept">Concepts</option>
-              <option value="source">Sources</option>
-              <option value="research case">Research cases</option>
-              <option value="dossier">Dossiers</option>
-              <option value="method">Methods</option>
-              <option value="spectroscopy">Spectroscopy</option>
-            </select>
-            <div class="advanced-search-grid" aria-label="Advanced local filters">
-              <label for="searchFacet">Domain / family
-                <select id="searchFacet">
-                  <option value="all">All domains / families</option>
+            <div class="scope-chip-row" aria-label="Common search scopes">
+              <button class="scope-chip is-active" type="button" data-scope-chip="all">All</button>
+              <button class="scope-chip" type="button" data-scope-chip="reagent">Reagents</button>
+              <button class="scope-chip" type="button" data-scope-chip="material">Materials</button>
+              <button class="scope-chip" type="button" data-scope-chip="compound">Compounds</button>
+              <button class="scope-chip" type="button" data-scope-chip="source">Sources</button>
+            </div>
+            <div class="primary-filter-grid" aria-label="Primary filters">
+              <label for="searchScope">Type
+                <select id="searchScope">
+                  <option value="all">All local records</option>
+                  <option value="reaction">Reaction systems</option>
+                  <option value="reactant">Reactant classes</option>
+                  <option value="reagent">Reagents</option>
+                  <option value="compound">Compounds</option>
+                  <option value="material">Materials</option>
+                  <option value="route">Routes</option>
+                  <option value="mechanism">Mechanisms</option>
+                  <option value="concept">Concepts</option>
+                  <option value="source">Sources</option>
+                  <option value="research case">Research cases</option>
+                  <option value="dossier">Dossiers</option>
+                  <option value="method">Methods</option>
+                  <option value="spectroscopy">Spectroscopy</option>
                 </select>
               </label>
-              <label for="searchTag">Tag
-                <select id="searchTag">
-                  <option value="all">All tags</option>
-                </select>
-              </label>
-              <label for="searchSource">Record source
+              <label for="searchSource">Source
                 <select id="searchSource">
                   <option value="all">Curated + session imports</option>
                   <option value="curated">Curated local records</option>
                   <option value="imported">Saved NIH/PubChem imports</option>
                 </select>
               </label>
-              <label for="searchEvidence">Minimum maturity
+              <label for="searchEvidence">Maturity
                 <select id="searchEvidence">
                   <option value="0">Any evidence level</option>
                   <option value="70">70%+</option>
@@ -157,19 +174,34 @@
                   <option value="90">90%+</option>
                 </select>
               </label>
-              <label for="searchSort">Sort
-                <select id="searchSort">
-                  <option value="relevance">Relevance</option>
-                  <option value="evidence">Evidence maturity</option>
-                  <option value="type">Record type</option>
-                  <option value="title">Title</option>
-                </select>
-              </label>
-              <label class="inline-check" for="searchExact">
-                <input id="searchExact" type="checkbox" />
-                <span>Exact phrase</span>
-              </label>
             </div>
+            <details class="advanced-search-disclosure" id="advancedSearchDisclosure">
+              <summary>Advanced filters <span id="advancedFilterSummary">Domain, tags, sorting, exact phrase</span></summary>
+              <div class="advanced-search-grid" aria-label="Advanced local filters">
+                <label for="searchFacet">Domain / family
+                  <select id="searchFacet">
+                    <option value="all">All domains / families</option>
+                  </select>
+                </label>
+                <label for="searchTag">Tag
+                  <select id="searchTag">
+                    <option value="all">All tags</option>
+                  </select>
+                </label>
+                <label for="searchSort">Sort
+                  <select id="searchSort">
+                    <option value="relevance">Relevance</option>
+                    <option value="evidence">Evidence maturity</option>
+                    <option value="type">Record type</option>
+                    <option value="title">Title</option>
+                  </select>
+                </label>
+                <label class="inline-check" for="searchExact">
+                  <input id="searchExact" type="checkbox" />
+                  <span>Exact phrase</span>
+                </label>
+              </div>
+            </details>
             <button class="primary-button" type="submit">Search academic index</button>
           </form>
           <div class="search-note">

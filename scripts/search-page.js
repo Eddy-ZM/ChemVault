@@ -350,6 +350,26 @@
     };
   }
 
+  function syncScopeChips(scopeValue = $("#searchScope")?.value || "all") {
+    document.querySelectorAll("[data-scope-chip]").forEach((button) => {
+      const active = button.dataset.scopeChip === scopeValue;
+      button.classList.toggle("is-active", active);
+      button.setAttribute("aria-pressed", String(active));
+    });
+  }
+
+  function updateAdvancedFilterSummary(filters = readAdvancedFilters()) {
+    const summary = $("#advancedFilterSummary");
+    if (!summary) return;
+    const active = [
+      filters.facet !== "all" ? "domain" : "",
+      filters.tag !== "all" ? "tag" : "",
+      filters.sort !== "relevance" ? "sort" : "",
+      filters.exact ? "exact phrase" : ""
+    ].filter(Boolean);
+    summary.textContent = active.length ? `${active.length} active: ${active.join(", ")}` : "Domain, tags, sorting, exact phrase";
+  }
+
   function renderAdvancedOptions(index) {
     const facet = $("#searchFacet");
     const tag = $("#searchTag");
@@ -400,6 +420,8 @@
     if (!panel) return;
     const index = buildIndex();
     renderAdvancedOptions(index);
+    syncScopeChips(scope);
+    updateAdvancedFilterSummary(filters);
     const rows = sortRows(index
       .filter((item) => scope === "all" || item.recordType === scope || item.type.toLowerCase() === scope || item.type.toLowerCase().includes(scope))
       .filter((item) => passesAdvanced(item, filters, query))
@@ -1217,6 +1239,10 @@
     if ($("#searchEvidence") && params.get("maturity")) $("#searchEvidence").value = params.get("maturity");
     if ($("#searchSort") && params.get("sort")) $("#searchSort").value = params.get("sort");
     if ($("#searchExact")) $("#searchExact").checked = params.get("exact") === "1";
+    const hasAdvancedFilters = ["facet", "tag", "sort", "exact"].some((key) => params.has(key));
+    if (hasAdvancedFilters && $("#advancedSearchDisclosure")) $("#advancedSearchDisclosure").open = true;
+    syncScopeChips(scope?.value || "all");
+    updateAdvancedFilterSummary();
 
     if (form) {
       form.addEventListener("submit", (event) => {
@@ -1224,9 +1250,25 @@
         runSearch();
       });
     }
-    if (scope) scope.addEventListener("change", runSearch);
+    if (scope) {
+      scope.addEventListener("change", () => {
+        syncScopeChips(scope.value);
+        runSearch();
+      });
+    }
+    document.querySelectorAll("[data-scope-chip]").forEach((button) => {
+      button.addEventListener("click", () => {
+        if (!scope) return;
+        scope.value = button.dataset.scopeChip || "all";
+        syncScopeChips(scope.value);
+        runSearch();
+      });
+    });
     ["#searchFacet", "#searchTag", "#searchSource", "#searchEvidence", "#searchSort", "#searchExact"].forEach((selector) => {
-      $(selector)?.addEventListener("change", runSearch);
+      $(selector)?.addEventListener("change", () => {
+        updateAdvancedFilterSummary();
+        runSearch();
+      });
     });
     document.addEventListener("click", (event) => {
       const target = event.target instanceof Element ? event.target : null;
