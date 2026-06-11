@@ -51,6 +51,8 @@
       ? api.fallbackImage(imageMeta.type, imageMeta.title, imageMeta.subtitle)
       : api.recordImage("Record", imageMeta.title, imageMeta.subtitle);
     const sourceHref = record.sourceHref || record.raw?.href || record.href || "";
+    const trustStrip = renderTrustStrip(record, sourceHref);
+    const safetyPanel = renderSafetyProfile(record);
     main.innerHTML = `
       <section class="page-hero record-hero">
         <div class="container page-hero-grid">
@@ -63,6 +65,7 @@
               <a class="secondary-button" href="search.html?q=${encode(record.title)}">Search this topic</a>
               ${record.external && record.href ? `<a class="secondary-button" href="${record.href}" target="_blank" rel="noreferrer">Open external source</a>` : ""}
             </div>
+            ${trustStrip}
           </div>
           <aside class="page-index-card record-index-card">
             <img class="record-focus-image" src="${esc(image)}" data-fallback-src="${esc(fallbackImage)}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" />
@@ -95,6 +98,8 @@
               <p class="record-lead">${esc(record.body || record.subtitle || "No summary text is available for this record.")}</p>
               ${record.tags?.length ? `<div class="tag-row">${record.tags.slice(0, 18).map((tag) => `<span class="tag">${esc(tag)}</span>`).join("")}</div>` : ""}
             </section>
+
+            ${safetyPanel}
 
             <section class="record-panel">
               <div class="library-toolbar">
@@ -157,6 +162,84 @@
       </section>
     `;
     wireRecordImages(main);
+  }
+
+  function renderTrustStrip(record, sourceHref) {
+    const maturity = record.maturity ? `${record.maturity}%` : "Not scored";
+    const maturityDetail = record.maturity
+      ? "Evidence coverage score for this indexed record."
+      : "Evidence coverage has not been scored for this record.";
+    const source = sourceLabel(record);
+    const sourceDetail = sourceHref
+      ? sourceHandoffLabel(sourceHref)
+      : "No original source link is attached.";
+    const hazard = hazardLabel(record);
+    const safetyDetail = primarySafetyText(record) || "No safety statement is attached to this record.";
+    const status = record.checkStatus || "Not available";
+    const checked = formatDate(record.checkedAt);
+    const statusDetail = checked === "Not checked"
+      ? "No verification date is recorded."
+      : `Last checked ${checked}.`;
+
+    return `
+      <div class="record-trust-strip" aria-label="Record credibility signals">
+        ${trustCard("Evidence maturity", maturity, maturityDetail, "maturity")}
+        ${trustCard("Source provenance", source, sourceDetail, "source")}
+        ${trustCard("Safety profile", hazard, safetyDetail, "safety")}
+        ${trustCard("Verification status", status, statusDetail, "verification")}
+      </div>
+    `;
+  }
+
+  function trustCard(label, value, detail, modifier) {
+    return `
+      <article class="record-trust-card record-trust-card--${modifier}">
+        <span>${esc(label)}</span>
+        <strong>${esc(value || "Not available")}</strong>
+        <small>${esc(detail || "Not available")}</small>
+      </article>
+    `;
+  }
+
+  function renderSafetyProfile(record) {
+    const hazards = listItems(record.hazardStatements);
+    const precautions = listItems(record.precautionaryStatements);
+    const hazard = hazardLabel(record);
+    const source = record.safetySource || sourceLabel(record);
+
+    return `
+      <section class="record-panel record-safety-panel" aria-labelledby="recordSafetyTitle">
+        <div class="library-toolbar">
+          <span class="label">Safety profile</span>
+          <strong>${esc(source || "Screening summary")}</strong>
+        </div>
+        <div class="record-safety-grid">
+          <div class="hazard-summary hazard-${hazardClass(record)}">
+            <strong id="recordSafetyTitle">${esc(hazard)}</strong>
+            ${hazards.length
+              ? hazards.slice(0, 4).map((item) => `<span>${esc(item)}</span>`).join("")
+              : "<span>No hazard statement is attached to this record.</span>"}
+          </div>
+          <div class="disposal-summary">
+            <strong>Disposal guidance</strong>
+            <span>${esc(record.disposalMethod || "No disposal guidance is attached to this record.")}</span>
+          </div>
+        </div>
+        <div class="record-source-meta">
+          <span><strong>Signal word</strong>${esc(record.signalWord || "Not assigned")}</span>
+          <span><strong>Safety source</strong>${esc(source || "Not recorded")}</span>
+        </div>
+        ${precautions.length ? `
+          <div class="record-precaution-list">
+            <strong>Precautionary statements</strong>
+            <ul>
+              ${precautions.slice(0, 5).map((item) => `<li>${esc(item)}</li>`).join("")}
+            </ul>
+          </div>
+        ` : ""}
+        <p class="record-safety-caveat">Verify the current SDS and institutional EHS guidance before handling or disposing of this material.</p>
+      </section>
+    `;
   }
 
   function relatedCard(record) {
@@ -261,6 +344,47 @@
 
   function sourceLabel(record) {
     return record.dataSource || record.raw?.source || record.raw?.raw?.source || (record.external ? "Session import" : "Curated");
+  }
+
+  function sourceHandoffLabel(sourceHref) {
+    if (/^https?:\/\//i.test(sourceHref)) return "Links to the original external source.";
+    return "Links to a local ChemVault source page.";
+  }
+
+  function hazardLabel(record) {
+    const value = String(record.hazardLevel || "").trim();
+    return value || "Not classified";
+  }
+
+  function hazardClass(record) {
+    const text = hazardLabel(record).toLowerCase();
+    if (/severe|fatal|toxic|corrosive/.test(text)) return "severe";
+    if (/high|danger/.test(text)) return "high";
+    if (/moderate|warning/.test(text)) return "moderate";
+    if (/low|minimal/.test(text)) return "low";
+    return "not-classified";
+  }
+
+  function primarySafetyText(record) {
+    return listItems(record.hazardStatements)[0] || record.disposalMethod || record.signalWord || "";
+  }
+
+  function listItems(value) {
+    if (Array.isArray(value)) {
+      return value.map((item) => String(item || "").trim()).filter(Boolean);
+    }
+    return String(value || "")
+      .split(/\s*\|\s*|\n/)
+      .map((item) => item.trim())
+      .filter(Boolean);
+  }
+
+  function formatDate(value) {
+    const text = String(value || "").trim();
+    if (!text || /^not available$/i.test(text)) return "Not checked";
+    const date = new Date(text);
+    if (Number.isNaN(date.valueOf())) return text;
+    return date.toISOString().slice(0, 10);
   }
 
   function fact(label, value) {

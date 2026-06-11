@@ -1440,6 +1440,123 @@ body.light-mode .graph-board {
   font-size: 1.02rem;
 }
 
+.record-trust-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.record-trust-card {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+  min-height: 112px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.045);
+  padding: 11px;
+  overflow-wrap: anywhere;
+}
+
+.record-trust-card span {
+  color: var(--muted);
+  font-size: 0.68rem;
+  font-weight: 900;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.record-trust-card strong {
+  color: var(--text);
+  font-size: 0.98rem;
+  line-height: 1.22;
+}
+
+.record-trust-card small {
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.35;
+}
+
+.record-trust-card--maturity {
+  border-color: rgba(47, 128, 237, 0.32);
+}
+
+.record-trust-card--source {
+  border-color: rgba(82, 199, 184, 0.34);
+}
+
+.record-trust-card--safety {
+  border-color: rgba(191, 90, 42, 0.32);
+}
+
+.record-trust-card--verification {
+  border-color: rgba(125, 122, 255, 0.34);
+}
+
+.record-safety-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.record-safety-panel .hazard-summary,
+.record-safety-panel .disposal-summary {
+  max-width: none;
+  min-height: 100%;
+}
+
+.record-source-meta {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.record-source-meta span,
+.record-precaution-list {
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.035);
+  padding: 10px;
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+
+.record-source-meta strong,
+.record-precaution-list strong {
+  display: block;
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 900;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.record-precaution-list {
+  margin-top: 10px;
+}
+
+.record-precaution-list ul {
+  margin: 7px 0 0;
+  padding-left: 18px;
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.record-safety-caveat {
+  margin: 12px 0 0;
+  border-left: 3px solid color-mix(in srgb, var(--accent) 58%, var(--line));
+  padding-left: 10px;
+  color: var(--muted);
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+
 .record-fact-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1596,6 +1713,10 @@ body.light-mode .graph-board {
   .workbench-rightbar {
     grid-column: auto;
   }
+
+  .record-safety-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 620px) {
@@ -1622,6 +1743,9 @@ body.light-mode .graph-board {
   .fallback-source-grid,
   .home-metric-grid,
   .home-search-row,
+  .record-trust-strip,
+  .record-safety-grid,
+  .record-source-meta,
   .record-fact-grid,
   .workbench-kpi-grid,
   .workbench-detail-grid,
@@ -2274,6 +2398,9 @@ html.dark-mode body.page-shell :where(
   .suggestion-block,
   .imported-record-list a,
   .compound-property-grid div,
+  .record-trust-card,
+  .record-source-meta span,
+  .record-precaution-list,
   .record-fact-grid div,
   .record-field-grid div,
   .search-control-panel,
@@ -2311,6 +2438,9 @@ body.dark-mode.page-shell :where(
   .suggestion-block,
   .imported-record-list a,
   .compound-property-grid div,
+  .record-trust-card,
+  .record-source-meta span,
+  .record-precaution-list,
   .record-fact-grid div,
   .record-field-grid div,
   .search-control-panel,
