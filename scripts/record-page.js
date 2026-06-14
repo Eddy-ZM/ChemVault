@@ -53,6 +53,7 @@
     const sourceHref = record.sourceHref || record.raw?.href || record.href || "";
     const trustStrip = renderTrustStrip(record, sourceHref);
     const safetyPanel = renderSafetyProfile(record);
+    const nextSteps = renderNextSteps(record, related.length, sourceHref);
     main.innerHTML = `
       <section class="page-hero record-hero">
         <div class="container page-hero-grid">
@@ -138,7 +139,9 @@
           </article>
 
           <aside class="record-secondary">
-            <section class="record-panel">
+            ${nextSteps}
+
+            <section class="record-panel" id="recordRelatedRecords">
               <div class="library-toolbar">
                 <span class="label">Related records</span>
                 <strong>${related.length} linked</strong>
@@ -162,6 +165,49 @@
       </section>
     `;
     wireRecordImages(main);
+  }
+
+  function renderNextSteps(record, relatedCount, sourceHref) {
+    const sourceAction = sourceHref
+      ? "Open the source page and check identifiers, authorship, date and provenance before citing."
+      : "Start with a ChemVault search, then confirm identifiers in an external database.";
+    const relatedAction = relatedCount
+      ? `Review ${relatedCount} linked records to compare mechanisms, reagents, methods and limitations.`
+      : "Broaden the search query to find adjacent reagents, methods or case notes.";
+    const safetyAction = hazardLabel(record) === "Not classified"
+      ? "Treat the record as unclassified until an SDS or institutional EHS source is checked."
+      : "Confirm the hazard level, disposal route and local controls against the current SDS.";
+
+    return `
+      <section class="record-panel record-next-steps" aria-labelledby="recordNextStepsTitle">
+        <div class="library-toolbar">
+          <span class="label">Next steps</span>
+          <strong id="recordNextStepsTitle">Next research steps</strong>
+        </div>
+        <div class="record-step-list">
+          ${stepCard("01", "Verify source", sourceAction)}
+          ${stepCard("02", "Compare linked chemistry", relatedAction)}
+          ${stepCard("03", "Plan safe handling", safetyAction)}
+        </div>
+        <div class="record-next-actions">
+          ${sourceHref ? `<a class="secondary-button" href="${esc(sourceHref)}"${/^https?:\/\//i.test(sourceHref) ? ' target="_blank" rel="noreferrer"' : ""}>Open source</a>` : ""}
+          <a class="secondary-button" href="#recordRelatedRecords">Review related</a>
+          <a class="secondary-button" href="search.html?q=${encode(record.title)}">Search topic</a>
+        </div>
+      </section>
+    `;
+  }
+
+  function stepCard(index, title, body) {
+    return `
+      <article class="record-step-card">
+        <span class="record-step-index">${esc(index)}</span>
+        <div>
+          <h3>${esc(title)}</h3>
+          <p>${esc(body)}</p>
+        </div>
+      </article>
+    `;
   }
 
   function renderTrustStrip(record, sourceHref) {

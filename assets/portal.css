@@ -1557,6 +1557,68 @@ body.light-mode .graph-board {
   line-height: 1.45;
 }
 
+.record-next-steps {
+  display: grid;
+  gap: 12px;
+}
+
+.record-step-list {
+  display: grid;
+  gap: 8px;
+}
+
+.record-step-card {
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr);
+  gap: 10px;
+  align-items: start;
+  min-width: 0;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  background: #f5f5f7;
+  padding: 10px;
+}
+
+.record-step-index {
+  display: inline-grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border: 1px solid rgba(0, 113, 227, 0.26);
+  border-radius: 999px;
+  background: rgba(0, 113, 227, 0.08);
+  color: var(--accent);
+  font-size: 0.72rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.record-step-card h3 {
+  margin: 0 0 4px;
+  color: var(--text);
+  font-size: 0.95rem;
+  line-height: 1.25;
+}
+
+.record-step-card p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.84rem;
+  line-height: 1.42;
+}
+
+.record-next-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.record-next-actions .secondary-button {
+  min-height: 38px;
+  padding: 9px 12px;
+  font-size: 0.82rem;
+}
+
 .record-fact-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1746,6 +1808,7 @@ body.light-mode .graph-board {
   .record-trust-strip,
   .record-safety-grid,
   .record-source-meta,
+  .record-step-card,
   .record-fact-grid,
   .workbench-kpi-grid,
   .workbench-detail-grid,
@@ -2302,6 +2365,10 @@ body.light-mode {
   .record-field-grid {
     grid-template-columns: 1fr;
   }
+
+  .record-next-actions .secondary-button {
+    width: 100%;
+  }
 }
 
 body.dark-mode.page-shell,
@@ -2399,6 +2466,7 @@ html.dark-mode body.page-shell :where(
   .imported-record-list a,
   .compound-property-grid div,
   .record-trust-card,
+  .record-step-card,
   .record-source-meta span,
   .record-precaution-list,
   .record-fact-grid div,
@@ -2439,6 +2507,7 @@ body.dark-mode.page-shell :where(
   .imported-record-list a,
   .compound-property-grid div,
   .record-trust-card,
+  .record-step-card,
   .record-source-meta span,
   .record-precaution-list,
   .record-fact-grid div,
