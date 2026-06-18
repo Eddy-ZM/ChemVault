@@ -81,6 +81,17 @@ body.dark-mode {
   background: var(--bg);
 }
 
+html.startup-welcome-pending body {
+  overflow: hidden;
+}
+
+html.startup-welcome-pending .site-header,
+html.startup-welcome-pending main,
+html.startup-welcome-pending .site-footer,
+html.startup-welcome-pending .site-version {
+  opacity: 0;
+}
+
 html.motion-boot:not(.motion-boot-timeout) body:not(.page-ready) {
   overflow: hidden;
 }

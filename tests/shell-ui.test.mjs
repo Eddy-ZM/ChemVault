@@ -63,13 +63,20 @@ test("updated shell assets use a fresh cache key", () => {
 test("startup welcome is wired through the shared motion layer", () => {
   const script = read("scripts/motion.js");
   const styles = read("assets/styles.css");
+  const boot = read("scripts/boot.js");
 
+  assert.match(boot, /function shouldShowStartupWelcome/, "boot layer decides when the home welcome should replace loading");
+  assert.match(boot, /startup-welcome-pending/, "boot layer marks the welcome state before page scripts load");
+  assert.match(boot, /if \(onHome\) return/, "boot layer never starts legacy loading on the home page");
   assert.match(script, /function wireStartupWelcome/, "motion layer owns startup welcome wiring");
+  assert.match(script, /const welcomeVisible = wireStartupWelcome\(\)/, "motion layer mounts the welcome before considering legacy startup loading");
+  assert.match(script, /!welcomeVisible && showStartupLoader\(\)/, "motion layer skips legacy startup loading when welcome is visible");
   assert.match(script, /startup-welcome/, "motion layer injects the startup welcome overlay");
   assert.match(script, /chemvault-gooey-threshold/, "startup welcome includes the gooey SVG threshold filter");
   assert.match(script, /data-welcome-action="enter"/, "startup welcome exposes an enter button");
   assert.match(script, /startGooeyTextMorph/, "startup welcome starts the gooey text morph animation");
 
+  assert.match(styles, /html\.startup-welcome-pending/, "stylesheet hides the page chrome while the welcome is being mounted");
   assert.match(styles, /\.startup-welcome\b/, "stylesheet defines startup welcome overlay styles");
   assert.match(styles, /\.startup-welcome__gooey/, "stylesheet defines gooey text layout styles");
   assert.match(styles, /\.startup-welcome__enter/, "stylesheet defines the enter button styles");
@@ -79,7 +86,8 @@ test("startup welcome assets use a fresh cache key on every HTML entry", () => {
   for (const file of bootHtmlFiles) {
     const html = read(file);
 
-    assert.match(html, /styles\.css\?v=20260618b/, `${file} references startup welcome styles`);
-    assert.match(html, /motion\.js\?v=20260618b/, `${file} references startup welcome motion`);
+    assert.match(html, /boot\.js\?v=20260618c/, `${file} references startup welcome boot`);
+    assert.match(html, /styles\.css\?v=20260618c/, `${file} references startup welcome styles`);
+    assert.match(html, /motion\.js\?v=20260618c/, `${file} references startup welcome motion`);
   }
 });

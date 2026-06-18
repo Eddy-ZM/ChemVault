@@ -90,9 +90,9 @@
 
   document.addEventListener("DOMContentLoaded", () => {
     document.documentElement.classList.add("motion-available");
-    const bootVisible = showStartupLoader();
     ensureOverlay();
-    wireStartupWelcome();
+    const welcomeVisible = wireStartupWelcome();
+    const bootVisible = !welcomeVisible && showStartupLoader();
     markVisited(new URL(window.location.href));
     wireNavigation();
     wireRipples();
@@ -142,6 +142,7 @@
   function wireStartupWelcome(options = {}) {
     if (startupWelcome && document.body.contains(startupWelcome)) return true;
     if (!options.force && hasSeenStartupWelcome()) return false;
+    if (!options.force && pageName(new URL(window.location.href)) !== "index.html") return false;
 
     startupWelcome = document.createElement("section");
     startupWelcome.className = "startup-welcome";
@@ -177,6 +178,7 @@
 
     document.body.appendChild(startupWelcome);
     document.body.classList.add("startup-welcome-active");
+    document.documentElement.classList.remove("startup-welcome-pending");
 
     cleanupWelcomeMorph = startGooeyTextMorph(startupWelcome, [
       "ChemVault",
