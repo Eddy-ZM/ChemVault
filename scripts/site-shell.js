@@ -234,24 +234,65 @@
     const version = document.querySelector(".site-version");
     const footer = document.createElement("footer");
     footer.className = "site-footer";
+    footer.setAttribute("aria-label", "ChemVault footer");
     footer.innerHTML = `
-      <div class="container footer-grid developer-footer-grid">
-        <div class="footer-brand-block">
-          <a class="footer-brand" href="/index.html">
-            <span class="footer-brand-mark" aria-hidden="true"><img src="/assets/chemvault-logo-mark.png" alt="" /></span>
-            <span><strong>ChemVault</strong><small>Academic chemistry knowledge portal</small></span>
-          </a>
-          <p>ChemVault is for educational purposes only. Data may contain errors and double-checking is required.</p>
-        </div>
-        <div class="footer-column">
-          <span class="footer-heading">Contact</span>
-          <a href="mailto:contact@chemvault.science">contact@chemvault.science</a>
-          <span>Created and maintained by Ziwen M.</span>
-        </div>
-        <div class="footer-column footer-legal">
-          <span class="footer-heading">Legal</span>
-          <span>© 2026 ChemVault</span>
-          <span>All rights reserved.</span>
+      <div class="footer-sticky-layer">
+        <div class="footer-sticky-shell">
+          <div class="footer-panel">
+            <div class="footer-ambient" aria-hidden="true"><span></span><span></span><span></span></div>
+            <div class="container footer-grid developer-footer-grid">
+              <div class="footer-brand-block footer-reveal" style="--footer-delay: 0ms">
+                <a class="footer-brand" href="/index.html">
+                  <span class="footer-brand-mark" aria-hidden="true"><img src="/assets/chemvault-logo-mark.png" alt="" /></span>
+                  <span><strong>ChemVault</strong><small>Academic chemistry knowledge portal</small></span>
+                </a>
+                <p>A focused chemistry workspace for searchable records, reagent notes, materials profiles, spectroscopy evidence and academic source review. Educational use only; verify primary data before applying it.</p>
+                <div class="footer-social-row" aria-label="Quick footer actions">
+                  <a class="footer-social" href="/pages/search.html" aria-label="Search ChemVault">Search</a>
+                  <a class="footer-social" href="/pages/workbench.html" aria-label="Open workbench">Workbench</a>
+                  <a class="footer-social" href="/data/public-record-index.json" aria-label="Open public record index">Data</a>
+                </div>
+              </div>
+              <div class="footer-link-groups">
+                <div class="footer-column footer-reveal" style="--footer-delay: 90ms">
+                  <span class="footer-heading">Explore</span>
+                  <a href="/pages/search.html">Search records</a>
+                  <a href="/pages/reagents.html">Reagents</a>
+                  <a href="/pages/materials.html">Materials</a>
+                  <a href="/pages/methods.html">Methods</a>
+                  <a href="/pages/spectroscopy.html">Spectroscopy</a>
+                  <a href="/pages/dossiers.html">Dossiers</a>
+                </div>
+                <div class="footer-column footer-reveal" style="--footer-delay: 180ms">
+                  <span class="footer-heading">Workspaces</span>
+                  <a href="/pages/workbench.html">Research Workbench</a>
+                  <a href="/pages/app.html">Framework App</a>
+                  <a href="/pages/research.html">Research Desk</a>
+                  <a href="/pages/atlas.html">Atlas</a>
+                  <a href="/pages/library.html">Library</a>
+                </div>
+                <div class="footer-column footer-reveal" style="--footer-delay: 270ms">
+                  <span class="footer-heading">Project</span>
+                  <a href="/pages/about.html">About</a>
+                  <a href="/pages/team.html">Team</a>
+                  <a href="/pages/developer.html">Developer</a>
+                  <a href="/data/public-record-index.json">Public data</a>
+                  <a href="/sitemap.xml">Sitemap</a>
+                </div>
+                <div class="footer-column footer-reveal" style="--footer-delay: 360ms">
+                  <span class="footer-heading">Contact</span>
+                  <a href="mailto:contact@chemvault.science">Email ChemVault</a>
+                  <span>Created and maintained by Ziwen M.</span>
+                  <span>Research chemistry portal</span>
+                  <span>© 2026 ChemVault</span>
+                </div>
+              </div>
+            </div>
+            <div class="container footer-bottom">
+              <p>© 2026 ChemVault. All rights reserved.</p>
+              <p>Educational reference, not a substitute for primary literature or safety review.</p>
+            </div>
+          </div>
         </div>
       </div>
     `;

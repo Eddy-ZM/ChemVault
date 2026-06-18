@@ -87,7 +87,60 @@ test("startup welcome assets use a fresh cache key on every HTML entry", () => {
     const html = read(file);
 
     assert.match(html, /boot\.js\?v=20260618c/, `${file} references startup welcome boot`);
-    assert.match(html, /styles\.css\?v=20260618c/, `${file} references startup welcome styles`);
+    assert.match(html, /styles\.css\?v=20260618e/, `${file} references current shared styles`);
     assert.match(html, /motion\.js\?v=20260618c/, `${file} references startup welcome motion`);
   }
+});
+
+test("footer uses a ChemVault sticky footer adapted from the template", () => {
+  const index = read("index.html");
+  const notFound = read("404.html");
+  const shell = read("scripts/site-shell.js");
+  const styles = read("assets/styles.css");
+
+  for (const [file, source] of [
+    ["index.html", index],
+    ["404.html", notFound],
+    ["scripts/site-shell.js", shell]
+  ]) {
+    assert.match(source, /class="footer-sticky-layer"/, `${file} includes the fixed sticky footer layer`);
+    assert.match(source, /class="footer-sticky-shell"/, `${file} includes the sticky viewport shell`);
+    assert.match(source, /class="footer-link-groups"/, `${file} includes grouped footer links`);
+    assert.match(source, />Explore</, `${file} keeps footer links focused on public browsing`);
+    assert.match(source, />Workspaces</, `${file} keeps footer links focused on site tools`);
+    assert.match(source, />Project</, `${file} keeps footer links focused on project information`);
+    assert.match(source, />Contact</, `${file} keeps contact information reachable`);
+    assert.match(source, /mailto:contact@chemvault\.science/, `${file} keeps the project email reachable`);
+  }
+
+  assert.match(styles, /--footer-height:\s*720px/, "footer exposes the template height token");
+  assert.match(styles, /\.site-footer[\s\S]*clip-path:\s*polygon\(0 0, 100% 0, 100% 100%, 0 100%\)/, "footer clips the fixed layer like the template");
+  assert.match(styles, /\.footer-sticky-layer[\s\S]*position:\s*fixed/, "footer layer is fixed to the bottom");
+  assert.match(styles, /\.footer-sticky-shell[\s\S]*position:\s*sticky/, "footer inner shell uses sticky positioning");
+
+  for (const file of ["404.html", ...pageFiles]) {
+    const html = read(file);
+    assert.match(html, /styles\.css\?v=20260618e/, `${file} references sticky footer styles`);
+    if (file !== "index.html") {
+      assert.match(html, /site-shell\.js\?v=20260618d/, `${file} references sticky footer shell markup`);
+    }
+  }
+});
+
+test("site navigation uses a ChemVault tubelight tab treatment", () => {
+  const styles = read("assets/styles.css");
+
+  for (const file of bootHtmlFiles) {
+    const html = read(file);
+    const nav = navMarkup(html);
+
+    assert.match(nav, /<details class="nav-more"/, `${file} keeps secondary pages in the tubelight More menu`);
+    assert.match(html, /styles\.css\?v=20260618e/, `${file} references tubelight navigation styles`);
+  }
+
+  assert.match(styles, /\.site-nav\s*{[\s\S]*border-radius:\s*999px/, "navigation container is a rounded tubelight rail");
+  assert.match(styles, /\.site-nav\s*{[\s\S]*backdrop-filter:\s*blur\(18px\)/, "navigation rail uses translucent glass");
+  assert.match(styles, /\.site-nav a,\s*\n\.nav-more > summary\s*{[\s\S]*border-radius:\s*999px/, "navigation items are rounded tabs");
+  assert.match(styles, /\.site-nav a::after,\s*\n\.nav-more > summary::after\s*{[\s\S]*top:\s*-6px/, "navigation tabs draw the top lamp");
+  assert.match(styles, /\.site-nav a\[aria-current\],\s*\n\.nav-more > summary\[aria-current\][\s\S]*box-shadow:[\s\S]*rgba\(0, 113, 227, 0\.18\)/, "current page tab has a ChemVault blue glow");
 });
