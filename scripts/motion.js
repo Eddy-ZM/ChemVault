@@ -42,11 +42,14 @@
   ].join(",");
 
   let overlay;
+  let startupWelcome;
+  let cleanupWelcomeMorph;
   let revealObserver;
   let mutationObserver;
   let isNavigating = false;
   const visitedKey = "chemvault-visited-pages";
   const suppressStartupKey = "chemvault-suppress-next-boot";
+  const welcomeSeenKey = "chemvault-welcome-entered";
   const heavyPageNames = new Set(["app.html", "workbench.html", "search.html", "record.html"]);
   const compactRevealPages = new Set(["app.html", "workbench.html", "search.html", "reagents.html", "materials.html", "methods.html", "spectroscopy.html", "dossiers.html"]);
   const genericLabels = new Set([
@@ -81,6 +84,7 @@
     showNavigation,
     hideNavigation,
     navigate,
+    showStartupWelcome: () => wireStartupWelcome({ force: true }),
     refresh: () => prepareReveal(document)
   };
 
@@ -88,6 +92,7 @@
     document.documentElement.classList.add("motion-available");
     const bootVisible = showStartupLoader();
     ensureOverlay();
+    wireStartupWelcome();
     markVisited(new URL(window.location.href));
     wireNavigation();
     wireRipples();
@@ -132,6 +137,154 @@
     `;
     document.body.appendChild(overlay);
     return overlay;
+  }
+
+  function wireStartupWelcome(options = {}) {
+    if (startupWelcome && document.body.contains(startupWelcome)) return true;
+    if (!options.force && hasSeenStartupWelcome()) return false;
+
+    startupWelcome = document.createElement("section");
+    startupWelcome.className = "startup-welcome";
+    startupWelcome.setAttribute("role", "dialog");
+    startupWelcome.setAttribute("aria-modal", "true");
+    startupWelcome.setAttribute("aria-labelledby", "startupWelcomeTitle");
+    startupWelcome.innerHTML = `
+      <div class="startup-welcome__panel">
+        <img class="startup-welcome__logo" src="/assets/chemvault-logo-mark.png" alt="" decoding="async" />
+        <h1 class="visually-hidden" id="startupWelcomeTitle">Welcome to ChemVault</h1>
+        <div class="startup-welcome__gooey" aria-label="ChemVault welcome words">
+          <svg class="startup-welcome__filter" aria-hidden="true" focusable="false">
+            <defs>
+              <filter id="chemvault-gooey-threshold">
+                <feColorMatrix
+                  in="SourceGraphic"
+                  type="matrix"
+                  values="1 0 0 0 0
+                          0 1 0 0 0
+                          0 0 1 0 0
+                          0 0 0 255 -140"
+                />
+              </filter>
+            </defs>
+          </svg>
+          <span data-gooey-text="first"></span>
+          <span data-gooey-text="second"></span>
+        </div>
+        <p class="startup-welcome__copy">A focused chemistry workspace for records, reagents, materials, spectroscopy and academic search.</p>
+        <button class="startup-welcome__enter" type="button" data-welcome-action="enter">Enter website</button>
+      </div>
+    `;
+
+    document.body.appendChild(startupWelcome);
+    document.body.classList.add("startup-welcome-active");
+
+    cleanupWelcomeMorph = startGooeyTextMorph(startupWelcome, [
+      "ChemVault",
+      "Research",
+      "Chemistry",
+      "Evidence"
+    ], {
+      morphTime: 1,
+      cooldownTime: 1.2
+    });
+
+    const button = startupWelcome.querySelector("[data-welcome-action=\"enter\"]");
+    button?.addEventListener("click", dismissStartupWelcome);
+    startupWelcome.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") dismissStartupWelcome();
+    });
+    window.setTimeout(() => button?.focus({ preventScroll: true }), 80);
+    return true;
+  }
+
+  function dismissStartupWelcome() {
+    if (!startupWelcome || startupWelcome.classList.contains("is-leaving")) return;
+    markStartupWelcomeSeen();
+    cleanupWelcomeMorph?.();
+    cleanupWelcomeMorph = null;
+    startupWelcome.querySelector("[data-welcome-action=\"enter\"]")?.setAttribute("disabled", "true");
+    startupWelcome.classList.add("is-leaving");
+    document.body.classList.remove("startup-welcome-active");
+    window.setTimeout(() => {
+      startupWelcome?.remove();
+      startupWelcome = null;
+      document.querySelector("#main")?.focus?.({ preventScroll: true });
+    }, reduceMotion.matches ? 1 : 360);
+  }
+
+  function startGooeyTextMorph(root, texts, options = {}) {
+    const text1 = root.querySelector("[data-gooey-text=\"first\"]");
+    const text2 = root.querySelector("[data-gooey-text=\"second\"]");
+    const availableTexts = texts.filter(Boolean);
+    const morphTime = options.morphTime || 1;
+    const cooldownTime = options.cooldownTime || 0.25;
+    if (!text1 || !text2 || !availableTexts.length) return () => {};
+
+    let animationFrame = 0;
+    let textIndex = availableTexts.length - 1;
+    let lastTime = performance.now();
+    let morph = 0;
+    let cooldown = cooldownTime;
+
+    text1.textContent = availableTexts[textIndex % availableTexts.length];
+    text2.textContent = availableTexts[(textIndex + 1) % availableTexts.length];
+
+    const setMorph = (fraction) => {
+      const next = Math.max(0.0001, Math.min(fraction, 1));
+      const current = Math.max(0.0001, 1 - next);
+      text2.style.filter = `blur(${Math.min(8 / next - 8, 100)}px)`;
+      text2.style.opacity = `${Math.pow(next, 0.4)}`;
+      text1.style.filter = `blur(${Math.min(8 / current - 8, 100)}px)`;
+      text1.style.opacity = `${Math.pow(current, 0.4)}`;
+    };
+
+    const doCooldown = () => {
+      morph = 0;
+      text2.style.filter = "";
+      text2.style.opacity = "1";
+      text1.style.filter = "";
+      text1.style.opacity = "0";
+    };
+
+    const doMorph = () => {
+      morph -= cooldown;
+      cooldown = 0;
+      let fraction = morph / morphTime;
+      if (fraction > 1) {
+        cooldown = cooldownTime;
+        fraction = 1;
+      }
+      setMorph(fraction);
+    };
+
+    function animate(now) {
+      animationFrame = requestAnimationFrame(animate);
+      const shouldIncrementIndex = cooldown > 0;
+      const dt = (now - lastTime) / 1000;
+      lastTime = now;
+      cooldown -= dt;
+
+      if (cooldown <= 0) {
+        if (shouldIncrementIndex) {
+          textIndex = (textIndex + 1) % availableTexts.length;
+          text1.textContent = availableTexts[textIndex % availableTexts.length];
+          text2.textContent = availableTexts[(textIndex + 1) % availableTexts.length];
+        }
+        doMorph();
+      } else {
+        doCooldown();
+      }
+    }
+
+    if (reduceMotion.matches || availableTexts.length === 1) {
+      text1.textContent = availableTexts[0];
+      text1.style.opacity = "1";
+      text2.style.opacity = "0";
+      return () => {};
+    }
+
+    animationFrame = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(animationFrame);
   }
 
   function wireNavigation() {
@@ -237,6 +390,22 @@
     }
   }
 
+  function hasSeenStartupWelcome() {
+    try {
+      return sessionStorage.getItem(welcomeSeenKey) === "true";
+    } catch {
+      return false;
+    }
+  }
+
+  function markStartupWelcomeSeen() {
+    try {
+      sessionStorage.setItem(welcomeSeenKey, "true");
+    } catch {
+      // Session storage can be unavailable in private contexts.
+    }
+  }
+
   function shouldUseNavigationLoader(link, url) {
     if (reduceMotion.matches) return false;
     if (link?.dataset.transition === "none") return false;
@@ -332,7 +501,7 @@
     const compact = shouldUseCompactReveal(nodes.length);
     nodes.forEach((node, index) => {
       if (node.dataset.motionBound === "true") return;
-      if (node.closest(".page-transition")) return;
+      if (node.closest(".page-transition, .startup-welcome")) return;
       node.dataset.motionBound = "true";
       if (compact) node.dataset.motionProfile = "compact";
       node.style.setProperty("--motion-order", String(compact ? Math.min(index, 4) : index % 6));
@@ -352,7 +521,7 @@
     document.addEventListener("pointerdown", (event) => {
       const target = event.target instanceof Element ? event.target : null;
       const control = target?.closest(rippleSelector);
-      if (!control || control.closest(".page-transition")) return;
+      if (!control || control.closest(".page-transition, .startup-welcome")) return;
       if (control instanceof HTMLInputElement || control instanceof HTMLSelectElement || control instanceof HTMLTextAreaElement) return;
 
       const rect = control.getBoundingClientRect();
