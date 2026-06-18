@@ -14,7 +14,7 @@
   let backendRecords = [];
   let latestSearchRun = 0;
   let currentResultMap = new Map();
-  const searchResultsPerPage = 6;
+  const searchResultsPerPage = 3;
   const searchResultWindow = 24;
   let currentSearchPage = 1;
   let currentSearchSignature = "";

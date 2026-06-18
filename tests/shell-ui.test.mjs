@@ -58,8 +58,8 @@ test("search page paginates local results instead of rendering the full default 
   const styles = read("assets/portal.css");
 
   assert.match(html, /id="localSearchPagination"/, "search page has a dedicated pagination region below local results");
-  assert.match(html, /search-page\.js\?v=20260618a/, "search page refreshes the paginated search script");
-  assert.match(script, /const searchResultsPerPage\s*=\s*6/, "search results render a short page by default");
+  assert.match(html, /search-page\.js\?v=20260619a/, "search page refreshes the paginated search script");
+  assert.match(script, /const searchResultsPerPage\s*=\s*3/, "search results render three records per page by default");
   assert.match(script, /function renderSearchPagination/, "search script renders pagination controls");
   assert.match(script, /data-search-page/, "pagination controls expose target pages for interaction");
   assert.match(script, /rows\.slice\(pageStart,\s*pageStart \+ searchResultsPerPage\)/, "local results render only the current page slice");
@@ -90,6 +90,18 @@ test("home page search uses a clearable icon input adapted from the template", (
   assert.match(styles, /\.home-search-clear\[hidden\]/, "hidden clear button stays out of the accessible layout");
   assert.match(styles, /\.home-search-input input::-webkit-search-cancel-button/, "native search clear button is hidden so only the template clear control appears");
   assert.match(styles, /\.home-search-input\.has-value \.home-search-clear/, "clear button appears only when there is input text");
+});
+
+test("topbar search opens without resizing the navigation tabs", () => {
+  const styles = read("assets/styles.css");
+
+  assert.match(styles, /\.search-shell\s*{[\s\S]*position:\s*relative/, "topbar search creates a local positioning context");
+  assert.match(styles, /\.search-shell\s*{[\s\S]*overflow:\s*visible/, "topbar search lets the floating input render outside the compact trigger");
+  assert.match(styles, /\.search-shell\s*{[\s\S]*width:\s*112px/, "compact search trigger keeps a fixed layout width");
+  assert.match(styles, /\.search-shell input\s*{[\s\S]*position:\s*absolute/, "topbar search input floats instead of expanding the header grid");
+  assert.match(styles, /\.search-shell:is\(:focus-within, \.is-expanded, \.has-value\) input\s*{[\s\S]*width:\s*min\(420px, calc\(100vw - 32px\)\)/, "expanded input gets room without changing the trigger width");
+  assert.doesNotMatch(styles, /\.search-shell:is\(:focus-within, \.is-expanded, \.has-value\)\s*{[\s\S]*width:\s*min\(456px, 48vw\)/, "expanded state no longer grows the search trigger");
+  assert.doesNotMatch(styles, /\.site-header\.nav-stacked \.search-shell:is\(:focus-within, \.is-expanded, \.has-value\)\s*{[\s\S]*width:\s*min\(456px, 48vw\)/, "stacked header search also avoids pushing navigation tabs");
 });
 
 test("updated shell assets use a fresh cache key", () => {
@@ -127,7 +139,7 @@ test("startup welcome assets use a fresh cache key on every HTML entry", () => {
     const html = read(file);
 
     assert.match(html, /boot\.js\?v=20260618c/, `${file} references startup welcome boot`);
-    assert.match(html, /styles\.css\?v=20260618e/, `${file} references current shared styles`);
+    assert.match(html, /styles\.css\?v=20260619b/, `${file} references current shared styles`);
     assert.match(html, /motion\.js\?v=20260618c/, `${file} references startup welcome motion`);
   }
 });
@@ -153,14 +165,23 @@ test("footer uses a ChemVault sticky footer adapted from the template", () => {
     assert.match(source, /mailto:contact@chemvault\.science/, `${file} keeps the project email reachable`);
   }
 
+  assert.match(styles, /body\s*{[\s\S]*position:\s*relative/, "page body creates a root layer for the reveal footer");
+  assert.match(styles, /body\s*{[\s\S]*isolation:\s*isolate/, "page body isolates the reveal stacking context");
+  assert.match(styles, /main\s*{[\s\S]*position:\s*relative[\s\S]*z-index:\s*2[\s\S]*background:\s*var\(--bg\)/, "main content stays above the fixed footer layer until it is revealed");
   assert.match(styles, /--footer-height:\s*720px/, "footer exposes the template height token");
   assert.match(styles, /\.site-footer[\s\S]*clip-path:\s*polygon\(0 0, 100% 0, 100% 100%, 0 100%\)/, "footer clips the fixed layer like the template");
+  assert.match(styles, /\.site-footer[\s\S]*z-index:\s*0/, "footer itself sits behind page content for the reveal effect");
   assert.match(styles, /\.footer-sticky-layer[\s\S]*position:\s*fixed/, "footer layer is fixed to the bottom");
+  assert.match(styles, /\.footer-sticky-layer[\s\S]*inset:\s*auto 0 0/, "footer layer is pinned to the viewport bottom like the template");
+  assert.match(styles, /\.footer-sticky-layer[\s\S]*z-index:\s*0/, "footer fixed layer stays under the page content");
   assert.match(styles, /\.footer-sticky-shell[\s\S]*position:\s*sticky/, "footer inner shell uses sticky positioning");
+  assert.match(styles, /\.footer-sticky-shell[\s\S]*height:\s*var\(--footer-height\)/, "sticky shell preserves the template reveal height");
+  assert.match(styles, /html\.motion-available body\.page-ready \.site-footer\s*{[\s\S]*transform:\s*none/, "page enter animation does not create a fixed-position containing block around the footer");
+  assert.match(styles, /\.site-version\s*{[\s\S]*position:\s*relative[\s\S]*z-index:\s*2/, "version strip remains above the revealed footer layer");
 
   for (const file of ["404.html", ...pageFiles]) {
     const html = read(file);
-    assert.match(html, /styles\.css\?v=20260618e/, `${file} references sticky footer styles`);
+    assert.match(html, /styles\.css\?v=20260619b/, `${file} references sticky footer styles`);
     if (file !== "index.html") {
       assert.match(html, /site-shell\.js\?v=20260618d/, `${file} references sticky footer shell markup`);
     }
@@ -175,7 +196,7 @@ test("site navigation uses a ChemVault tubelight tab treatment", () => {
     const nav = navMarkup(html);
 
     assert.match(nav, /<details class="nav-more"/, `${file} keeps secondary pages in the tubelight More menu`);
-    assert.match(html, /styles\.css\?v=20260618e/, `${file} references tubelight navigation styles`);
+    assert.match(html, /styles\.css\?v=20260619b/, `${file} references tubelight navigation styles`);
   }
 
   assert.match(styles, /\.site-nav\s*{[\s\S]*border-radius:\s*999px/, "navigation container is a rounded tubelight rail");
