@@ -17,7 +17,7 @@
   <link rel="apple-touch-icon" href="/assets/chemvault-apple-touch-icon.png" />
   <link rel="manifest" href="/site.webmanifest" />
   <link rel="stylesheet" href="assets/styles.css?v=20260618e" />
-  <link rel="stylesheet" href="assets/portal.css?v=20260611a" />
+  <link rel="stylesheet" href="assets/portal.css?v=20260618b" />
   <script src="data/chem-data.js?v=20260603a" defer></script>
   <script src="data/reagent-extension.js?v=20260603a" defer></script>
   <script src="data/research-data.js?v=20260603a" defer></script>
@@ -34,7 +34,7 @@
   <script src="scripts/search-intent.js?v=20260608a" defer></script>
   <script src="scripts/api.js?v=20260603a" defer></script>
   <script src="scripts/motion.js?v=20260618c" defer></script>
-  <script src="scripts/home.js?v=20260611a" defer></script>
+  <script src="scripts/home.js?v=20260618a" defer></script>
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -121,7 +121,20 @@
           <form class="home-search-card" id="homeSearchForm">
             <label for="homeSearch">Search local records or continue externally</label>
             <div class="home-search-row">
-              <input id="homeSearch" type="search" placeholder="Try graphene oxide, DMP, sol-gel, PubMed topic..." autocomplete="off" />
+              <div class="home-search-input" data-home-search-input>
+                <span class="home-search-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" focusable="false">
+                    <path d="m21 21-4.35-4.35" />
+                    <circle cx="11" cy="11" r="6.5" />
+                  </svg>
+                </span>
+                <input id="homeSearch" type="search" placeholder="Try graphene oxide, DMP, sol-gel, PubMed topic..." autocomplete="off" />
+                <button class="home-search-clear" type="button" data-home-search-clear hidden aria-label="Clear home search">
+                  <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+                    <path d="M18 6 6 18M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
               <button class="primary-button" type="submit">Search</button>
             </div>
             <div class="home-quick-links" id="homeQuickLinks"></div>

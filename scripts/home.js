@@ -513,6 +513,29 @@
     syncShell();
   }
 
+  function wireHomeSearchInput(input) {
+    const shell = input?.closest(".home-search-input");
+    const clearButton = shell?.querySelector("[data-home-search-clear]");
+    if (!input || !shell || !clearButton) return;
+
+    const syncInputState = () => {
+      const hasValue = Boolean(input.value.trim());
+      shell.classList.toggle("has-value", hasValue);
+      clearButton.hidden = !hasValue;
+    };
+
+    clearButton.addEventListener("click", () => {
+      input.value = "";
+      renderQuickLinks();
+      renderGateway();
+      syncInputState();
+      input.focus();
+    });
+
+    input.addEventListener("input", syncInputState);
+    syncInputState();
+  }
+
   function initSearch() {
     const form = $("#homeSearchForm");
     const input = $("#homeSearch");
@@ -527,6 +550,7 @@
       renderQuickLinks();
       renderGateway();
     }
+    wireHomeSearchInput(input);
 
     input.addEventListener("input", () => {
       renderQuickLinks(input.value);

@@ -52,6 +52,46 @@ test("search page keeps long-tail filters behind a collapsed advanced disclosure
   assert.match(advanced, /id="searchExact"/, "exact phrase filter is inside advanced filters");
 });
 
+test("search page paginates local results instead of rendering the full default stack", () => {
+  const html = read("pages/search.html");
+  const script = read("scripts/search-page.js");
+  const styles = read("assets/portal.css");
+
+  assert.match(html, /id="localSearchPagination"/, "search page has a dedicated pagination region below local results");
+  assert.match(html, /search-page\.js\?v=20260618a/, "search page refreshes the paginated search script");
+  assert.match(script, /const searchResultsPerPage\s*=\s*6/, "search results render a short page by default");
+  assert.match(script, /function renderSearchPagination/, "search script renders pagination controls");
+  assert.match(script, /data-search-page/, "pagination controls expose target pages for interaction");
+  assert.match(script, /rows\.slice\(pageStart,\s*pageStart \+ searchResultsPerPage\)/, "local results render only the current page slice");
+  assert.match(styles, /\.search-pagination-shell/, "pagination controls are styled with the search page shell");
+  assert.match(styles, /\.search-pagination-link\[aria-current="page"\]/, "current pagination page is visually distinguished");
+});
+
+test("home page search uses a clearable icon input adapted from the template", () => {
+  const html = read("index.html");
+  const script = read("scripts/home.js");
+  const styles = read("assets/portal.css");
+
+  assert.match(html, /portal\.css\?v=20260618b/, "home page refreshes the portal stylesheet for the search input");
+  assert.match(html, /home\.js\?v=20260618a/, "home page refreshes the search interaction script");
+  assert.match(html, /class="home-search-input"/, "home search wraps the input in a component shell");
+  assert.match(html, /class="home-search-icon"/, "home search includes a leading search icon");
+  assert.match(html, /data-home-search-clear/, "home search includes a clear button like the template");
+  assert.match(html, /aria-label="Clear home search"/, "clear button has an accessible name");
+
+  assert.match(script, /function wireHomeSearchInput/, "home script wires the clearable input behavior");
+  assert.match(script, /data-home-search-clear/, "home script targets the clear button");
+  assert.match(script, /home-search-input/, "home script toggles value state on the input shell");
+  assert.match(script, /input\.value = ""/, "clear action resets the search input");
+
+  assert.match(styles, /\.home-search-input\s*{[\s\S]*position:\s*relative/, "home input shell positions icon and clear controls");
+  assert.match(styles, /\.home-search-icon\s*{[\s\S]*position:\s*absolute/, "search icon is inset inside the input");
+  assert.match(styles, /\.home-search-clear\s*{[\s\S]*position:\s*absolute/, "clear button is inset inside the input");
+  assert.match(styles, /\.home-search-clear\[hidden\]/, "hidden clear button stays out of the accessible layout");
+  assert.match(styles, /\.home-search-input input::-webkit-search-cancel-button/, "native search clear button is hidden so only the template clear control appears");
+  assert.match(styles, /\.home-search-input\.has-value \.home-search-clear/, "clear button appears only when there is input text");
+});
+
 test("updated shell assets use a fresh cache key", () => {
   const staleAssetPattern = /(styles\.css|portal\.css|home\.js|site-shell\.js|search-page\.js)\?v=20260603a/;
 

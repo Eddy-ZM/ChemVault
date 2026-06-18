@@ -407,16 +407,119 @@ body.light-mode .graph-board {
   gap: 10px;
 }
 
-.home-search-row input,
-.search-control-panel input,
-.search-control-panel select {
-  width: 100%;
+.home-search-input {
+  position: relative;
+  display: flex;
+  align-items: center;
   min-width: 0;
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background: rgba(255, 255, 255, 0.06);
   color: var(--text);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  transition:
+    border-color var(--motion-fast) ease,
+    background var(--motion-fast) ease,
+    box-shadow var(--motion-fast) ease;
+}
+
+.home-search-input:focus-within {
+  border-color: rgba(0, 113, 227, 0.38);
+  background: #ffffff;
+  box-shadow:
+    0 0 0 3px rgba(0, 113, 227, 0.12),
+    0 14px 34px rgba(0, 113, 227, 0.12);
+}
+
+.home-search-icon,
+.home-search-clear {
+  position: absolute;
+  top: 50%;
+  display: inline-grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  transform: translateY(-50%);
+  color: var(--muted);
+}
+
+.home-search-icon {
+  left: 13px;
+  pointer-events: none;
+}
+
+.home-search-icon svg,
+.home-search-clear svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.home-search-clear {
+  right: 12px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transition: background var(--motion-fast) ease, color var(--motion-fast) ease, opacity var(--motion-fast) ease;
+}
+
+.home-search-clear:hover,
+.home-search-clear:focus-visible {
+  background: rgba(0, 113, 227, 0.1);
+  color: #0071e3;
+  outline: none;
+}
+
+.home-search-clear[hidden] {
+  display: none;
+}
+
+.home-search-input.has-value .home-search-clear {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.home-search-input input,
+.search-control-panel input,
+.search-control-panel select {
+  width: 100%;
+  min-width: 0;
+  color: var(--text);
   padding: 12px;
+}
+
+.home-search-input input {
+  height: 100%;
+  min-height: 48px;
+  border: 0;
+  border-radius: inherit;
+  background: transparent;
+  outline: 0;
+  padding: 12px 46px 12px 44px;
+}
+
+.home-search-input input::placeholder {
+  color: color-mix(in srgb, var(--muted) 82%, transparent);
+}
+
+.home-search-input input::-webkit-search-cancel-button,
+.home-search-input input::-webkit-search-decoration {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.search-control-panel input,
+.search-control-panel select {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .home-quick-links {
@@ -1961,7 +2064,7 @@ body.light-mode .graph-board {
   color: #0066cc;
 }
 
-.home-search-row input,
+.home-search-input,
 .search-control-panel input,
 .search-control-panel select,
 .search-shell {
@@ -2092,6 +2195,88 @@ body.light-mode {
   display: grid;
   gap: 0;
   margin: 0;
+}
+
+.page-shell .search-pagination-shell {
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  background: linear-gradient(180deg, #ffffff 0%, #fbfbfd 100%);
+  padding: 14px 18px 18px;
+}
+
+.page-shell .search-pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.page-shell .search-pagination-status {
+  color: #6e6e73;
+  font-size: 0.78rem;
+  font-weight: 750;
+}
+
+.page-shell .search-pagination-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.page-shell .search-pagination-link,
+.page-shell .search-pagination-ellipsis {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  height: 36px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: transparent;
+  color: #424245;
+  font: inherit;
+  font-size: 0.84rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.page-shell .search-pagination-link {
+  cursor: pointer;
+  padding: 0 11px;
+  transition: background 180ms ease, border-color 180ms ease, color 180ms ease, box-shadow 180ms ease;
+}
+
+.page-shell .search-pagination-link:hover:not(:disabled),
+.page-shell .search-pagination-link:focus-visible {
+  border-color: rgba(0, 113, 227, 0.22);
+  background: rgba(0, 113, 227, 0.08);
+  color: #0071e3;
+  outline: none;
+}
+
+.page-shell .search-pagination-link[aria-current="page"] {
+  border-color: rgba(0, 113, 227, 0.34);
+  background: #ffffff;
+  color: #0071e3;
+  box-shadow: 0 10px 28px rgba(0, 113, 227, 0.18);
+}
+
+.page-shell .search-pagination-link:disabled {
+  cursor: not-allowed;
+  opacity: 0.42;
+}
+
+.page-shell .search-pagination-previous,
+.page-shell .search-pagination-next {
+  gap: 5px;
+}
+
+.page-shell .search-pagination-ellipsis {
+  color: #86868b;
 }
 
 .page-shell .academic-result-item {
@@ -2362,6 +2547,24 @@ body.light-mode {
     max-width: 220px;
   }
 
+  .page-shell .search-pagination {
+    align-items: stretch;
+  }
+
+  .page-shell .search-pagination-status,
+  .page-shell .search-pagination-content {
+    width: 100%;
+  }
+
+  .page-shell .search-pagination-content {
+    justify-content: space-between;
+  }
+
+  .page-shell .search-pagination-previous span:not([aria-hidden="true"]),
+  .page-shell .search-pagination-next span:not([aria-hidden="true"]) {
+    display: none;
+  }
+
   .record-field-grid {
     grid-template-columns: 1fr;
   }
@@ -2543,6 +2746,41 @@ body.dark-mode.page-shell .local-results-panel .live-enrichment-status {
   background: #15171b;
   border-bottom-color: rgba(255, 255, 255, 0.12);
   color: #a8adb7;
+}
+
+html.dark-mode body.page-shell .search-pagination-shell,
+body.dark-mode.page-shell .search-pagination-shell {
+  background: linear-gradient(180deg, #191b20 0%, #15171b 100%);
+  border-top-color: rgba(255, 255, 255, 0.11);
+}
+
+html.dark-mode body.page-shell .search-pagination-status,
+html.dark-mode body.page-shell .search-pagination-ellipsis,
+body.dark-mode.page-shell .search-pagination-status,
+body.dark-mode.page-shell .search-pagination-ellipsis {
+  color: #a8adb7;
+}
+
+html.dark-mode body.page-shell .search-pagination-link,
+body.dark-mode.page-shell .search-pagination-link {
+  color: #f5f5f7;
+}
+
+html.dark-mode body.page-shell .search-pagination-link:hover:not(:disabled),
+html.dark-mode body.page-shell .search-pagination-link:focus-visible,
+body.dark-mode.page-shell .search-pagination-link:hover:not(:disabled),
+body.dark-mode.page-shell .search-pagination-link:focus-visible {
+  border-color: rgba(0, 113, 227, 0.34);
+  background: rgba(0, 113, 227, 0.14);
+  color: #8cc8ff;
+}
+
+html.dark-mode body.page-shell .search-pagination-link[aria-current="page"],
+body.dark-mode.page-shell .search-pagination-link[aria-current="page"] {
+  border-color: rgba(0, 113, 227, 0.48);
+  background: rgba(0, 113, 227, 0.2);
+  color: #f5f5f7;
+  box-shadow: 0 12px 32px rgba(0, 113, 227, 0.24);
 }
 
 html.dark-mode body.page-shell .academic-result-item,
@@ -2747,11 +2985,26 @@ body.dark-mode:not(.page-shell) :where(.external-source-card, .local-result-card
     linear-gradient(115deg, transparent 0%, transparent 42%, rgba(255, 255, 255, 0.12) 50%, transparent 60%, transparent 100%);
 }
 
-html.dark-mode body:not(.page-shell) :where(.home-search-card input, .home-search-row input),
-body.dark-mode:not(.page-shell) :where(.home-search-card input, .home-search-row input) {
+html.dark-mode body:not(.page-shell) :where(.home-search-input, .home-search-card input, .home-search-row input),
+body.dark-mode:not(.page-shell) :where(.home-search-input, .home-search-card input, .home-search-row input) {
   background: #15171b;
   border-color: rgba(255, 255, 255, 0.16);
   color: #f5f5f7;
+}
+
+html.dark-mode body:not(.page-shell) .home-search-input input,
+body.dark-mode:not(.page-shell) .home-search-input input {
+  background: transparent;
+  color: #f5f5f7;
+}
+
+html.dark-mode body:not(.page-shell) .home-search-input:focus-within,
+body.dark-mode:not(.page-shell) .home-search-input:focus-within {
+  border-color: rgba(0, 113, 227, 0.46);
+  background: #1f2228;
+  box-shadow:
+    0 0 0 3px rgba(0, 113, 227, 0.16),
+    0 16px 38px rgba(0, 0, 0, 0.34);
 }
 
 html.dark-mode body:not(.page-shell) :where(.lead, .section-heading p, .portal-card p, .home-quick-card span),

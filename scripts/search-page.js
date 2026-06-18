@@ -14,6 +14,10 @@
   let backendRecords = [];
   let latestSearchRun = 0;
   let currentResultMap = new Map();
+  const searchResultsPerPage = 6;
+  const searchResultWindow = 24;
+  let currentSearchPage = 1;
+  let currentSearchSignature = "";
   const $ = (selector) => document.querySelector(selector);
   const searchIntent = () => window.CHEMVAULT_SEARCH_INTENT;
   const esc = (value) => String(value || "").replace(/[&<>"']/g, (char) => ({
@@ -414,6 +418,83 @@
       : "";
   }
 
+  function searchSignature(query, scope, filters) {
+    return JSON.stringify({
+      query: compact(query),
+      scope,
+      facet: filters.facet,
+      tag: filters.tag,
+      source: filters.source,
+      minMaturity: filters.minMaturity,
+      sort: filters.sort,
+      exact: filters.exact
+    });
+  }
+
+  function clampSearchPage(page, pageCount) {
+    return Math.min(Math.max(Number(page) || 1, 1), Math.max(pageCount, 1));
+  }
+
+  function paginationRange(page, pageCount) {
+    if (pageCount <= 7) return Array.from({ length: pageCount }, (_, index) => index + 1);
+    const pages = new Set([1, pageCount, page - 1, page, page + 1]);
+    const sorted = [...pages].filter((item) => item >= 1 && item <= pageCount).sort((a, b) => a - b);
+    return sorted.reduce((items, item, index) => {
+      if (index && item - sorted[index - 1] > 1) items.push("ellipsis");
+      items.push(item);
+      return items;
+    }, []);
+  }
+
+  function renderSearchPagination(totalResults, pageCount, pageStart, visibleCount) {
+    const shell = $("#localSearchPagination");
+    if (!shell) return;
+    if (!totalResults) {
+      shell.innerHTML = "";
+      return;
+    }
+
+    const pageEnd = Math.min(totalResults, pageStart + visibleCount);
+    const status = `Showing ${pageStart + 1}-${pageEnd} of ${totalResults}`;
+    if (pageCount <= 1) {
+      shell.innerHTML = `<div class="search-pagination-status">${status}</div>`;
+      return;
+    }
+
+    const pageItems = paginationRange(currentSearchPage, pageCount).map((item, index) => {
+      if (item === "ellipsis") {
+        return `<li><span class="search-pagination-ellipsis" aria-hidden="true">...</span><span class="sr-only">More pages</span></li>`;
+      }
+      const active = item === currentSearchPage;
+      return `
+        <li>
+          <button class="search-pagination-link" type="button" data-search-page="${item}" ${active ? `aria-current="page"` : ""}>${item}</button>
+        </li>
+      `;
+    }).join("");
+
+    shell.innerHTML = `
+      <nav class="search-pagination" role="navigation" aria-label="Search results pagination">
+        <span class="search-pagination-status">${status}</span>
+        <ul class="search-pagination-content">
+          <li>
+            <button class="search-pagination-link search-pagination-previous" type="button" data-search-page="${Math.max(1, currentSearchPage - 1)}" ${currentSearchPage === 1 ? "disabled" : ""} aria-label="Go to previous page">
+              <span aria-hidden="true">‹</span>
+              <span>Previous</span>
+            </button>
+          </li>
+          ${pageItems}
+          <li>
+            <button class="search-pagination-link search-pagination-next" type="button" data-search-page="${Math.min(pageCount, currentSearchPage + 1)}" ${currentSearchPage === pageCount ? "disabled" : ""} aria-label="Go to next page">
+              <span>Next</span>
+              <span aria-hidden="true">›</span>
+            </button>
+          </li>
+        </ul>
+      </nav>
+    `;
+  }
+
   function renderLocal(query, scope = "all", filters = readAdvancedFilters()) {
     const panel = $("#localSearchResults");
     const summary = $("#searchSummary");
@@ -422,14 +503,23 @@
     renderAdvancedOptions(index);
     syncScopeChips(scope);
     updateAdvancedFilterSummary(filters);
+    const signature = searchSignature(query, scope, filters);
+    if (signature !== currentSearchSignature) {
+      currentSearchSignature = signature;
+      currentSearchPage = 1;
+    }
     const rows = sortRows(index
       .filter((item) => scope === "all" || item.recordType === scope || item.type.toLowerCase() === scope || item.type.toLowerCase().includes(scope))
       .filter((item) => passesAdvanced(item, filters, query))
       .map((item) => ({ item, score: filters.exact ? score(item, query) : tokenScore(item, query) }))
       .filter((row) => query ? row.score > 0 : row.score > 0)
     , filters.sort)
-      .slice(0, 24)
+      .slice(0, searchResultWindow)
       .map((row) => row.item);
+    const pageCount = Math.max(1, Math.ceil(rows.length / searchResultsPerPage));
+    currentSearchPage = clampSearchPage(currentSearchPage, pageCount);
+    const pageStart = (currentSearchPage - 1) * searchResultsPerPage;
+    const visibleRows = rows.slice(pageStart, pageStart + searchResultsPerPage);
 
     if (summary) {
       const countText = rows.length === 1 ? "1 result" : `${rows.length} results`;
@@ -447,11 +537,13 @@
           <p>ChemVault will check NIH PubChem and PubMed when the local database has no strong match. Accepted academic records appear in this same result list.</p>
         </div>
       `;
+      renderSearchPagination(0, 0, 0, 0);
       return 0;
     }
 
     currentResultMap = new Map(rows.map((item) => [recordKey(item), item]));
-    panel.innerHTML = rows.map((item) => academicResultItem(item)).join("");
+    panel.innerHTML = visibleRows.map((item) => academicResultItem(item)).join("");
+    renderSearchPagination(rows.length, pageCount, pageStart, visibleRows.length);
     wireImageFallbacks(panel);
     return rows.length;
   }
@@ -1273,6 +1365,15 @@
     document.addEventListener("click", (event) => {
       const target = event.target instanceof Element ? event.target : null;
       if (!target) return;
+      const pageTrigger = target.closest("[data-search-page]");
+      if (pageTrigger) {
+        event.preventDefault();
+        if (pageTrigger.disabled) return;
+        currentSearchPage = clampSearchPage(pageTrigger.dataset.searchPage, 999);
+        renderLocal($("#academicSearch")?.value.trim() || "", $("#searchScope")?.value || "all");
+        $("#localSearchResults")?.closest(".local-results-panel")?.scrollIntoView({ block: "start", behavior: "smooth" });
+        return;
+      }
       const focusTrigger = target.closest("[data-record-key]");
       if (focusTrigger) {
         storeFocusRecord(currentResultMap.get(focusTrigger.dataset.recordKey));

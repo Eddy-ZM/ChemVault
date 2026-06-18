@@ -14,7 +14,7 @@
   <link rel="apple-touch-icon" href="/assets/chemvault-apple-touch-icon.png" />
   <link rel="manifest" href="/site.webmanifest" />
   <link rel="stylesheet" href="../assets/styles.css?v=20260618e" />
-  <link rel="stylesheet" href="../assets/portal.css?v=20260611a" />
+  <link rel="stylesheet" href="../assets/portal.css?v=20260618b" />
   <script src="../data/chem-data.js?v=20260603a" defer></script>
   <script src="../data/reagent-extension.js?v=20260603a" defer></script>
   <script src="../data/research-data.js?v=20260603a" defer></script>
@@ -32,7 +32,7 @@
   <script src="../scripts/api.js?v=20260603a" defer></script>
   <script src="../scripts/motion.js?v=20260618c" defer></script>
   <script src="../scripts/site-shell.js?v=20260618d" defer></script>
-  <script src="../scripts/search-page.js?v=20260611a" defer></script>
+  <script src="../scripts/search-page.js?v=20260618a" defer></script>
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -218,6 +218,7 @@
             </div>
             <div class="live-enrichment-status" id="liveEnrichmentStatus">Enter an academic query to search ChemVault first, then NIH PubChem and PubMed when local data is missing.</div>
             <div class="local-result-grid academic-result-list" id="localSearchResults"></div>
+            <div class="search-pagination-shell" id="localSearchPagination" aria-live="polite"></div>
           </section>
 
           <section class="result-panel nih-import-panel" aria-live="polite">
