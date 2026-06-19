@@ -45,5 +45,5 @@ test("record detail page uses a fresh cache key for its changed script", () => {
 test("record detail page busts the stylesheet cache for new detail styles", () => {
   const html = read("pages/record.html");
 
-  assert.match(html, /portal\.css\?v=20260618b/, "record page references the upgraded portal stylesheet cache key");
+  assert.match(html, /portal\.css\?v=20260619c/, "record page references the upgraded portal stylesheet cache key");
 });

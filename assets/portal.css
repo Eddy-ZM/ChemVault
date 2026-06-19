@@ -2538,13 +2538,53 @@ body.light-mode {
 }
 
 @media (max-width: 620px) {
+  .page-shell .search-studio-section {
+    padding-top: 30px;
+  }
+
+  .page-shell .search-workbench-grid {
+    gap: 12px;
+  }
+
+  .search-control-panel input,
+  .search-control-panel select {
+    min-height: 46px;
+    font-size: 16px;
+  }
+
+  .scope-chip-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .scope-chip {
+    width: 100%;
+    padding: 0 8px;
+  }
+
+  .advanced-search-grid {
+    grid-template-columns: 1fr;
+  }
+
   .page-shell .academic-result-item {
     grid-template-columns: 1fr;
+    gap: 12px;
+    padding: 16px;
   }
 
   .page-shell .academic-result-media {
     width: 100%;
-    max-width: 220px;
+    max-width: none;
+    aspect-ratio: 16 / 10;
+  }
+
+  .page-shell .result-title {
+    font-size: 1.08rem;
+  }
+
+  .page-shell .result-snippet {
+    max-width: none;
+    font-size: 0.9rem;
   }
 
   .page-shell .search-pagination {
@@ -2557,7 +2597,8 @@ body.light-mode {
   }
 
   .page-shell .search-pagination-content {
-    justify-content: space-between;
+    flex-wrap: wrap;
+    justify-content: flex-start;
   }
 
   .page-shell .search-pagination-previous span:not([aria-hidden="true"]),

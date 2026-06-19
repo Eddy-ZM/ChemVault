@@ -58,11 +58,15 @@ test("search page paginates local results instead of rendering the full default 
   const styles = read("assets/portal.css");
 
   assert.match(html, /id="localSearchPagination"/, "search page has a dedicated pagination region below local results");
-  assert.match(html, /search-page\.js\?v=20260619a/, "search page refreshes the paginated search script");
+  assert.match(html, /search-page\.js\?v=20260619b/, "search page refreshes the paginated search script");
   assert.match(script, /const searchResultsPerPage\s*=\s*3/, "search results render three records per page by default");
+  assert.match(script, /let searchIndexCache\s*=\s*null/, "search page caches the mapped local index between searches");
+  assert.match(script, /function importedRecordsSignature/, "search page invalidates the cached index when saved imports change");
+  assert.match(script, /let advancedOptionsSignature\s*=\s*""/, "advanced filter options avoid being rebuilt on every search");
   assert.match(script, /function renderSearchPagination/, "search script renders pagination controls");
   assert.match(script, /data-search-page/, "pagination controls expose target pages for interaction");
   assert.match(script, /rows\.slice\(pageStart,\s*pageStart \+ searchResultsPerPage\)/, "local results render only the current page slice");
+  assert.match(script, /smoothScroll\s*=\s*!window\.matchMedia/, "mobile pagination avoids smooth scroll pressure");
   assert.match(styles, /\.search-pagination-shell/, "pagination controls are styled with the search page shell");
   assert.match(styles, /\.search-pagination-link\[aria-current="page"\]/, "current pagination page is visually distinguished");
 });
@@ -72,7 +76,7 @@ test("home page search uses a clearable icon input adapted from the template", (
   const script = read("scripts/home.js");
   const styles = read("assets/portal.css");
 
-  assert.match(html, /portal\.css\?v=20260618b/, "home page refreshes the portal stylesheet for the search input");
+  assert.match(html, /portal\.css\?v=20260619c/, "home page refreshes the portal stylesheet for the search input");
   assert.match(html, /home\.js\?v=20260618a/, "home page refreshes the search interaction script");
   assert.match(html, /class="home-search-input"/, "home search wraps the input in a component shell");
   assert.match(html, /class="home-search-icon"/, "home search includes a leading search icon");
@@ -94,12 +98,17 @@ test("home page search uses a clearable icon input adapted from the template", (
 
 test("topbar search opens without resizing the navigation tabs", () => {
   const styles = read("assets/styles.css");
+  const shell = read("scripts/site-shell.js");
 
   assert.match(styles, /\.search-shell\s*{[\s\S]*position:\s*relative/, "topbar search creates a local positioning context");
   assert.match(styles, /\.search-shell\s*{[\s\S]*overflow:\s*visible/, "topbar search lets the floating input render outside the compact trigger");
   assert.match(styles, /\.search-shell\s*{[\s\S]*width:\s*112px/, "compact search trigger keeps a fixed layout width");
   assert.match(styles, /\.search-shell input\s*{[\s\S]*position:\s*absolute/, "topbar search input floats instead of expanding the header grid");
   assert.match(styles, /\.search-shell:is\(:focus-within, \.is-expanded, \.has-value\) input\s*{[\s\S]*width:\s*min\(420px, calc\(100vw - 32px\)\)/, "expanded input gets room without changing the trigger width");
+  assert.match(styles, /@media \(max-width:\s*620px\)[\s\S]*\.header-actions\s*{[\s\S]*grid-template-columns:\s*minmax\(0, 1fr\) 42px/, "mobile header search and theme control share a stable full-width row");
+  assert.match(styles, /@media \(max-width:\s*620px\)[\s\S]*\.search-shell span\s*{[\s\S]*display:\s*none/, "mobile search hides the compact label to preserve input width");
+  assert.match(shell, /let shellSearchItemsCache\s*=\s*null/, "topbar search caches the mapped local search items");
+  assert.match(shell, /function shellSearchItems/, "topbar search builds local records through a reusable cache");
   assert.doesNotMatch(styles, /\.search-shell:is\(:focus-within, \.is-expanded, \.has-value\)\s*{[\s\S]*width:\s*min\(456px, 48vw\)/, "expanded state no longer grows the search trigger");
   assert.doesNotMatch(styles, /\.site-header\.nav-stacked \.search-shell:is\(:focus-within, \.is-expanded, \.has-value\)\s*{[\s\S]*width:\s*min\(456px, 48vw\)/, "stacked header search also avoids pushing navigation tabs");
 });
@@ -139,7 +148,7 @@ test("startup welcome assets use a fresh cache key on every HTML entry", () => {
     const html = read(file);
 
     assert.match(html, /boot\.js\?v=20260618c/, `${file} references startup welcome boot`);
-    assert.match(html, /styles\.css\?v=20260619d/, `${file} references current shared styles`);
+    assert.match(html, /styles\.css\?v=20260619e/, `${file} references current shared styles`);
     assert.match(html, /motion\.js\?v=20260618c/, `${file} references startup welcome motion`);
   }
 });
@@ -178,6 +187,11 @@ test("footer uses a ChemVault sticky footer adapted from the template", () => {
   assert.match(styles, /\.footer-sticky-layer[\s\S]*z-index:\s*0/, "footer fixed layer stays under the page content");
   assert.match(styles, /\.footer-sticky-shell[\s\S]*position:\s*sticky/, "footer inner shell uses sticky positioning");
   assert.match(styles, /\.footer-sticky-shell[\s\S]*height:\s*var\(--footer-height\)/, "sticky shell preserves the template reveal height");
+  assert.match(styles, /@media \(max-width:\s*900px\)[\s\S]*\.site-footer\s*{[\s\S]*height:\s*auto[\s\S]*clip-path:\s*none/, "mobile footer uses natural height instead of a fixed reveal ratio");
+  assert.match(styles, /@media \(max-width:\s*900px\)[\s\S]*\.footer-sticky-layer\s*{[\s\S]*position:\s*relative[\s\S]*height:\s*auto/, "mobile footer layer returns to document flow");
+  assert.match(styles, /@media \(max-width:\s*900px\)[\s\S]*\.footer-sticky-shell\s*{[\s\S]*position:\s*relative[\s\S]*overflow:\s*visible/, "mobile footer avoids an inner scrolling sticky shell");
+  assert.match(styles, /@media \(max-width:\s*900px\)[\s\S]*\.footer-reveal\s*{[\s\S]*animation:\s*none[\s\S]*filter:\s*none/, "mobile footer disables reveal blur animation");
+  assert.doesNotMatch(styles, /--footer-height:\s*720px/, "mobile footer no longer uses a too-short hard-coded height");
   assert.match(styles, /html\.motion-available body\.page-ready \.site-footer\s*{[\s\S]*transform:\s*none/, "page enter animation does not create a fixed-position containing block around the footer");
   assert.match(styles, /\.site-footer[\s\S]*view-timeline-name:\s*--footer-clarify/, "footer exposes a reveal timeline for the subtle blur effect");
   assert.match(styles, /@supports \(animation-timeline:\s*view\(\)\)[\s\S]*\.footer-panel[\s\S]*animation:\s*footer-clarify/, "footer panel clarifies as the footer is revealed");
@@ -189,9 +203,9 @@ test("footer uses a ChemVault sticky footer adapted from the template", () => {
   for (const file of ["404.html", ...pageFiles]) {
     const html = read(file);
     assert.doesNotMatch(html, /class="site-version"/, `${file} removes the original standalone version strip`);
-    assert.match(html, /styles\.css\?v=20260619d/, `${file} references sticky footer styles`);
+    assert.match(html, /styles\.css\?v=20260619e/, `${file} references sticky footer styles`);
     if (file !== "index.html") {
-      assert.match(html, /site-shell\.js\?v=20260619b/, `${file} references sticky footer shell markup`);
+      assert.match(html, /site-shell\.js\?v=20260619c/, `${file} references sticky footer shell markup`);
     }
   }
 });
@@ -204,7 +218,7 @@ test("site navigation uses a ChemVault tubelight tab treatment", () => {
     const nav = navMarkup(html);
 
     assert.match(nav, /<details class="nav-more"/, `${file} keeps secondary pages in the tubelight More menu`);
-    assert.match(html, /styles\.css\?v=20260619d/, `${file} references tubelight navigation styles`);
+    assert.match(html, /styles\.css\?v=20260619e/, `${file} references tubelight navigation styles`);
   }
 
   assert.match(styles, /\.site-nav\s*{[\s\S]*border-radius:\s*999px/, "navigation container is a rounded tubelight rail");

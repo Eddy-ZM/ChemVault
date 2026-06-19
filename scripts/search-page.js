@@ -18,6 +18,12 @@
   const searchResultWindow = 24;
   let currentSearchPage = 1;
   let currentSearchSignature = "";
+  let localIndexCache = null;
+  let localIndexImportSignature = "";
+  let searchIndexCache = null;
+  let searchIndexImportSignature = "";
+  let searchIndexBackendSignature = "";
+  let advancedOptionsSignature = "";
   const $ = (selector) => document.querySelector(selector);
   const searchIntent = () => window.CHEMVAULT_SEARCH_INTENT;
   const esc = (value) => String(value || "").replace(/[&<>"']/g, (char) => ({
@@ -31,6 +37,22 @@
   const normalise = (value) => String(value || "").toLowerCase();
   const compact = (value) => normalise(value).replace(/[^a-z0-9.+-]/g, " ").replace(/\s+/g, " ").trim();
   const recordApi = () => window.CHEMVAULT_RECORDS;
+
+  function importedRecordsSignature() {
+    try {
+      return localStorage.getItem(importedStoreKey) || "";
+    } catch {
+      return "";
+    }
+  }
+
+  function backendRecordsSignature() {
+    return backendRecords.map((item) => [
+      item.recordType || item.type || "record",
+      item.id || compact(item.title),
+      item.updatedAt || item.checkedAt || ""
+    ].join(":")).join("|");
+  }
 
   function externalUrl(source, query) {
     const encoded = encode(query);
@@ -177,47 +199,60 @@
   }
 
   function buildIndex() {
-    const api = recordApi();
-    if (api?.buildRecords) {
-      const rows = api.buildRecords({ includeImported: true }).map((record) => {
-        const rawSource = record.raw?.source || record.raw?.raw?.source;
-        const dataSource = record.external ? "Session import" : rawSource === "PubChem" || rawSource === "PubMed" ? rawSource : "Curated";
-        return ({
-        id: record.id,
-        recordType: record.type,
-        type: record.typeLabel || record.type,
-        title: record.title,
-        body: record.body || record.subtitle || "",
-        tags: record.tags || [],
-        href: record.external ? record.href : api.recordUrl(record.type, record.id),
-        external: record.external,
-        domain: record.domain || "",
-        family: record.family || "",
-        risk: record.risk || "",
-        maturity: Number(record.maturity || 0),
-        formula: record.formula || "",
-        subtitle: record.subtitle || "",
-        sourceHref: record.sourceHref || "",
-        raw: record.raw || {},
-        hazardStatements: record.hazardStatements || record.raw?.hazardStatements || [],
-        hazardLevel: record.hazardLevel || record.raw?.hazardLevel || "",
-        signalWord: record.signalWord || record.raw?.signalWord || "",
-        precautionaryStatements: record.precautionaryStatements || record.raw?.precautionaryStatements || [],
-        disposalMethod: record.disposalMethod || record.raw?.disposalMethod || "",
-        safetySource: record.safetySource || record.raw?.safetySource || "",
-        checkStatus: record.checkStatus || record.raw?.checkStatus || (record.raw?.source ? "accepted" : "curated"),
-        checkedAt: record.checkedAt || record.raw?.checkedAt || "",
-        sourceKind: record.external || dataSource === "PubChem" || dataSource === "PubMed" ? "imported" : "curated",
-        dataSource,
-        imageUrl: record.imageUrl || record.raw?.imageUrl || "",
-        searchText: record.searchText || compact(`${record.title} ${record.body} ${(record.tags || []).join(" ")}`)
-      });
-      });
-      return mergeIndexRows(rows, backendRecords);
+    const importSignature = importedRecordsSignature();
+    const backendSignature = backendRecordsSignature();
+    if (
+      searchIndexCache
+      && searchIndexImportSignature === importSignature
+      && searchIndexBackendSignature === backendSignature
+    ) {
+      return searchIndexCache;
     }
-    const rows = [];
-    getImportedRecords().forEach((item) => rows.push(item));
-    (data.reactionSystems || []).forEach((item) => rows.push({
+
+    const api = recordApi();
+    let rows = [];
+    if (api?.buildRecords) {
+      if (!localIndexCache || localIndexImportSignature !== importSignature) {
+        localIndexCache = api.buildRecords({ includeImported: true }).map((record) => {
+          const rawSource = record.raw?.source || record.raw?.raw?.source;
+          const dataSource = record.external ? "Session import" : rawSource === "PubChem" || rawSource === "PubMed" ? rawSource : "Curated";
+          return ({
+            id: record.id,
+            recordType: record.type,
+            type: record.typeLabel || record.type,
+            title: record.title,
+            body: record.body || record.subtitle || "",
+            tags: record.tags || [],
+            href: record.external ? record.href : api.recordUrl(record.type, record.id),
+            external: record.external,
+            domain: record.domain || "",
+            family: record.family || "",
+            risk: record.risk || "",
+            maturity: Number(record.maturity || 0),
+            formula: record.formula || "",
+            subtitle: record.subtitle || "",
+            sourceHref: record.sourceHref || "",
+            raw: record.raw || {},
+            hazardStatements: record.hazardStatements || record.raw?.hazardStatements || [],
+            hazardLevel: record.hazardLevel || record.raw?.hazardLevel || "",
+            signalWord: record.signalWord || record.raw?.signalWord || "",
+            precautionaryStatements: record.precautionaryStatements || record.raw?.precautionaryStatements || [],
+            disposalMethod: record.disposalMethod || record.raw?.disposalMethod || "",
+            safetySource: record.safetySource || record.raw?.safetySource || "",
+            checkStatus: record.checkStatus || record.raw?.checkStatus || (record.raw?.source ? "accepted" : "curated"),
+            checkedAt: record.checkedAt || record.raw?.checkedAt || "",
+            sourceKind: record.external || dataSource === "PubChem" || dataSource === "PubMed" ? "imported" : "curated",
+            dataSource,
+            imageUrl: record.imageUrl || record.raw?.imageUrl || "",
+            searchText: record.searchText || compact(`${record.title} ${record.body} ${(record.tags || []).join(" ")}`)
+          });
+        });
+        localIndexImportSignature = importSignature;
+      }
+      rows = localIndexCache;
+    } else {
+      getImportedRecords().forEach((item) => rows.push(item));
+      (data.reactionSystems || []).forEach((item) => rows.push({
       type: "Reaction",
       title: item.name,
       body: [item.className, item.domain, (item.conditions || []).join(", "), (item.readouts || []).join(", "), (item.limitations || []).join(", ")].filter(Boolean).join(" | "),
@@ -308,7 +343,13 @@
       tags: item.tags || [],
       href: `spectroscopy.html?id=${item.id}`
     }));
-    return mergeIndexRows(rows, backendRecords);
+    }
+
+    const merged = mergeIndexRows(rows, backendRecords);
+    searchIndexCache = merged;
+    searchIndexImportSignature = importSignature;
+    searchIndexBackendSignature = backendSignature;
+    return merged;
   }
 
   function score(item, query) {
@@ -380,6 +421,14 @@
     if (!facet || !tag) return;
     const selectedFacet = facet.value || "all";
     const selectedTag = tag.value || "all";
+    const signature = `${index.length}:${index.map(recordKey).join("|")}`;
+    if (
+      signature === advancedOptionsSignature
+      && facet.options.length > 1
+      && tag.options.length > 1
+    ) {
+      return;
+    }
     const facets = unique(index.flatMap((item) => [item.domain, item.family, item.risk]).filter(Boolean))
       .sort((a, b) => a.localeCompare(b));
     const tags = unique(index.flatMap((item) => item.tags || []).filter(Boolean))
@@ -389,6 +438,7 @@
     tag.innerHTML = `<option value="all">All tags</option>${tags.map((item) => `<option value="${esc(item)}">${esc(item)}</option>`).join("")}`;
     facet.value = facets.includes(selectedFacet) ? selectedFacet : "all";
     tag.value = tags.includes(selectedTag) ? selectedTag : "all";
+    advancedOptionsSignature = signature;
   }
 
   function passesAdvanced(item, filters, query) {
@@ -1371,7 +1421,8 @@
         if (pageTrigger.disabled) return;
         currentSearchPage = clampSearchPage(pageTrigger.dataset.searchPage, 999);
         renderLocal($("#academicSearch")?.value.trim() || "", $("#searchScope")?.value || "all");
-        $("#localSearchResults")?.closest(".local-results-panel")?.scrollIntoView({ block: "start", behavior: "smooth" });
+        const smoothScroll = !window.matchMedia?.("(max-width: 620px)").matches;
+        $("#localSearchResults")?.closest(".local-results-panel")?.scrollIntoView({ block: "start", behavior: smoothScroll ? "smooth" : "auto" });
         return;
       }
       const focusTrigger = target.closest("[data-record-key]");

@@ -1,6 +1,9 @@
 (function () {
   const themeQuery = window.matchMedia?.("(prefers-color-scheme: dark)");
   const searchIntent = () => window.CHEMVAULT_SEARCH_INTENT;
+  const importedStoreKey = "chemvault-imported-records";
+  let shellSearchItemsCache = null;
+  let shellSearchImportSignature = "";
 
   document.addEventListener("DOMContentLoaded", () => {
     wireShellNav();
@@ -57,46 +60,8 @@
         panel.innerHTML = "";
         return;
       }
-      const data = window.CHEMVAULT_DATA;
-      const research = window.CHEMVAULT_RESEARCH;
-      const dossiers = window.CHEMVAULT_DOSSIERS;
-      const methods = window.CHEMVAULT_METHODS;
-      const spectroscopy = window.CHEMVAULT_SPECTROSCOPY;
-      const materials = window.CHEMVAULT_MATERIALS;
       const external = window.CHEMVAULT_EXTERNAL;
-      const records = window.CHEMVAULT_RECORDS;
-      const localItems = [
-        ...(records?.buildRecords ? records.buildRecords({ includeImported: true }).map((item) => ({
-          id: item.id,
-          recordType: item.type,
-          type: item.typeLabel || item.type,
-          title: item.title,
-          body: item.body || item.subtitle || "",
-          href: item.external ? item.href : records.recordUrl(item.type, item.id),
-          external: item.external,
-          imageUrl: item.imageUrl || item.raw?.imageUrl || "",
-          formula: item.formula || "",
-          tags: item.tags || [],
-          domain: item.domain || "",
-          family: item.family || "",
-          raw: item.raw || {},
-          text: item.searchText
-        })) : [
-          ...(data?.reactionSystems || []).map((item) => ({ id: item.id, recordType: "reaction", type: "Reaction", title: item.name, body: item.className, href: `workbench.html?id=${encodeURIComponent(item.id)}`, text: [item.name, item.className, item.domain, ...(item.conditions || []), ...(item.readouts || []), ...(item.limitations || [])].join(" ") })),
-          ...(data?.reactants || []).map((item) => ({ id: item.id, recordType: "reactant", type: "Reactant", title: item.name, body: item.className, href: `workbench.html?q=${encodeURIComponent(item.name)}`, text: [item.name, item.className, ...(item.functionalGroups || []), ...(item.compatibleMethods || []), ...(item.constraints || [])].join(" ") })),
-          ...(data?.reagents || []).map((item) => ({ id: item.id, recordType: "reagent", type: "Reagent", title: `${item.formula} · ${item.name}`, body: item.focus, formula: item.formula, tags: item.tags || [], href: `reagents.html?id=${encodeURIComponent(item.id)}`, text: [item.formula, item.name, item.focus, item.category, ...(item.tags || []), ...(item.transformations || [])].join(" ") })),
-          ...(data?.compounds || []).map((item) => ({ id: item.id, recordType: "compound", type: "Compound", title: `${item.formula} · ${item.name}`, body: item.summary, formula: item.formula, tags: [...(item.synonyms || []), ...(item.tags || [])], href: `search.html?q=${encodeURIComponent(item.name)}`, text: [item.formula, item.name, item.family, item.cas, item.summary, ...(item.synonyms || []), ...(item.tags || [])].join(" ") })),
-          ...(research?.caseStudies || []).map((item) => ({ id: item.id, recordType: "research-case", type: "Case", title: item.title, body: item.question, href: `research.html?case=${encodeURIComponent(item.id)}`, text: [item.title, item.discipline, item.question, item.thesis].join(" ") })),
-          ...(dossiers?.dossiers || []).map((item) => ({ id: item.id, recordType: "dossier", type: "Dossier", title: item.title, body: item.abstract, href: `dossiers.html?id=${encodeURIComponent(item.id)}`, text: [item.title, item.field, item.status, item.abstract, ...(item.keywords || []), ...(item.claims || [])].join(" ") })),
-          ...(methods?.protocols || []).map((item) => ({ id: item.id, recordType: "method", type: "Method", title: item.title, body: item.summary, href: `methods.html?id=${encodeURIComponent(item.id)}`, text: [item.title, item.domain, item.level, item.summary, ...(item.inputs || []), ...(item.outputs || [])].join(" ") })),
-          ...(spectroscopy?.cases || []).map((item) => ({ id: item.id, recordType: "spectroscopy", type: "Spectroscopy", title: item.title, body: item.question, href: `spectroscopy.html?id=${encodeURIComponent(item.id)}`, text: [item.title, item.family, item.question, item.conclusion, ...(item.signals || []).flatMap((signal) => [signal.technique, signal.signal, signal.interpretation])].join(" ") })),
-          ...(materials?.materials || []).map((item) => ({ id: item.id, recordType: "material", type: "Material", title: item.name, body: item.synthesis, formula: item.formula, tags: item.tags || [], href: `materials.html?id=${encodeURIComponent(item.id)}`, text: [item.name, item.family, item.formula, item.synthesis, ...(item.applications || []), ...(item.properties || []), ...(item.characterization || [])].join(" ") })),
-          ...(data?.routes || []).map((item) => ({ recordType: "route", type: "Route", title: `${item.start} to ${item.target}`, body: item.note, href: `library.html?q=${encodeURIComponent(`${item.start} ${item.target}`)}`, text: [item.start, item.target, item.note, ...(item.route || [])].join(" ") })),
-          ...(data?.mechanisms || []).map((item) => ({ id: item.id, recordType: "mechanism", type: "Mechanism", title: item.name, body: item.summary, href: `atlas.html?id=${encodeURIComponent(item.id)}`, text: [item.name, item.className, item.summary, ...(item.bestFor || [])].join(" ") })),
-          ...(data?.concepts || []).map((item) => ({ id: item.id, recordType: "concept", type: "Concept", title: item.term, body: item.definition, href: `library.html?q=${encodeURIComponent(item.term)}`, text: [item.term, item.family, item.definition, item.equation].join(" ") })),
-          ...(data?.sources || []).map((item) => ({ id: item.id, recordType: "source", type: "Source", title: item.short, body: item.note, href: `library.html?q=${encodeURIComponent(item.short)}`, text: [item.title, item.short, item.family, item.note].join(" ") }))
-        ])
-      ];
+      const localItems = shellSearchItems();
       const localHits = rankedLocalHits(localItems, rawQuery, 6);
       const externalHits = (external?.sources || []).slice(0, 4).map((source) => ({
         type: "External",
@@ -119,6 +84,61 @@
       wireImageFallbacks(panel);
     });
     syncShell();
+  }
+
+  function shellSearchItems() {
+    const importSignature = shellSearchImportedSignature();
+    if (shellSearchItemsCache && shellSearchImportSignature === importSignature) {
+      return shellSearchItemsCache;
+    }
+
+    const data = window.CHEMVAULT_DATA;
+    const research = window.CHEMVAULT_RESEARCH;
+    const dossiers = window.CHEMVAULT_DOSSIERS;
+    const methods = window.CHEMVAULT_METHODS;
+    const spectroscopy = window.CHEMVAULT_SPECTROSCOPY;
+    const materials = window.CHEMVAULT_MATERIALS;
+    const records = window.CHEMVAULT_RECORDS;
+    shellSearchItemsCache = records?.buildRecords ? records.buildRecords({ includeImported: true }).map((item) => ({
+      id: item.id,
+      recordType: item.type,
+      type: item.typeLabel || item.type,
+      title: item.title,
+      body: item.body || item.subtitle || "",
+      href: item.external ? item.href : records.recordUrl(item.type, item.id),
+      external: item.external,
+      imageUrl: item.imageUrl || item.raw?.imageUrl || "",
+      formula: item.formula || "",
+      tags: item.tags || [],
+      domain: item.domain || "",
+      family: item.family || "",
+      raw: item.raw || {},
+      text: item.searchText
+    })) : [
+      ...(data?.reactionSystems || []).map((item) => ({ id: item.id, recordType: "reaction", type: "Reaction", title: item.name, body: item.className, href: `workbench.html?id=${encodeURIComponent(item.id)}`, text: [item.name, item.className, item.domain, ...(item.conditions || []), ...(item.readouts || []), ...(item.limitations || [])].join(" ") })),
+      ...(data?.reactants || []).map((item) => ({ id: item.id, recordType: "reactant", type: "Reactant", title: item.name, body: item.className, href: `workbench.html?q=${encodeURIComponent(item.name)}`, text: [item.name, item.className, ...(item.functionalGroups || []), ...(item.compatibleMethods || []), ...(item.constraints || [])].join(" ") })),
+      ...(data?.reagents || []).map((item) => ({ id: item.id, recordType: "reagent", type: "Reagent", title: `${item.formula} · ${item.name}`, body: item.focus, formula: item.formula, tags: item.tags || [], href: `reagents.html?id=${encodeURIComponent(item.id)}`, text: [item.formula, item.name, item.focus, item.category, ...(item.tags || []), ...(item.transformations || [])].join(" ") })),
+      ...(data?.compounds || []).map((item) => ({ id: item.id, recordType: "compound", type: "Compound", title: `${item.formula} · ${item.name}`, body: item.summary, formula: item.formula, tags: [...(item.synonyms || []), ...(item.tags || [])], href: `search.html?q=${encodeURIComponent(item.name)}`, text: [item.formula, item.name, item.family, item.cas, item.summary, ...(item.synonyms || []), ...(item.tags || [])].join(" ") })),
+      ...(research?.caseStudies || []).map((item) => ({ id: item.id, recordType: "research-case", type: "Case", title: item.title, body: item.question, href: `research.html?case=${encodeURIComponent(item.id)}`, text: [item.title, item.discipline, item.question, item.thesis].join(" ") })),
+      ...(dossiers?.dossiers || []).map((item) => ({ id: item.id, recordType: "dossier", type: "Dossier", title: item.title, body: item.abstract, href: `dossiers.html?id=${encodeURIComponent(item.id)}`, text: [item.title, item.field, item.status, item.abstract, ...(item.keywords || []), ...(item.claims || [])].join(" ") })),
+      ...(methods?.protocols || []).map((item) => ({ id: item.id, recordType: "method", type: "Method", title: item.title, body: item.summary, href: `methods.html?id=${encodeURIComponent(item.id)}`, text: [item.title, item.domain, item.level, item.summary, ...(item.inputs || []), ...(item.outputs || [])].join(" ") })),
+      ...(spectroscopy?.cases || []).map((item) => ({ id: item.id, recordType: "spectroscopy", type: "Spectroscopy", title: item.title, body: item.question, href: `spectroscopy.html?id=${encodeURIComponent(item.id)}`, text: [item.title, item.family, item.question, item.conclusion, ...(item.signals || []).flatMap((signal) => [signal.technique, signal.signal, signal.interpretation])].join(" ") })),
+      ...(materials?.materials || []).map((item) => ({ id: item.id, recordType: "material", type: "Material", title: item.name, body: item.synthesis, formula: item.formula, tags: item.tags || [], href: `materials.html?id=${encodeURIComponent(item.id)}`, text: [item.name, item.family, item.formula, item.synthesis, ...(item.applications || []), ...(item.properties || []), ...(item.characterization || [])].join(" ") })),
+      ...(data?.routes || []).map((item) => ({ recordType: "route", type: "Route", title: `${item.start} to ${item.target}`, body: item.note, href: `library.html?q=${encodeURIComponent(`${item.start} ${item.target}`)}`, text: [item.start, item.target, item.note, ...(item.route || [])].join(" ") })),
+      ...(data?.mechanisms || []).map((item) => ({ id: item.id, recordType: "mechanism", type: "Mechanism", title: item.name, body: item.summary, href: `atlas.html?id=${encodeURIComponent(item.id)}`, text: [item.name, item.className, item.summary, ...(item.bestFor || [])].join(" ") })),
+      ...(data?.concepts || []).map((item) => ({ id: item.id, recordType: "concept", type: "Concept", title: item.term, body: item.definition, href: `library.html?q=${encodeURIComponent(item.term)}`, text: [item.term, item.family, item.definition, item.equation].join(" ") })),
+      ...(data?.sources || []).map((item) => ({ id: item.id, recordType: "source", type: "Source", title: item.short, body: item.note, href: `library.html?q=${encodeURIComponent(item.short)}`, text: [item.title, item.short, item.family, item.note].join(" ") }))
+    ];
+    shellSearchImportSignature = importSignature;
+    return shellSearchItemsCache;
+  }
+
+  function shellSearchImportedSignature() {
+    try {
+      return localStorage.getItem(importedStoreKey) || "";
+    } catch {
+      return "";
+    }
   }
 
   function rankedLocalHits(items, rawQuery, limit) {
