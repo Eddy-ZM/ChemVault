@@ -232,6 +232,7 @@
   function ensureDeveloperFooter() {
     if (document.querySelector(".site-footer")) return;
     const version = document.querySelector(".site-version");
+    const versionLabel = version?.textContent?.trim() || "ChemVault v0.2.4";
     const footer = document.createElement("footer");
     footer.className = "site-footer";
     footer.setAttribute("aria-label", "ChemVault footer");
@@ -290,7 +291,10 @@
             </div>
             <div class="container footer-bottom">
               <p>© 2026 ChemVault. All rights reserved.</p>
-              <p>Educational reference, not a substitute for primary literature or safety review.</p>
+              <div class="footer-bottom-meta">
+                <p>Educational reference, not a substitute for primary literature or safety review.</p>
+                <span class="footer-version">${versionLabel}</span>
+              </div>
             </div>
           </div>
         </div>
