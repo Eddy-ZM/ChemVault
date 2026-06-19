@@ -139,7 +139,7 @@ test("startup welcome assets use a fresh cache key on every HTML entry", () => {
     const html = read(file);
 
     assert.match(html, /boot\.js\?v=20260618c/, `${file} references startup welcome boot`);
-    assert.match(html, /styles\.css\?v=20260619c/, `${file} references current shared styles`);
+    assert.match(html, /styles\.css\?v=20260619d/, `${file} references current shared styles`);
     assert.match(html, /motion\.js\?v=20260618c/, `${file} references startup welcome motion`);
   }
 });
@@ -170,7 +170,7 @@ test("footer uses a ChemVault sticky footer adapted from the template", () => {
   assert.match(styles, /body\s*{[\s\S]*position:\s*relative/, "page body creates a root layer for the reveal footer");
   assert.match(styles, /body\s*{[\s\S]*isolation:\s*isolate/, "page body isolates the reveal stacking context");
   assert.match(styles, /main\s*{[\s\S]*position:\s*relative[\s\S]*z-index:\s*2[\s\S]*background:\s*var\(--bg\)/, "main content stays above the fixed footer layer until it is revealed");
-  assert.match(styles, /--footer-height:\s*720px/, "footer exposes the template height token");
+  assert.match(styles, /--footer-height:\s*620px/, "footer uses a tighter reveal height with less empty space");
   assert.match(styles, /\.site-footer[\s\S]*clip-path:\s*polygon\(0 0, 100% 0, 100% 100%, 0 100%\)/, "footer clips the fixed layer like the template");
   assert.match(styles, /\.site-footer[\s\S]*z-index:\s*0/, "footer itself sits behind page content for the reveal effect");
   assert.match(styles, /\.footer-sticky-layer[\s\S]*position:\s*fixed/, "footer layer is fixed to the bottom");
@@ -183,13 +183,15 @@ test("footer uses a ChemVault sticky footer adapted from the template", () => {
   assert.match(styles, /@supports \(animation-timeline:\s*view\(\)\)[\s\S]*\.footer-panel[\s\S]*animation:\s*footer-clarify/, "footer panel clarifies as the footer is revealed");
   assert.match(styles, /@keyframes footer-clarify[\s\S]*filter:\s*blur\(5px\)[\s\S]*filter:\s*blur\(0\)/, "footer reveal moves from slight blur to clear");
   assert.match(styles, /\.footer-version\s*{[\s\S]*letter-spacing:\s*0\.08em/, "footer version has a compact metadata treatment");
-  assert.match(styles, /\.site-version\s*{[\s\S]*position:\s*relative[\s\S]*z-index:\s*2/, "version strip remains above the revealed footer layer");
+  assert.doesNotMatch(styles, /\.site-version\s*{/, "original standalone version strip styles are removed");
+  assert.doesNotMatch(shell, /document\.querySelector\("\.site-version"\)/, "dynamic footer no longer depends on the removed version strip");
 
   for (const file of ["404.html", ...pageFiles]) {
     const html = read(file);
-    assert.match(html, /styles\.css\?v=20260619c/, `${file} references sticky footer styles`);
+    assert.doesNotMatch(html, /class="site-version"/, `${file} removes the original standalone version strip`);
+    assert.match(html, /styles\.css\?v=20260619d/, `${file} references sticky footer styles`);
     if (file !== "index.html") {
-      assert.match(html, /site-shell\.js\?v=20260619a/, `${file} references sticky footer shell markup`);
+      assert.match(html, /site-shell\.js\?v=20260619b/, `${file} references sticky footer shell markup`);
     }
   }
 });
@@ -202,7 +204,7 @@ test("site navigation uses a ChemVault tubelight tab treatment", () => {
     const nav = navMarkup(html);
 
     assert.match(nav, /<details class="nav-more"/, `${file} keeps secondary pages in the tubelight More menu`);
-    assert.match(html, /styles\.css\?v=20260619c/, `${file} references tubelight navigation styles`);
+    assert.match(html, /styles\.css\?v=20260619d/, `${file} references tubelight navigation styles`);
   }
 
   assert.match(styles, /\.site-nav\s*{[\s\S]*border-radius:\s*999px/, "navigation container is a rounded tubelight rail");

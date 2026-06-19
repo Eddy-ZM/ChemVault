@@ -96,8 +96,7 @@ html.startup-welcome-pending body {
 
 html.startup-welcome-pending .site-header,
 html.startup-welcome-pending main,
-html.startup-welcome-pending .site-footer,
-html.startup-welcome-pending .site-version {
+html.startup-welcome-pending .site-footer {
   opacity: 0;
 }
 
@@ -107,16 +106,14 @@ html.motion-boot:not(.motion-boot-timeout) body:not(.page-ready) {
 
 html.motion-boot:not(.motion-boot-timeout) body:not(.page-ready) .site-header,
 html.motion-boot:not(.motion-boot-timeout) body:not(.page-ready) main,
-html.motion-boot:not(.motion-boot-timeout) body:not(.page-ready) .site-footer,
-html.motion-boot:not(.motion-boot-timeout) body:not(.page-ready) .site-version {
+html.motion-boot:not(.motion-boot-timeout) body:not(.page-ready) .site-footer {
   opacity: 0;
   transform: translateY(8px);
 }
 
 html.motion-soft-enter body:not(.page-ready) .site-header,
 html.motion-soft-enter body:not(.page-ready) main,
-html.motion-soft-enter body:not(.page-ready) .site-footer,
-html.motion-soft-enter body:not(.page-ready) .site-version {
+html.motion-soft-enter body:not(.page-ready) .site-footer {
   opacity: 0.985;
   transform: translateY(2px);
 }
@@ -153,8 +150,7 @@ html.motion-boot:not(.motion-boot-timeout) body:not(.page-ready)::after {
 
 html.motion-available body.page-ready .site-header,
 html.motion-available body.page-ready main,
-html.motion-available body.page-ready .site-footer,
-html.motion-available body.page-ready .site-version {
+html.motion-available body.page-ready .site-footer {
   opacity: 1;
   transform: translateY(0);
   transition: opacity var(--motion-medium) var(--ease-out), transform var(--motion-medium) var(--ease-out);
@@ -170,8 +166,7 @@ body.page-is-soft-leaving {
 
 body.page-is-soft-leaving .site-header,
 body.page-is-soft-leaving main,
-body.page-is-soft-leaving .site-footer,
-body.page-is-soft-leaving .site-version {
+body.page-is-soft-leaving .site-footer {
   opacity: 0.985;
   transform: translateY(-2px);
   transition: opacity 90ms ease, transform 90ms ease;
@@ -2499,7 +2494,7 @@ td strong {
 }
 
 .site-footer {
-  --footer-height: 720px;
+  --footer-height: 620px;
   position: relative;
   width: 100%;
   height: var(--footer-height);
@@ -2535,13 +2530,13 @@ td strong {
   min-height: 100%;
   flex-direction: column;
   justify-content: space-between;
-  gap: 34px;
+  gap: 24px;
   overflow: hidden;
   border-top: 1px solid rgba(255, 255, 255, 0.12);
   background:
     linear-gradient(180deg, rgba(14, 32, 56, 0.94), rgba(7, 10, 16, 0.98) 46%, #06070a),
     #070a10;
-  padding: 104px 0 28px;
+  padding: 76px 0 22px;
 }
 
 .footer-ambient {
@@ -2805,19 +2800,6 @@ td strong {
   }
 }
 
-.site-version {
-  position: relative;
-  z-index: 2;
-  border-top: 1px solid var(--line);
-  color: var(--muted);
-  background: color-mix(in srgb, var(--bg) 92%, #000 8%);
-  padding: 10px 22px;
-  text-align: center;
-  font-size: 0.78rem;
-  font-weight: 800;
-  letter-spacing: 0;
-}
-
 .empty-state {
   color: var(--muted);
   border: 1px dashed var(--line);
@@ -3042,12 +3024,12 @@ td strong {
   }
 
   .site-footer {
-    --footer-height: 800px;
+    --footer-height: 720px;
   }
 
   .footer-panel {
     gap: 24px;
-    padding: 94px 0 24px;
+    padding: 72px 0 22px;
   }
 
   .footer-link-groups {

@@ -231,8 +231,7 @@
 
   function ensureDeveloperFooter() {
     if (document.querySelector(".site-footer")) return;
-    const version = document.querySelector(".site-version");
-    const versionLabel = version?.textContent?.trim() || "ChemVault v0.2.4";
+    const versionLabel = "ChemVault v0.2.4";
     const footer = document.createElement("footer");
     footer.className = "site-footer";
     footer.setAttribute("aria-label", "ChemVault footer");
@@ -300,8 +299,7 @@
         </div>
       </div>
     `;
-    if (version) version.before(footer);
-    else document.body.appendChild(footer);
+    document.body.appendChild(footer);
   }
 
   function adaptShellLayout() {
