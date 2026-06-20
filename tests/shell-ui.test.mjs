@@ -77,7 +77,7 @@ test("home page search uses a clearable icon input adapted from the template", (
   const styles = read("assets/portal.css");
 
   assert.match(html, /portal\.css\?v=20260619c/, "home page refreshes the portal stylesheet for the search input");
-  assert.match(html, /home\.js\?v=20260618a/, "home page refreshes the search interaction script");
+  assert.match(html, /home\.js\?v=20260620a/, "home page refreshes the search interaction script");
   assert.match(html, /class="home-search-input"/, "home search wraps the input in a component shell");
   assert.match(html, /class="home-search-icon"/, "home search includes a leading search icon");
   assert.match(html, /data-home-search-clear/, "home search includes a clear button like the template");
@@ -105,7 +105,7 @@ test("topbar search opens without resizing the navigation tabs", () => {
   assert.match(styles, /\.search-shell\s*{[\s\S]*width:\s*112px/, "compact search trigger keeps a fixed layout width");
   assert.match(styles, /\.search-shell input\s*{[\s\S]*position:\s*absolute/, "topbar search input floats instead of expanding the header grid");
   assert.match(styles, /\.search-shell:is\(:focus-within, \.is-expanded, \.has-value\) input\s*{[\s\S]*width:\s*min\(420px, calc\(100vw - 32px\)\)/, "expanded input gets room without changing the trigger width");
-  assert.match(styles, /@media \(max-width:\s*620px\)[\s\S]*\.header-actions\s*{[\s\S]*grid-template-columns:\s*minmax\(0, 1fr\) 42px/, "mobile header search and theme control share a stable full-width row");
+  assert.match(styles, /@media \(max-width:\s*620px\)[\s\S]*\.header-actions\s*{[\s\S]*grid-template-columns:\s*minmax\(0, 1fr\) 64px/, "mobile header search and theme control share a stable full-width row");
   assert.match(styles, /@media \(max-width:\s*620px\)[\s\S]*\.search-shell span\s*{[\s\S]*display:\s*none/, "mobile search hides the compact label to preserve input width");
   assert.match(shell, /let shellSearchItemsCache\s*=\s*null/, "topbar search caches the mapped local search items");
   assert.match(shell, /function shellSearchItems/, "topbar search builds local records through a reusable cache");
@@ -148,7 +148,7 @@ test("startup welcome assets use a fresh cache key on every HTML entry", () => {
     const html = read(file);
 
     assert.match(html, /boot\.js\?v=20260618c/, `${file} references startup welcome boot`);
-    assert.match(html, /styles\.css\?v=20260619e/, `${file} references current shared styles`);
+    assert.match(html, /styles\.css\?v=20260620a/, `${file} references current shared styles`);
     assert.match(html, /motion\.js\?v=20260618c/, `${file} references startup welcome motion`);
   }
 });
@@ -174,6 +174,7 @@ test("footer uses a ChemVault sticky footer adapted from the template", () => {
     assert.match(source, /mailto:contact@chemvault\.science/, `${file} keeps the project email reachable`);
     assert.match(source, /class="footer-version"/, `${file} writes the site version inside the footer`);
     assert.match(source, /ChemVault v0\.2\.4/, `${file} exposes the current site version in the footer`);
+    assert.match(source, /class="[^"]*footer-mobile-compact/, `${file} includes a dedicated compact mobile footer`);
   }
 
   assert.match(styles, /body\s*{[\s\S]*position:\s*relative/, "page body creates a root layer for the reveal footer");
@@ -197,15 +198,19 @@ test("footer uses a ChemVault sticky footer adapted from the template", () => {
   assert.match(styles, /@supports \(animation-timeline:\s*view\(\)\)[\s\S]*\.footer-panel[\s\S]*animation:\s*footer-clarify/, "footer panel clarifies as the footer is revealed");
   assert.match(styles, /@keyframes footer-clarify[\s\S]*filter:\s*blur\(5px\)[\s\S]*filter:\s*blur\(0\)/, "footer reveal moves from slight blur to clear");
   assert.match(styles, /\.footer-version\s*{[\s\S]*letter-spacing:\s*0\.08em/, "footer version has a compact metadata treatment");
+  assert.match(styles, /\.footer-mobile-compact\s*{[\s\S]*display:\s*none/, "desktop footer keeps the mobile footer summary hidden");
+  assert.match(styles, /@media \(max-width:\s*620px\)[\s\S]*\.footer-grid\s*{[\s\S]*display:\s*none/, "mobile layout replaces the full link grid with a compact footer");
+  assert.match(styles, /@media \(max-width:\s*620px\)[\s\S]*\.footer-mobile-compact\s*{[\s\S]*display:\s*grid/, "mobile layout exposes its dedicated footer summary");
+  assert.match(styles, /@media \(max-width:\s*620px\)[\s\S]*\.footer-mobile-identity p\s*{[\s\S]*font-size:\s*0\.7rem/, "mobile footer uses reduced text sizing");
   assert.doesNotMatch(styles, /\.site-version\s*{/, "original standalone version strip styles are removed");
   assert.doesNotMatch(shell, /document\.querySelector\("\.site-version"\)/, "dynamic footer no longer depends on the removed version strip");
 
   for (const file of ["404.html", ...pageFiles]) {
     const html = read(file);
     assert.doesNotMatch(html, /class="site-version"/, `${file} removes the original standalone version strip`);
-    assert.match(html, /styles\.css\?v=20260619e/, `${file} references sticky footer styles`);
+    assert.match(html, /styles\.css\?v=20260620a/, `${file} references sticky footer styles`);
     if (file !== "index.html") {
-      assert.match(html, /site-shell\.js\?v=20260619c/, `${file} references sticky footer shell markup`);
+      assert.match(html, /site-shell\.js\?v=20260620a/, `${file} references sticky footer shell markup`);
     }
   }
 });
@@ -218,7 +223,7 @@ test("site navigation uses a ChemVault tubelight tab treatment", () => {
     const nav = navMarkup(html);
 
     assert.match(nav, /<details class="nav-more"/, `${file} keeps secondary pages in the tubelight More menu`);
-    assert.match(html, /styles\.css\?v=20260619e/, `${file} references tubelight navigation styles`);
+    assert.match(html, /styles\.css\?v=20260620a/, `${file} references tubelight navigation styles`);
   }
 
   assert.match(styles, /\.site-nav\s*{[\s\S]*border-radius:\s*999px/, "navigation container is a rounded tubelight rail");
@@ -226,4 +231,21 @@ test("site navigation uses a ChemVault tubelight tab treatment", () => {
   assert.match(styles, /\.site-nav a,\s*\n\.nav-more > summary\s*{[\s\S]*border-radius:\s*999px/, "navigation items are rounded tabs");
   assert.match(styles, /\.site-nav a::after,\s*\n\.nav-more > summary::after\s*{[\s\S]*top:\s*-6px/, "navigation tabs draw the top lamp");
   assert.match(styles, /\.site-nav a\[aria-current\],\s*\n\.nav-more > summary\[aria-current\][\s\S]*box-shadow:[\s\S]*rgba\(0, 113, 227, 0\.18\)/, "current page tab has a ChemVault blue glow");
+});
+
+test("theme switch presents a stable, resolved light/dark control", () => {
+  const styles = read("assets/styles.css");
+
+  for (const scriptFile of ["scripts/home.js", "scripts/site-shell.js", "scripts/app.js"]) {
+    const script = read(scriptFile);
+    assert.match(script, /button\.dataset\.themeSetting = setting/, `${scriptFile} preserves the stored theme preference`);
+    assert.match(script, /button\.dataset\.themeState = mode/, `${scriptFile} exposes the resolved light/dark state to the control`);
+    assert.match(script, /return resolveTheme\(normaliseTheme\(setting\)\) === "dark" \? "light" : "dark"/, `${scriptFile} toggles directly between light and dark`);
+    assert.match(script, /theme active\. Switch to/, `${scriptFile} gives the toggle an accessible active-state label`);
+  }
+
+  assert.match(styles, /\.theme-toggle\s*{[\s\S]*width:\s*64px[\s\S]*border-radius:\s*999px/, "theme control uses a compact switch rail");
+  assert.match(styles, /\.theme-toggle\[data-theme-state="dark"\] \.theme-toggle__icon\s*{[\s\S]*translateX\(30px\)/, "dark mode moves the switch thumb to the active side");
+  assert.match(styles, /\.theme-toggle\[data-theme-state="light"\] \.theme-toggle__icon::before/, "light mode renders the sun state");
+  assert.doesNotMatch(styles, /\.theme-toggle\[data-theme-state="system"\]/, "theme control no longer renders a visually ambiguous system state");
 });

@@ -189,7 +189,8 @@
     if (options.persist !== false) localStorage.setItem("chemvault-theme", setting);
     document.querySelector("meta[name='theme-color']")?.setAttribute("content", dark ? "#101114" : "#f5f5f7");
     document.querySelectorAll("[data-shell-action='theme']").forEach((button) => {
-      button.dataset.themeState = setting;
+      button.dataset.themeSetting = setting;
+      button.dataset.themeState = mode;
       button.dataset.themeResolved = mode;
       button.setAttribute("aria-label", themeLabel(setting, mode));
       button.setAttribute("title", themeTitle(setting, mode));
@@ -226,20 +227,15 @@
   }
 
   function nextThemeSetting(setting) {
-    const normalised = normaliseTheme(setting);
-    if (normalised === "system") return resolveTheme("system") === "dark" ? "light" : "dark";
-    return normalised === "light" ? "dark" : "system";
+    return resolveTheme(normaliseTheme(setting)) === "dark" ? "light" : "dark";
   }
 
   function themeLabel(setting, mode) {
-    if (setting === "system") return `System theme, currently ${mode}. Switch to ${mode === "dark" ? "light" : "dark"} theme`;
-    if (setting === "light") return "Light theme. Switch to dark theme";
-    return "Dark theme. Switch to system theme";
+    return `${mode === "dark" ? "Dark" : "Light"} theme active. Switch to ${mode === "dark" ? "light" : "dark"} theme`;
   }
 
   function themeTitle(setting, mode) {
-    if (setting === "system") return `System theme (${mode})`;
-    return setting === "light" ? "Light theme" : "Dark theme";
+    return `Switch to ${mode === "dark" ? "light" : "dark"} theme`;
   }
 
   function normalisePath(pathname) {
@@ -307,6 +303,21 @@
                   <span>© 2026 ChemVault</span>
                 </div>
               </div>
+            </div>
+            <div class="container footer-mobile-compact">
+              <div class="footer-mobile-identity">
+                <a class="footer-brand" href="/index.html">
+                  <span class="footer-brand-mark" aria-hidden="true"><img src="/assets/chemvault-logo-mark.png" alt="" /></span>
+                  <span><strong>ChemVault</strong><small>Academic chemistry portal</small></span>
+                </a>
+                <p>Educational reference only. Verify primary data before use.</p>
+              </div>
+              <nav class="footer-mobile-links" aria-label="Footer navigation">
+                <a href="/pages/search.html">Search</a>
+                <a href="/pages/workbench.html">Workbench</a>
+                <a href="/data/public-record-index.json">Data</a>
+                <a href="mailto:contact@chemvault.science">Contact</a>
+              </nav>
             </div>
             <div class="container footer-bottom">
               <p>© 2026 ChemVault. All rights reserved.</p>
