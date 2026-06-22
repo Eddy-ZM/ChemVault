@@ -8,6 +8,9 @@
   const encode = (value) => encodeURIComponent((value || "").trim());
   const normalise = (value) => String(value || "").toLowerCase();
   const searchIntent = () => window.CHEMVAULT_SEARCH_INTENT;
+  let localIndexCache = null;
+  let homeSearchFrame = 0;
+  let shellSearchFrame = 0;
 
   const count = (items) => Array.isArray(items) ? items.length : 0;
   const typeKey = (record, index) => `${record.type || record.typeLabel || "record"}:${record.id || record.title || index}`;
@@ -167,9 +170,11 @@
   }
 
   function localIndex() {
+    if (localIndexCache) return localIndexCache;
+
     const records = window.CHEMVAULT_RECORDS;
     if (records?.buildRecords) {
-      return records.buildRecords({ includeImported: true }).map((item) => ({
+      const rows = records.buildRecords({ includeImported: true }).map((item) => ({
         id: item.id,
         recordType: item.type,
         type: item.typeLabel || item.type,
@@ -185,6 +190,8 @@
         raw: item.raw || {},
         searchText: item.searchText || ""
       }));
+      localIndexCache = rows.map((item) => ({ ...item, searchableText: localSearchText(item) }));
+      return localIndexCache;
     }
     const rows = [];
     (data.reagents || []).forEach((item) => rows.push({
@@ -254,7 +261,8 @@
       tags: item.tags || [],
       href: `pages/library.html?q=${encode(item.term)}`
     }));
-    return rows;
+    localIndexCache = rows.map((item) => ({ ...item, searchableText: localSearchText(item) }));
+    return localIndexCache;
   }
 
   function renderMetrics() {
@@ -426,7 +434,7 @@
 
     (searchIntent()?.rank?.(query, index, { limit }) || []).forEach((match) => addHit(match.item));
     index
-      .filter((item) => localSearchText(item).includes(term))
+      .filter((item) => item.searchableText.includes(term))
       .slice(0, limit)
       .forEach(addHit);
     return hits.slice(0, limit);
@@ -475,8 +483,7 @@
     input.addEventListener("blur", () => {
       window.setTimeout(syncShell, 120);
     });
-    input.addEventListener("input", () => {
-      syncShell();
+    const renderSuggestions = () => {
       const rawQuery = input.value.trim();
       const term = normalise(rawQuery);
       if (!term) {
@@ -505,6 +512,15 @@
         </a>
       `).join("") : `<div class="empty-state">No matching academic record.</div>`;
       wireImageFallbacks(panel);
+    };
+
+    input.addEventListener("input", () => {
+      syncShell();
+      if (shellSearchFrame) cancelAnimationFrame(shellSearchFrame);
+      shellSearchFrame = requestAnimationFrame(() => {
+        shellSearchFrame = 0;
+        renderSuggestions();
+      });
     });
     syncShell();
   }
@@ -549,8 +565,13 @@
     wireHomeSearchInput(input);
 
     input.addEventListener("input", () => {
-      renderQuickLinks(input.value);
-      renderGateway(input.value);
+      const queryValue = input.value;
+      if (homeSearchFrame) cancelAnimationFrame(homeSearchFrame);
+      homeSearchFrame = requestAnimationFrame(() => {
+        homeSearchFrame = 0;
+        renderQuickLinks(queryValue);
+        renderGateway(queryValue);
+      });
     });
 
     form.addEventListener("submit", (event) => {

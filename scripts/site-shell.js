@@ -4,6 +4,7 @@
   const importedStoreKey = "chemvault-imported-records";
   let shellSearchItemsCache = null;
   let shellSearchImportSignature = "";
+  let shellSearchFrame = 0;
 
   document.addEventListener("DOMContentLoaded", () => {
     wireShellNav();
@@ -52,8 +53,8 @@
     input.addEventListener("blur", () => {
       window.setTimeout(syncShell, 120);
     });
-    input.addEventListener("input", () => {
-      syncShell();
+
+    const renderShellResults = () => {
       const rawQuery = input.value.trim();
       const query = normalise(rawQuery);
       if (!query) {
@@ -61,6 +62,7 @@
         panel.innerHTML = "";
         return;
       }
+
       const external = window.CHEMVAULT_EXTERNAL;
       const localItems = shellSearchItems();
       const localHits = rankedLocalHits(localItems, rawQuery, 6);
@@ -83,6 +85,15 @@
         </a>
       `).join("") : `<div class="empty-state">No matching academic record.</div>`;
       wireImageFallbacks(panel);
+    };
+
+    input.addEventListener("input", () => {
+      syncShell();
+      if (shellSearchFrame) cancelAnimationFrame(shellSearchFrame);
+      shellSearchFrame = requestAnimationFrame(() => {
+        shellSearchFrame = 0;
+        renderShellResults();
+      });
     });
     syncShell();
   }

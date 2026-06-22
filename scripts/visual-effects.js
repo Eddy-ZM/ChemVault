@@ -3,8 +3,16 @@
   const body = document.body;
   const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)');
   const prefersReduced = reduceMotion?.matches === true;
+  const isFinePointer = window.matchMedia?.("(pointer: fine)")?.matches !== false;
+  const lowMemoryDevice = Number.isFinite(navigator.deviceMemory) && navigator.deviceMemory <= 3;
+  const enablePointerFx = !prefersReduced && isFinePointer && !lowMemoryDevice;
+  const shouldThrottleSections = navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4;
 
   root.classList.add('cv-effects-ready');
+  let pointerFrame = 0;
+  let pointerEvent = null;
+  let scrollRailFrame = 0;
+  let scrollProgressFrame = 0;
 
   const setPointer = (event) => {
     root.style.setProperty('--cursor-x', `${event.clientX}px`);
@@ -15,7 +23,20 @@
     root.style.setProperty('--cursor-spot-y', spotlightY);
   };
 
-  window.addEventListener('pointermove', setPointer, { passive: true });
+  const flushPointer = () => {
+    if (!pointerEvent) return;
+    setPointer(pointerEvent);
+    pointerEvent = null;
+    pointerFrame = 0;
+  };
+
+  if (enablePointerFx) {
+    window.addEventListener('pointermove', (event) => {
+      pointerEvent = event;
+      if (pointerFrame) return;
+      pointerFrame = requestAnimationFrame(flushPointer);
+    }, { passive: true });
+  }
 
   if (prefersReduced) {
     root.classList.add('cv-reduced-motion');
@@ -83,8 +104,7 @@
 
   tiltTargets.forEach((element) => {
     element.classList.add('cv-tilt');
-
-    element.addEventListener('pointermove', (event) => {
+    const track = (event) => {
       const rect = element.getBoundingClientRect();
       const x = event.clientX - rect.left;
       const y = event.clientY - rect.top;
@@ -95,7 +115,8 @@
       element.style.setProperty('--spot-y', `${y}px`);
       element.style.setProperty('--tilt-x', `${tiltX.toFixed(2)}deg`);
       element.style.setProperty('--tilt-y', `${tiltY.toFixed(2)}deg`);
-    }, { passive: true });
+    };
+    if (enablePointerFx) element.addEventListener('pointermove', track, { passive: true });
 
     element.addEventListener('pointerleave', () => {
       element.style.setProperty('--tilt-x', '0deg');
@@ -169,7 +190,11 @@
     };
 
     const scheduleUpdate = () => {
-      requestAnimationFrame(updateProgress);
+      if (scrollRailFrame) return;
+      scrollRailFrame = requestAnimationFrame(() => {
+        scrollRailFrame = 0;
+        updateProgress();
+      });
     };
 
     updateProgress();
@@ -178,23 +203,26 @@
   };
 
   const syncParallax = () => {
-    const hero = document.querySelector('.academic-hero');
-    const sections = document.querySelectorAll('.academic-section');
     const apply = () => {
+      const hero = document.querySelector('.academic-hero');
       const offset = Math.min(120, window.scrollY * 0.12);
+      const scrollScale = shouldThrottleSections ? 0.08 : 0.12;
+      const scaledOffset = Math.min(120, window.scrollY * scrollScale);
       root.style.setProperty('--cv-parallax-offset', `${-offset.toFixed(2)}px`);
-
-      sections.forEach((section, index) => {
-        const rect = section.getBoundingClientRect();
-        const ratio = Math.max(0, Math.min(1, (window.innerHeight - rect.top) / (window.innerHeight * 1.5)));
-        section.style.setProperty('--cv-section-shift', `${(ratio * (index % 2 ? 5 : -5)).toFixed(2)}px`);
-      });
+      if (scaledOffset !== 0) {
+        root.style.setProperty('--cv-parallax-offset', `${-scaledOffset.toFixed(2)}px`);
+      }
     };
 
     const onScroll = () => {
-      requestAnimationFrame(apply);
+      if (scrollProgressFrame) return;
+      scrollProgressFrame = requestAnimationFrame(() => {
+        scrollProgressFrame = 0;
+        apply();
+      });
     };
 
+    const hero = document.querySelector('.academic-hero');
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
     if (hero) hero.classList.add('cv-hero-parallax');
