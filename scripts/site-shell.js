@@ -278,34 +278,7 @@
   }
 
   function ensureDeveloperFooter() {
-    if (document.querySelector(".site-footer, .academic-footer")) return;
-    if (document.body.classList.contains("academic-site")) {
-      const footer = document.createElement("footer");
-      footer.className = "academic-footer";
-      footer.setAttribute("aria-label", "ChemVault footer");
-      footer.innerHTML = `
-        <div class="container academic-footer-grid">
-          <div>
-            <a class="footer-brand" href="/index.html">
-              <span class="footer-brand-mark" aria-hidden="true"><img src="/assets/chemvault-logo-mark.png" alt="" /></span>
-              <span><strong>ChemVault</strong><small>Scientific knowledge infrastructure</small></span>
-            </a>
-            <p>ChemVault is an independent academic technology initiative exploring chemistry, artificial intelligence and scientific knowledge infrastructure.</p>
-          </div>
-          <nav class="academic-footer-links" aria-label="Footer navigation">
-            <div><span>Platform</span><a href="/pages/research.html">Research</a><a href="/pages/platform.html">Platform</a><a href="/pages/projects.html">Projects</a></div>
-            <div><span>Tools</span><a href="/pages/search.html">Compound Search</a><a href="/pages/workbench.html">Workbench</a><a href="/data/public-record-index.json">Public Data</a></div>
-            <div><span>Connect</span><a href="/pages/notes.html">Notes</a><a href="/pages/about.html">About</a><a href="/pages/contact.html">Contact</a></div>
-          </nav>
-        </div>
-        <div class="container footer-bottom-line">
-          <span>© 2026 ChemVault. Research-oriented academic technology initiative.</span>
-          <span>Verify primary literature and safety data before applying chemical information.</span>
-        </div>
-      `;
-      document.body.appendChild(footer);
-      return;
-    }
+    if (document.querySelector(".site-footer")) return;
     const versionLabel = "ChemVault v0.2.4";
     const footer = document.createElement("footer");
     footer.className = "site-footer";
