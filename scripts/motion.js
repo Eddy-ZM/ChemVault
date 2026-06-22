@@ -335,9 +335,12 @@
       return;
     }
 
-    if (!useLoader) {
+    const slowJourney = isSlowConnection() || isSearchWork(url);
+    const preferSoftJourney = reduceMotion.matches || !useLoader || slowJourney;
+
+    if (preferSoftJourney) {
       showSoftNavigation();
-      window.setTimeout(go, 70);
+      window.setTimeout(go, slowJourney ? 130 : 70);
       return;
     }
 
@@ -427,7 +430,8 @@
 
   function isSlowConnection() {
     const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-    if (!connection || connection.saveData) return false;
+    if (!connection) return false;
+    if (connection.saveData) return true;
     return ["slow-2g", "2g", "3g"].includes(connection.effectiveType);
   }
 
@@ -481,7 +485,17 @@
     revealObserver = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (!entry.isIntersecting) return;
-        entry.target.classList.add("is-visible");
+
+        const delay = Number(entry.target.dataset.motionDelayMs || 0);
+        if (!delay) {
+          entry.target.classList.add("is-visible");
+          revealObserver.unobserve(entry.target);
+          return;
+        }
+
+        window.setTimeout(() => {
+          entry.target.classList.add("is-visible");
+        }, delay);
         revealObserver.unobserve(entry.target);
       });
     }, {
@@ -499,26 +513,81 @@
 
   function prepareReveal(root) {
     if (reduceMotion.matches || !revealObserver) return;
-    const nodes = root.querySelectorAll(revealSelector);
+    const nodes = [...root.querySelectorAll(revealSelector)];
     const compact = shouldUseCompactReveal(nodes.length);
-    nodes.forEach((node, index) => {
+    const sectionAnchor = new Map();
+    const sectionCounter = new Map();
+    const stageGap = compact ? 170 : 280;
+    const slotGap = compact ? 18 : 32;
+    const baseDelay = compact ? 48 : 82;
+    const profile = compact ? "compact" : "default";
+    const capDelay = compact ? 680 : 1180;
+
+    nodes.forEach((node) => {
       if (node.dataset.motionBound === "true") return;
       if (node.closest(".page-transition, .startup-welcome")) return;
+      const anchor = node.closest("section, .academic-hero") || node.parentElement || root;
+      let stage = sectionAnchor.get(anchor);
+      let slot = sectionCounter.get(anchor) || 0;
+      if (stage === undefined) {
+        stage = sectionAnchor.size;
+        sectionAnchor.set(anchor, stage);
+      }
+      sectionCounter.set(anchor, slot + 1);
       node.dataset.motionBound = "true";
-      if (compact) node.dataset.motionProfile = "compact";
-      node.style.setProperty("--motion-order", String(compact ? Math.min(index, 4) : index % 6));
+      node.dataset.motionProfile = profile;
+      const delay = Math.min(capDelay, baseDelay + (stage * stageGap) + (slot * slotGap));
+      node.style.setProperty("--motion-order", String(slot));
+      node.style.setProperty("--motion-reveal-delay", `${delay}ms`);
+      node.dataset.motionDelayMs = String(delay);
       revealObserver.observe(node);
     });
+    window.dispatchEvent(new CustomEvent("chemvault-motion-reveal-ready"));
   }
 
   function shouldUseCompactReveal(count) {
+    const current = pageName(new URL(window.location.href));
+    if (current === "index.html" || document.body.classList.contains("academic-home")) return false;
     if (document.body.classList.contains("page-ready")) return true;
-    if (compactRevealPages.has(pageName(new URL(window.location.href)))) return true;
+    if (compactRevealPages.has(current)) return true;
     return count > 44;
   }
 
   function wireRipples() {
     if (reduceMotion.matches) return;
+    const maxRipplePool = 12;
+    const ripplePool = [];
+    const hostedTargets = new WeakSet();
+    const defaultRippleDuration = 640;
+    const minRippleMs = 420;
+    const maxRippleMs = 680;
+
+    const releaseRipple = (ripple) => {
+      if (ripple.parentElement) ripple.parentElement.removeChild(ripple);
+      ripple.classList.remove("is-active");
+      ripple.hidden = true;
+      if (ripplePool.length < maxRipplePool) {
+        ripplePool.push(ripple);
+      } else {
+        ripple.remove();
+      }
+    };
+
+    const acquireRipple = (host) => {
+      const ripple = ripplePool.pop() || document.createElement("span");
+      if (!ripple.dataset.boundRipple) {
+        ripple.className = "motion-ripple";
+        ripple.dataset.boundRipple = "true";
+        ripple.setAttribute("aria-hidden", "true");
+        ripple.addEventListener("animationend", () => {
+          releaseRipple(ripple);
+        });
+      }
+      if (ripple.parentElement !== host) host.appendChild(ripple);
+      ripple.hidden = false;
+      ripple.classList.remove("is-active");
+      return ripple;
+    };
 
     document.addEventListener("pointerdown", (event) => {
       const target = event.target instanceof Element ? event.target : null;
@@ -527,15 +596,23 @@
       if (control instanceof HTMLInputElement || control instanceof HTMLSelectElement || control instanceof HTMLTextAreaElement) return;
 
       const rect = control.getBoundingClientRect();
+      if (!hostedTargets.has(control)) {
+        control.classList.add("is-motion-ripple-host");
+        if (getComputedStyle(control).position === "static") control.style.position = "relative";
+        if (getComputedStyle(control).overflow === "visible") control.style.overflow = "hidden";
+        hostedTargets.add(control);
+      }
       const size = Math.max(rect.width, rect.height) * 1.8;
-      const ripple = document.createElement("span");
-      ripple.className = "motion-ripple";
+      const ripple = acquireRipple(control);
+      ripple.classList.remove("is-active");
       ripple.style.width = `${size}px`;
       ripple.style.height = `${size}px`;
       ripple.style.left = `${event.clientX - rect.left}px`;
       ripple.style.top = `${event.clientY - rect.top}px`;
-      control.appendChild(ripple);
-      window.setTimeout(() => ripple.remove(), 650);
+      const duration = Math.min(maxRippleMs, Math.max(minRippleMs, 520 + Math.sqrt(size) * 10));
+      ripple.style.setProperty("--chemvault-ripple-duration", `${Math.min(defaultRippleDuration, duration)}ms`);
+      void ripple.offsetWidth;
+      ripple.classList.add("is-active");
     });
   }
 })();

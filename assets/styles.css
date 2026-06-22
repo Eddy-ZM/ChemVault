@@ -21,6 +21,11 @@
   --motion-fast: 150ms;
   --motion-medium: 260ms;
   --motion-slow: 520ms;
+  --motion-reveal-duration: 520ms;
+  --motion-reveal-stagger: 24ms;
+  --motion-reveal-enter-y: 12px;
+  --motion-reveal-enter-rotate: 2.2deg;
+  --motion-reveal-compact-duration: 210ms;
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-spring: cubic-bezier(0.2, 0.8, 0.2, 1);
   --font-display: "Aptos", "Avenir Next", "Avenir", "Segoe UI", "PingFang SC", "Noto Sans", sans-serif;
@@ -1077,6 +1082,7 @@ body.startup-welcome-active {
   background: rgba(245, 245, 247, 0.58);
   backdrop-filter: blur(18px) saturate(160%);
   transition: opacity var(--motion-medium) ease, visibility var(--motion-medium) ease;
+  overflow: hidden;
 }
 
 .page-transition.is-active {
@@ -1084,23 +1090,54 @@ body.startup-welcome-active {
   visibility: visible;
 }
 
+.page-transition::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 35% 18%, rgba(0, 113, 227, 0.22), transparent 52%),
+    radial-gradient(circle at 78% 72%, rgba(0, 113, 227, 0.16), transparent 50%);
+  opacity: 0;
+  transition: opacity var(--motion-slow) var(--ease-out);
+}
+
+.page-transition.is-active::before {
+  opacity: 1;
+}
+
 .page-transition__panel {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
   gap: 9px 12px;
   align-items: center;
+  position: relative;
   width: min(340px, calc(100vw - 48px));
   border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: var(--radius);
   background: rgba(255, 255, 255, 0.88);
   box-shadow: 0 22px 56px rgba(0, 0, 0, 0.14);
   padding: 14px;
-  transform: translateY(10px) scale(0.98);
-  transition: transform var(--motion-medium) var(--ease-out);
+  transform: translateY(20px) rotateX(2.2deg) scale(0.97);
+  transition:
+    transform 580ms var(--ease-out),
+    box-shadow 300ms var(--ease-out),
+    opacity 260ms ease;
 }
 
 .page-transition.is-active .page-transition__panel {
-  transform: translateY(0) scale(1);
+  transform: translateY(0) rotateX(0deg) scale(1);
+}
+
+.page-transition__panel::after {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(120deg, transparent 0, rgba(255, 255, 255, 0.5) 48%, transparent 95%);
+  opacity: 0.22;
+  transform: translateX(-130%);
+  animation: chemvault-panel-sheen 1900ms var(--ease-spring) infinite;
+  content: "";
 }
 
 .page-transition__logo {
@@ -1227,32 +1264,53 @@ body.startup-welcome-active {
   z-index: 0;
   border-radius: 50%;
   pointer-events: none;
-  background: rgba(0, 113, 227, 0.16);
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.5), rgba(0, 113, 227, 0.2));
+  opacity: 0;
   transform: translate(-50%, -50%) scale(0);
-  animation: chemvault-ripple 620ms ease-out forwards;
+  animation: none;
+  will-change: transform, opacity;
+}
+
+.motion-ripple.is-active {
+  animation: chemvault-ripple var(--chemvault-ripple-duration, 620ms) cubic-bezier(0.18, 0.82, 0.21, 1) forwards;
+}
+
+.is-motion-ripple-host {
+  position: relative;
+  overflow: hidden;
 }
 
 .motion-available [data-motion-bound="true"] {
   opacity: 0;
-  transform: translateY(var(--motion-enter-y, 10px));
+  transform: translateY(var(--motion-enter-y, var(--motion-reveal-enter-y))) rotateX(var(--motion-enter-rotate, 0deg));
+  filter: blur(8px);
   transition:
-    opacity var(--motion-reveal-duration, 360ms) var(--ease-out),
-    transform var(--motion-reveal-duration, 360ms) var(--ease-out),
+    opacity var(--motion-reveal-duration, var(--motion-slow)) var(--ease-out),
+    transform var(--motion-reveal-duration, var(--motion-slow)) var(--ease-out),
+    filter var(--motion-reveal-duration, var(--motion-slow)) var(--ease-out),
     border-color var(--motion-fast) ease,
     background var(--motion-fast) ease,
     box-shadow var(--motion-fast) ease;
-  transition-delay: calc(var(--motion-order, 0) * var(--motion-reveal-stagger, 18ms));
+  will-change: opacity, transform, filter;
+  transition-delay: var(--motion-reveal-delay, var(--reveal-delay, calc(var(--motion-order, 0) * var(--motion-reveal-stagger, 18ms))));
 }
 
 .motion-available [data-motion-profile="compact"] {
   --motion-enter-y: 5px;
-  --motion-reveal-duration: 220ms;
+  --motion-enter-rotate: 0deg;
+  --motion-reveal-duration: var(--motion-reveal-compact-duration);
   --motion-reveal-stagger: 7ms;
+}
+
+.motion-available [data-motion-profile="default"] {
+  --motion-enter-y: var(--motion-reveal-enter-y);
+  --motion-enter-rotate: var(--motion-reveal-enter-rotate);
 }
 
 .motion-available [data-motion-bound="true"].is-visible {
   opacity: 1;
-  transform: translateY(0);
+  transform: translateY(0) rotateX(0deg);
+  filter: blur(0);
 }
 
 @keyframes chemvault-progress {
@@ -1264,6 +1322,12 @@ body.startup-welcome-active {
   }
   100% {
     transform: scaleX(0.94);
+  }
+}
+
+@keyframes chemvault-panel-sheen {
+  to {
+    transform: translateX(130%);
   }
 }
 
@@ -1314,6 +1378,11 @@ body.startup-welcome-active {
 }
 
 @keyframes chemvault-ripple {
+  0% {
+    opacity: 0.48;
+    transform: translate(-50%, -50%) scale(0);
+  }
+
   100% {
     opacity: 0;
     transform: translate(-50%, -50%) scale(1);

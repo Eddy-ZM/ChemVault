@@ -13,8 +13,8 @@
   --cv-accent: #00a3c7;
   --cv-accent-2: #2563eb;
   --cv-emerald: #0f9f7a;
-  --cv-font-display: "Aptos", "Avenir Next", "Avenir", "Segoe UI", "PingFang SC", "Noto Sans", sans-serif;
-  --cv-font-body: "Aptos", "IBM Plex Sans", "Noto Sans", "Noto Sans SC", "Segoe UI", sans-serif;
+  --cv-font-display: "IBM Plex Sans", "Inter", "Avenir Next", "Segoe UI", "PingFang SC", "Noto Sans", sans-serif;
+  --cv-font-body: "IBM Plex Sans", "Inter", "Noto Sans", "Noto Sans SC", "Segoe UI", sans-serif;
   --cv-font-serif: "Aptos Display", "Times New Roman", Georgia, serif;
   --cv-font-mono: "IBM Plex Mono", "SFMono-Regular", "Consolas", "Liberation Mono", Menlo, monospace;
   --cv-font-sans: var(--cv-font-body);
@@ -251,8 +251,39 @@ body.academic-site .eyebrow {
 }
 
 .hero-instrument {
+  position: relative;
   display: grid;
   gap: 16px;
+}
+
+.hero-instrument::before,
+.hero-instrument::after {
+  content: "";
+  position: absolute;
+  inset: 8px -12px;
+  border-radius: 24px;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  opacity: 0.32;
+}
+
+.hero-instrument::before {
+  background:
+    radial-gradient(circle at 18% 36%, rgba(34, 211, 238, 0.26) 0 1px, transparent 1.4px),
+    radial-gradient(circle at 66% 26%, rgba(16, 185, 129, 0.22) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 74% 80%, rgba(125, 211, 252, 0.24) 0 1px, transparent 1.4px);
+  transform: translateY(0.6rem);
+  animation: cvInstrumentFloat 14s ease-in-out infinite;
+}
+
+.hero-instrument::after {
+  z-index: -1;
+  inset: 34% 10% 20% 10%;
+  background:
+    linear-gradient(120deg, transparent 36%, rgba(125, 211, 252, 0.14) 48%, transparent 64%),
+    radial-gradient(circle at 50% 50%, rgba(14, 165, 233, 0.24), transparent 56%);
+  filter: blur(10px);
+  animation: cvInstrumentScan 11s ease-in-out infinite;
 }
 
 .compound-search-panel,
@@ -938,7 +969,9 @@ body.academic-site .eyebrow {
 
 /* 21st.dev-inspired premium research platform layer */
 .academic-hero {
+  position: relative;
   min-height: 860px;
+  isolation: isolate;
   background:
     linear-gradient(180deg, rgba(2, 6, 23, 0.18) 0%, rgba(2, 6, 23, 0.84) 80%, var(--bg) 100%),
     radial-gradient(circle at 50% 12%, rgba(103, 232, 249, 0.2), transparent 31%),
@@ -948,13 +981,17 @@ body.academic-site .eyebrow {
 }
 
 .academic-hero::before {
-  opacity: 0.35;
+  opacity: 0.45;
   background-image:
     linear-gradient(rgba(148, 163, 184, 0.12) 1px, transparent 1px),
     linear-gradient(90deg, rgba(148, 163, 184, 0.1) 1px, transparent 1px),
+    radial-gradient(circle at 16% 22%, rgba(34, 211, 238, 0.28) 0, rgba(34, 211, 238, 0.28) 1.2px, transparent 1.4px),
+    radial-gradient(circle at 58% 56%, rgba(16, 185, 129, 0.24) 0, rgba(16, 185, 129, 0.24) 1.2px, transparent 1.5px),
+    radial-gradient(circle at 84% 14%, rgba(125, 211, 252, 0.24) 0, rgba(125, 211, 252, 0.24) 1.1px, transparent 1.4px),
     radial-gradient(circle at center, rgba(125, 211, 252, 0.18), transparent 62%);
   background-size: 56px 56px, 56px 56px, 100% 100%;
   mask-image: linear-gradient(to bottom, black, transparent 86%);
+  animation: cvChemGridShift 52s linear infinite;
 }
 
 .academic-hero::after {
@@ -970,16 +1007,43 @@ body.academic-site .eyebrow {
     linear-gradient(135deg, rgba(15, 23, 42, 0.72), rgba(15, 23, 42, 0.05)),
     repeating-linear-gradient(90deg, transparent 0 34px, rgba(125, 211, 252, 0.04) 34px 35px);
   filter: blur(0);
-  opacity: 0.38;
+  opacity: 0.43;
+  background-size: 100% 100%, 28px 28px;
+  box-shadow:
+    inset 0 0 0 1px rgba(125, 211, 252, 0.12),
+    0 48px 130px rgba(2, 6, 23, 0.8);
+  animation: cvPanelFloat 13s ease-in-out infinite, cvPanelGlow 9.6s ease-in-out infinite;
 }
 
 .academic-hero-grid {
+  position: relative;
   grid-template-columns: minmax(0, 0.92fr) minmax(420px, 0.88fr);
   gap: clamp(2.5rem, 6vw, 5rem);
   align-items: center;
 }
 
+.academic-hero-grid::before {
+  content: "";
+  position: absolute;
+  left: -10%;
+  top: -6%;
+  width: 120%;
+  height: 130%;
+  pointer-events: none;
+  border-radius: 34px;
+  background:
+    radial-gradient(circle at 14% 18%, rgba(34, 211, 238, 0.2) 0, rgba(34, 211, 238, 0.2) 1.3px, transparent 1.6px),
+    radial-gradient(circle at 46% 44%, rgba(16, 185, 129, 0.2) 0, rgba(16, 185, 129, 0.2) 1.2px, transparent 1.4px),
+    radial-gradient(circle at 72% 28%, rgba(125, 211, 252, 0.14) 0, rgba(125, 211, 252, 0.14) 1.2px, transparent 1.6px),
+    radial-gradient(circle at 81% 72%, rgba(34, 211, 238, 0.18) 0, rgba(34, 211, 238, 0.18) 1.3px, transparent 1.6px),
+    linear-gradient(120deg, transparent 45%, rgba(125, 211, 252, 0.12) 50%, transparent 56%);
+  mix-blend-mode: screen;
+  opacity: 0.7;
+  animation: cvOrbitNetwork 26s ease-in-out infinite;
+}
+
 .academic-hero-content {
+  position: relative;
   max-width: 760px;
 }
 
@@ -1031,6 +1095,7 @@ body.academic-site .eyebrow {
     radial-gradient(circle at 50% 12%, rgba(34, 211, 238, 0.28), transparent 38%),
     radial-gradient(circle at 78% 70%, rgba(16, 185, 129, 0.16), transparent 34%);
   filter: blur(26px);
+  animation: cvStageAura 13s ease-in-out infinite;
   pointer-events: none;
 }
 
@@ -1039,12 +1104,21 @@ body.academic-site .eyebrow {
   position: relative;
   border: 1px solid rgba(148, 163, 184, 0.18);
   box-shadow: 0 34px 90px rgba(0, 0, 0, 0.38), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  overflow: hidden;
 }
 
 .command-search {
+  isolation: isolate;
   background:
     linear-gradient(180deg, rgba(15, 23, 42, 0.94), rgba(15, 23, 42, 0.78)),
     radial-gradient(circle at 14% 0%, rgba(125, 211, 252, 0.2), transparent 34%);
+}
+
+.command-search::before {
+  background:
+    radial-gradient(circle at 24% 22%, rgba(34, 211, 238, 0.16), transparent 42%),
+    radial-gradient(circle at 78% 62%, rgba(16, 185, 129, 0.14), transparent 44%);
+  mix-blend-mode: screen;
 }
 
 .command-topline,
@@ -1507,7 +1581,7 @@ body.academic-site .eyebrow {
 }
 
 .academic-hero::before {
-  animation: cvGridDrift 22s linear infinite;
+  animation: cvChemGridShift 52s linear infinite;
 }
 
 .academic-hero::after {
@@ -1516,6 +1590,8 @@ body.academic-site .eyebrow {
 
 .academic-hero-content {
   animation: cvHeroText 900ms cubic-bezier(0.2, 0.9, 0.18, 1) both;
+  animation-delay: var(--reveal-delay, 0ms);
+  will-change: opacity, transform;
 }
 
 .academic-hero h1 {
@@ -1528,7 +1604,47 @@ body.academic-site .eyebrow {
 }
 
 .template-stage {
-  animation: cvStageIn 920ms cubic-bezier(0.2, 0.9, 0.18, 1) 120ms both, cvStageFloat 8s ease-in-out 1.1s infinite;
+  animation: cvStageIn 920ms cubic-bezier(0.2, 0.9, 0.18, 1) calc(var(--reveal-delay, 0ms) + 140ms) both, cvStageFloat 8s ease-in-out 1.1s infinite;
+  will-change: transform;
+}
+
+.chem-orbit-shell {
+  position: absolute;
+  inset: 8% 8% 8% 8%;
+  pointer-events: none;
+  z-index: -1;
+  border-radius: 50%;
+}
+
+.chem-orbit-shell span {
+  position: absolute;
+  border-radius: 999px;
+  border: 1px solid rgba(125, 211, 252, 0.26);
+  animation: cvMoleculeOrbit 14s linear infinite;
+  animation-delay: calc(var(--reveal-delay, 0ms) + 640ms);
+}
+
+.chem-orbit-shell span:nth-child(1) {
+  inset: -2% 18% 44% 22%;
+  border-color: rgba(125, 211, 252, 0.38);
+  animation-duration: 19s;
+  animation-delay: calc(var(--reveal-delay, 0ms) + 820ms);
+}
+
+.chem-orbit-shell span:nth-child(2) {
+  inset: 34% 2% 18% 34%;
+  border-color: rgba(34, 211, 238, 0.24);
+  animation-duration: 22s;
+  animation-direction: reverse;
+  animation-delay: calc(var(--reveal-delay, 0ms) + 980ms);
+}
+
+.chem-orbit-shell span:nth-child(3) {
+  inset: 15% 34% 15% 4%;
+  border-color: rgba(16, 185, 129, 0.24);
+  animation-duration: 28s;
+  animation-direction: reverse;
+  animation-delay: calc(var(--reveal-delay, 0ms) + 1120ms);
 }
 
 .template-stage::before,
@@ -1547,6 +1663,7 @@ body.academic-site .eyebrow {
   filter: blur(22px);
   opacity: 0.65;
   animation: cvBeamSpin 14s linear infinite;
+  animation-delay: calc(var(--reveal-delay, 0ms) + 620ms);
 }
 
 .template-stage::after {
@@ -1558,6 +1675,7 @@ body.academic-site .eyebrow {
   mix-blend-mode: screen;
   transform: translateX(-140%);
   animation: cvGlassSweep 6.4s ease-in-out infinite;
+  animation-delay: calc(var(--reveal-delay, 0ms) + 800ms);
 }
 
 .hero-beam-field {
@@ -1578,12 +1696,13 @@ body.academic-site .eyebrow {
   box-shadow: 0 0 22px rgba(34, 211, 238, 0.72);
   opacity: 0;
   animation: cvDataBeam 4.8s linear infinite;
+  animation-delay: calc(var(--reveal-delay, 0ms) + 360ms);
 }
 
-.hero-beam-field span:nth-child(1) { top: 22%; animation-delay: 0s; }
-.hero-beam-field span:nth-child(2) { top: 42%; animation-delay: 1.1s; }
-.hero-beam-field span:nth-child(3) { top: 63%; animation-delay: 2.2s; }
-.hero-beam-field span:nth-child(4) { top: 82%; animation-delay: 3.1s; }
+.hero-beam-field span:nth-child(1) { top: 22%; animation-delay: calc(var(--reveal-delay, 0ms) + 1.2s); }
+.hero-beam-field span:nth-child(2) { top: 42%; animation-delay: calc(var(--reveal-delay, 0ms) + 1.9s); }
+.hero-beam-field span:nth-child(3) { top: 63%; animation-delay: calc(var(--reveal-delay, 0ms) + 2.6s); }
+.hero-beam-field span:nth-child(4) { top: 82%; animation-delay: calc(var(--reveal-delay, 0ms) + 3.3s); }
 
 .command-search,
 .lab-console,
@@ -1647,9 +1766,13 @@ body.academic-site .eyebrow {
   inset: -2px;
   z-index: 0;
   border-radius: inherit;
-  background: conic-gradient(from var(--beam-rotation, 0deg), transparent, rgba(34, 211, 238, 0.46), transparent 32%, rgba(16, 185, 129, 0.26), transparent 58%);
+  background:
+    radial-gradient(circle at 24% 22%, rgba(34, 211, 238, 0.16), transparent 42%),
+    radial-gradient(circle at 78% 62%, rgba(16, 185, 129, 0.14), transparent 44%),
+    conic-gradient(from var(--beam-rotation, 0deg), transparent, rgba(34, 211, 238, 0.46), transparent 32%, rgba(16, 185, 129, 0.26), transparent 58%);
   opacity: 0;
   animation: cvBorderBeam 5.8s linear infinite;
+  animation-delay: calc(var(--reveal-delay, 0ms) + 520ms);
   content: "";
 }
 
@@ -1688,6 +1811,7 @@ body.academic-site .eyebrow {
 
 .lab-console {
   animation: cvConsoleGlow 4.8s ease-in-out infinite alternate;
+  animation-delay: calc(var(--reveal-delay, 0ms) + 340ms);
 }
 
 .lab-console::after {
@@ -1698,21 +1822,25 @@ body.academic-site .eyebrow {
   opacity: 0.38;
   transform: translateY(-100%);
   animation: cvScanline 5.2s ease-in-out infinite;
+  animation-delay: calc(var(--reveal-delay, 0ms) + 980ms);
   content: "";
 }
 
 .pipeline-row i::after {
   animation: cvMeterPulse 2.7s ease-in-out infinite;
+  animation-delay: calc(var(--reveal-delay, 0ms) + 420ms);
 }
 
 .mini-graph-panel line {
   stroke-dasharray: 90;
   stroke-dashoffset: 90;
   animation: cvGraphDraw 4.4s ease-in-out infinite;
+  animation-delay: calc(var(--reveal-delay, 0ms) + 220ms);
 }
 
 .mini-graph-panel circle {
   animation: cvNodePulse 3.4s ease-in-out infinite;
+  animation-delay: calc(var(--reveal-delay, 0ms) + 620ms);
 }
 
 .hero-signal-strip {
@@ -1737,24 +1865,30 @@ body.academic-site .eyebrow {
   animation: cvSignal 2.4s ease-in-out infinite;
 }
 
-.hero-signal-strip span:nth-child(2n) { animation-delay: 0.26s; }
-.hero-signal-strip span:nth-child(3n) { animation-delay: 0.48s; }
+.hero-signal-strip span:nth-child(1) { animation-delay: calc((var(--reveal-delay, 0ms) + 600ms)); }
+.hero-signal-strip span:nth-child(2) { animation-delay: calc((var(--reveal-delay, 0ms) + 760ms)); }
+.hero-signal-strip span:nth-child(3) { animation-delay: calc((var(--reveal-delay, 0ms) + 900ms)); }
+.hero-signal-strip span:nth-child(4) { animation-delay: calc((var(--reveal-delay, 0ms) + 1040ms)); }
+.hero-signal-strip span:nth-child(5) { animation-delay: calc((var(--reveal-delay, 0ms) + 690ms)); }
+.hero-signal-strip span:nth-child(6) { animation-delay: calc((var(--reveal-delay, 0ms) + 860ms)); }
+.hero-signal-strip span:nth-child(7) { animation-delay: calc((var(--reveal-delay, 0ms) + 1020ms)); }
 
 .cv-reveal {
+  --cv-reveal-duration: 700ms;
   opacity: 0;
   filter: blur(12px);
-  transform: translateY(34px) scale(0.985);
+  transform: translateY(34px) rotateX(2.4deg) scale(0.985);
   transition:
-    opacity 760ms cubic-bezier(0.2, 0.9, 0.18, 1),
-    filter 760ms cubic-bezier(0.2, 0.9, 0.18, 1),
-    transform 760ms cubic-bezier(0.2, 0.9, 0.18, 1);
+    opacity var(--cv-reveal-duration) cubic-bezier(0.2, 0.9, 0.18, 1),
+    filter var(--cv-reveal-duration) cubic-bezier(0.2, 0.9, 0.18, 1),
+    transform var(--cv-reveal-duration) cubic-bezier(0.2, 0.9, 0.18, 1);
   transition-delay: var(--reveal-delay, 0ms);
 }
 
 .cv-reveal.is-visible {
   opacity: 1;
   filter: blur(0);
-  transform: translateY(0) scale(1);
+  transform: translateY(0) rotateX(0deg) scale(1);
 }
 
 .module-mosaic,
@@ -1798,9 +1932,71 @@ body.academic-site .eyebrow {
   z-index: 1;
 }
 
-@keyframes cvGridDrift {
-  from { background-position: 0 0, 0 0, center; }
-  to { background-position: 56px 112px, 112px 56px, center; }
+@keyframes cvChemGridShift {
+  0% { background-position: 0 0, 0 0, 0 0; }
+  20% { background-position: 22px 4px, 18px 8px, 10% 18%; }
+  40% { background-position: 11px 24px, -12px 34px, 40% 72%; }
+  60% { background-position: 36px 8px, 8px -18px, 78% 20%; }
+  80% { background-position: 12px 42px, -4px 30px, 45% 58%; }
+  100% { background-position: 56px 112px, 112px 56px, 100% 100%; }
+}
+
+@keyframes cvPanelGlow {
+  0%, 100% { box-shadow: inset 0 0 0 1px rgba(125, 211, 252, 0.12), 0 38px 110px rgba(2, 6, 23, 0.76); }
+  50% { box-shadow: inset 0 0 0 1px rgba(34, 211, 238, 0.22), 0 58px 140px rgba(2, 6, 23, 0.6); }
+}
+
+@keyframes cvOrbitNetwork {
+  0%, 100% {
+    opacity: 0.36;
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 0.7;
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes cvMoleculeOrbit {
+  0% {
+    transform: rotate(0deg);
+    opacity: 0.28;
+  }
+  50% {
+    transform: rotate(180deg);
+    opacity: 0.46;
+  }
+  100% {
+    transform: rotate(360deg);
+    opacity: 0.28;
+  }
+}
+
+@keyframes cvStageAura {
+  0%, 100% {
+    transform: translate3d(0, 0, 0);
+    opacity: 0.44;
+  }
+  50% {
+    transform: translate3d(0, -4%, 0);
+    opacity: 0.68;
+  }
+}
+
+@keyframes cvInstrumentFloat {
+  0%, 100% { transform: translate3d(0, 8px, 0); }
+  48% { transform: translate3d(0, -6px, 0); }
+}
+
+@keyframes cvInstrumentScan {
+  0%, 100% {
+    transform: translateX(-10%);
+    opacity: 0.22;
+  }
+  48% {
+    transform: translateX(8%);
+    opacity: 0.38;
+  }
 }
 
 @keyframes cvPanelFloat {
@@ -1959,7 +2155,9 @@ body.academic-site .eyebrow {
 @media (max-width: 720px) {
   .hero-beam-field,
   .template-stage::after,
-  .hero-signal-strip {
+  .hero-signal-strip,
+  .chem-orbit-shell,
+  .academic-hero-grid::before {
     display: none;
   }
 
@@ -2191,5 +2389,201 @@ body {
 
 /* Keep interactive controls stable: no continuous transform on form parent */
 .template-stage {
-  animation: cvStageIn 920ms cubic-bezier(0.2, 0.9, 0.18, 1) 120ms both !important;
+  animation: cvStageIn 920ms cubic-bezier(0.2, 0.9, 0.18, 1) calc(var(--reveal-delay, 0ms) + 140ms) both,
+    cvStageFloat 8.6s ease-in-out calc(var(--reveal-delay, 0ms) + 1.2s) infinite;
+}
+
+/* Cohesive cinematic orchestration for homepage chemistry scene */
+:root {
+  --cv-orch-stage: 210ms;
+  --cv-orch-slot: 42ms;
+  --cv-orch-enter-duration: 860ms;
+  --cv-orch-float-duration: 9.2s;
+  --cv-orch-scanline-duration: 5.4s;
+  --cv-orch-console-glow-duration: 5s;
+  --cv-orch-graph-duration: 4.6s;
+  --cv-orch-node-duration: 3.8s;
+}
+
+.cv-reveal {
+  --cv-orch-reveal-delay: calc((var(--cv-stage-delay, 0ms) + var(--cv-slot-delay, 0ms)) + 0ms);
+  transition-delay: var(--cv-orch-reveal-delay);
+}
+
+.cv-compact-mode .cv-reveal {
+  --cv-orch-reveal-delay: calc((var(--cv-stage-delay, 0ms) + var(--cv-slot-delay, 0ms)));
+}
+
+.template-stage {
+  animation:
+    cvStageIn var(--cv-orch-enter-duration) cubic-bezier(0.2, 0.9, 0.18, 1) calc(var(--cv-orch-reveal-delay, 0ms) + 130ms) both,
+    cvStageFloat var(--cv-orch-float-duration) ease-in-out calc(var(--cv-orch-reveal-delay, 0ms) + 860ms) infinite;
+}
+
+.chem-orbit-shell {
+  z-index: 0;
+  border: 1px dashed rgba(0, 163, 199, 0.18);
+  box-shadow: inset 0 0 0 1px rgba(125, 211, 252, 0.16), 0 0 0 1px rgba(14, 165, 233, 0.08);
+}
+
+.chem-orbit-shell::before {
+  content: "";
+  position: absolute;
+  width: 9%;
+  aspect-ratio: 1;
+  border-radius: 999px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, rgba(125, 211, 252, 0.95), rgba(14, 165, 233, 0.35) 42%, transparent 70%);
+  animation: cvMoleculePulse 4.2s ease-in-out infinite;
+  animation-delay: calc(var(--cv-orch-reveal-delay, 0ms) + 620ms);
+}
+
+.chem-orbit-shell::after {
+  content: "";
+  position: absolute;
+  inset: 16%;
+  border-radius: 50%;
+  border: 1px dashed rgba(125, 211, 252, 0.2);
+  pointer-events: none;
+  animation: cvMoleculePulse 5.6s ease-in-out infinite;
+  animation-delay: calc(var(--cv-orch-reveal-delay, 0ms) + 1.05s);
+}
+
+.chem-orbit-shell span {
+  animation: cvMoleculeOrbit 18s linear infinite;
+  animation-delay: calc(var(--cv-orch-reveal-delay, 0ms) + 420ms);
+}
+
+.chem-orbit-shell span:nth-child(1) {
+  animation-duration: 19.5s;
+  animation-delay: calc(var(--cv-orch-reveal-delay, 0ms) + 560ms);
+}
+
+.chem-orbit-shell span:nth-child(2) {
+  animation-duration: 22.5s;
+  animation-direction: reverse;
+  animation-delay: calc(var(--cv-orch-reveal-delay, 0ms) + 700ms);
+}
+
+.chem-orbit-shell span:nth-child(3) {
+  animation-duration: 26.5s;
+  animation-direction: reverse;
+  animation-delay: calc(var(--cv-orch-reveal-delay, 0ms) + 820ms);
+}
+
+.chem-orbit-shell span::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, rgba(125, 211, 252, 0.92), rgba(125, 211, 252, 0) 70%);
+  box-shadow: 0 0 0 4px rgba(125, 211, 252, 0.14);
+}
+
+.template-stage::before {
+  animation: cvBeamSpin 13s linear infinite;
+  animation-delay: calc(var(--cv-orch-reveal-delay, 0ms) + 520ms);
+}
+
+.template-stage::after {
+  animation: cvGlassSweep 6.8s ease-in-out infinite;
+  animation-delay: calc(var(--cv-orch-reveal-delay, 0ms) + 720ms);
+}
+
+.hero-beam-field span {
+  --cv-beam-offset: 0ms;
+  animation: cvDataBeam 4.6s linear infinite;
+  animation-delay: calc(var(--cv-orch-reveal-delay, 0ms) + 360ms + var(--cv-beam-offset));
+}
+
+.hero-beam-field span:nth-child(1) { --cv-beam-offset: 140ms; }
+.hero-beam-field span:nth-child(2) { --cv-beam-offset: 360ms; }
+.hero-beam-field span:nth-child(3) { --cv-beam-offset: 580ms; }
+.hero-beam-field span:nth-child(4) { --cv-beam-offset: 800ms; }
+
+.command-search::before {
+  animation: cvBorderBeam 6s linear infinite;
+  animation-delay: calc(var(--cv-orch-reveal-delay, 0ms) + 560ms);
+}
+
+.lab-console {
+  animation:
+    cvConsoleGlow var(--cv-orch-console-glow-duration) ease-in-out infinite alternate,
+    cvConsoleGlow 6s ease-in-out infinite alternate;
+  animation-delay: calc(var(--cv-orch-reveal-delay, 0ms) + 340ms);
+}
+
+.lab-console::after {
+  animation: cvScanline var(--cv-orch-scanline-duration) ease-in-out infinite;
+  animation-delay: calc(var(--cv-orch-reveal-delay, 0ms) + 980ms);
+}
+
+.pipeline-row i::after {
+  animation: cvMeterPulse 2.9s ease-in-out infinite;
+  animation-delay: calc(var(--cv-orch-reveal-delay, 0ms) + 420ms);
+}
+
+.mini-graph-panel line {
+  animation: cvGraphDraw var(--cv-orch-graph-duration) ease-in-out infinite;
+  animation-delay: calc(var(--cv-orch-reveal-delay, 0ms) + 220ms);
+}
+
+.mini-graph-panel circle {
+  animation: cvNodePulse var(--cv-orch-node-duration) ease-in-out infinite;
+  animation-delay: calc(var(--cv-orch-reveal-delay, 0ms) + 520ms);
+}
+
+.hero-signal-strip span {
+  --cv-signal-offset: 0ms;
+  animation: cvSignal 2.5s cubic-bezier(0.24, 0.8, 0.38, 1) infinite;
+  animation-delay: calc(var(--cv-orch-reveal-delay, 0ms) + 620ms + var(--cv-signal-offset));
+}
+
+.hero-signal-strip span:nth-child(1) { --cv-signal-offset: 0ms; }
+.hero-signal-strip span:nth-child(2) { --cv-signal-offset: 84ms; }
+.hero-signal-strip span:nth-child(3) { --cv-signal-offset: 168ms; }
+.hero-signal-strip span:nth-child(4) { --cv-signal-offset: 252ms; }
+.hero-signal-strip span:nth-child(5) { --cv-signal-offset: 336ms; }
+.hero-signal-strip span:nth-child(6) { --cv-signal-offset: 420ms; }
+.hero-signal-strip span:nth-child(7) { --cv-signal-offset: 504ms; }
+
+.chem-orbit-shell,
+.hero-beam-field,
+.hero-signal-strip {
+  opacity: 0.95;
+  filter: saturate(1.08);
+}
+
+html.cv-throttle-mode .template-stage {
+  animation:
+    cvStageIn 700ms cubic-bezier(0.2, 0.9, 0.18, 1) calc(var(--cv-orch-reveal-delay, 0ms) + 90ms) both,
+    cvStageFloat 7s ease-in-out calc(var(--cv-orch-reveal-delay, 0ms) + 500ms) infinite;
+}
+
+html.cv-throttle-mode .hero-beam-field span,
+html.cv-throttle-mode .hero-signal-strip span,
+html.cv-throttle-mode .lab-console::after,
+html.cv-throttle-mode .pipeline-row i::after,
+html.cv-throttle-mode .mini-graph-panel line,
+html.cv-throttle-mode .mini-graph-panel circle {
+  animation-duration: 6s;
+}
+
+@keyframes cvMoleculePulse {
+  0%, 100% {
+    opacity: 0.72;
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(125, 211, 252, 0.12);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.06);
+    box-shadow: 0 0 20px 2px rgba(125, 211, 252, 0.2);
+  }
 }
