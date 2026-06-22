@@ -2671,3 +2671,99 @@ html.cv-throttle-mode .mini-graph-panel circle {
     box-shadow: 0 0 20px 2px rgba(125, 211, 252, 0.2);
   }
 }
+
+/* Final readability guard for academic pages outside Search. */
+body.academic-site.academic-page {
+  background: var(--cv-paper) !important;
+  color: var(--cv-ink);
+}
+
+body.academic-site.academic-page main {
+  background: var(--cv-paper) !important;
+  color: var(--cv-ink);
+}
+
+body.academic-site.academic-page :where(
+  .academic-page-hero,
+  .academic-section,
+  .academic-band
+) {
+  background: var(--cv-paper) !important;
+  color: var(--cv-ink);
+}
+
+body.academic-site.academic-page :where(.academic-section:nth-of-type(even)) {
+  background: var(--cv-paper-2) !important;
+}
+
+body.academic-site.academic-page :where(
+  .page-index-panel,
+  .academic-panel,
+  .note-panel,
+  .research-direction,
+  .feature-card,
+  .research-area-card,
+  .platform-capability-card,
+  .project-card,
+  .academic-note-card,
+  .contact-card,
+  .roadmap-item,
+  .project-ledger,
+  .project-ledger-row,
+  .module-tile
+) {
+  background: var(--cv-panel) !important;
+  border-color: var(--cv-border);
+  color: var(--cv-ink);
+}
+
+body.academic-site.academic-page :where(
+  .academic-page-hero h1,
+  .section-header h2,
+  .feature-card h3,
+  .research-area-card h3,
+  .platform-capability-card h3,
+  .project-card h3,
+  .academic-note-card h3,
+  .contact-card h3,
+  .roadmap-item h3,
+  .research-direction h2,
+  .page-index-panel strong,
+  .project-ledger-row h3,
+  .module-tile h3
+) {
+  color: var(--cv-ink) !important;
+}
+
+body.academic-site.academic-page :where(
+  .academic-page-hero p,
+  .section-header p,
+  .text-column p,
+  .feature-card p,
+  .research-area-card p,
+  .platform-capability-card p,
+  .project-card p,
+  .academic-note-card p,
+  .contact-card p,
+  .roadmap-item p,
+  .research-direction p,
+  .page-index-panel a,
+  .page-index-panel span,
+  .academic-note-card time,
+  .project-ledger-row p,
+  .module-tile p
+) {
+  color: var(--cv-muted) !important;
+}
+
+body.academic-site.academic-page :where(
+  .tag-list span,
+  .capability-meta span,
+  .project-meta span,
+  .note-meta span,
+  .project-stack code
+) {
+  background: var(--cv-paper) !important;
+  color: var(--cv-ink) !important;
+  border-color: var(--cv-border);
+}

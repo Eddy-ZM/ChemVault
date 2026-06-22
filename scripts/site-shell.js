@@ -298,7 +298,7 @@
                 <div class="footer-social-row" aria-label="Quick footer actions">
                   <a class="footer-social" href="/pages/search.html" aria-label="Search ChemVault">Compound Search</a>
                   <a class="footer-social" href="/pages/platform.html" aria-label="Open platform">Platform</a>
-                  <a class="footer-social" href="/data/public-record-index.json" aria-label="Open public record index">Public Data</a>
+                  <a class="footer-social" href="/pages/public-data.html" aria-label="Open public data overview">Public Data</a>
                 </div>
               </div>
               <div class="footer-link-groups">
@@ -325,8 +325,8 @@
                   <a href="/pages/methods.html">Methods</a>
                   <a href="/pages/spectroscopy.html">Spectroscopy</a>
                   <a href="/pages/dossiers.html">Dossiers</a>
-                  <a href="/data/public-record-index.json">Public data</a>
-                  <a href="/sitemap.xml">Sitemap</a>
+                  <a href="/pages/public-data.html">Public data</a>
+                  <a href="/pages/sitemap.html">Sitemap</a>
                 </div>
                 <div class="footer-column footer-reveal" style="--footer-delay: 360ms">
                   <span class="footer-heading">Contact</span>

@@ -40,6 +40,8 @@ const staticUrls = [
   { path: "/pages/library.html", priority: "0.7", changefreq: "monthly" },
   { path: "/pages/team.html", priority: "0.5", changefreq: "monthly" },
   { path: "/pages/developer.html", priority: "0.5", changefreq: "monthly" },
+  { path: "/pages/public-data.html", priority: "0.6", changefreq: "weekly" },
+  { path: "/pages/sitemap.html", priority: "0.5", changefreq: "monthly" },
   { path: "/data/public-record-index.json", priority: "0.6", changefreq: "weekly" }
 ];
 

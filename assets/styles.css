@@ -3688,3 +3688,91 @@ html.dark-mode body .theme-toggle:focus-visible {
   border-color: rgba(191, 219, 254, 0.68);
   background: linear-gradient(135deg, #16243c, #355987);
 }
+
+/* Final readability guard for every non-search shell page. */
+body.page-shell:not([data-boot-label="Search"]) {
+  background: var(--bg);
+  color: var(--text);
+}
+
+body.page-shell:not([data-boot-label="Search"]) main {
+  background: var(--bg);
+  color: var(--text);
+}
+
+body.page-shell:not([data-boot-label="Search"]) :where(
+  .page-hero,
+  .section,
+  .section-tint
+) {
+  background-color: var(--bg);
+  color: var(--text);
+}
+
+body.page-shell:not([data-boot-label="Search"]) :where(
+  .page-panel,
+  .page-index-card,
+  .portal-card,
+  .data-window,
+  .source-browser-card,
+  .route-network article,
+  .local-result-card,
+  .external-source-card,
+  .fallback-source-card,
+  .workbench-command-card,
+  .workbench-detail-card,
+  .route-card,
+  .mechanism-audit-card,
+  .material-interface-card,
+  .related-record-card,
+  .record-panel,
+  .record-trust-card
+) {
+  background: var(--surface);
+  border-color: var(--line);
+  color: var(--text);
+}
+
+body.page-shell:not([data-boot-label="Search"]) :where(
+  .page-hero h1,
+  .page-panel h1,
+  .page-panel h2,
+  .page-panel h3,
+  .page-index-card strong,
+  .portal-card strong,
+  .data-window h2,
+  .data-window h3,
+  .source-browser-card h2,
+  .source-browser-card h3,
+  .local-result-card strong,
+  .external-source-card strong,
+  .fallback-source-card strong,
+  .workbench-topline h2,
+  .route-card h3,
+  .mechanism-audit-card h3,
+  .material-interface-card h3,
+  .evidence-item h3,
+  .selected-record h3,
+  .related-record-card h3,
+  .record-panel h2
+) {
+  color: var(--text);
+}
+
+body.page-shell:not([data-boot-label="Search"]) :where(
+  .page-hero p,
+  .page-index-card ol,
+  .portal-card p,
+  .data-window p,
+  .source-browser-card p,
+  .route-card p,
+  .mechanism-audit-card p,
+  .material-interface-card p,
+  .evidence-item p,
+  .selected-record p,
+  .related-record-card p,
+  .record-panel p,
+  .record-trust-card p
+) {
+  color: var(--muted);
+}

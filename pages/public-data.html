@@ -3,19 +3,18 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ChemVault | React Framework App</title>
-  <meta name="description" content="ChemVault React application with JSON-driven chemistry data, dynamic search, componentized Research Desk, Dossier System, reaction workbench and panel UI." />
+  <title>Public Data | ChemVault</title>
+  <meta name="description" content="Human-readable overview of ChemVault public data resources, including the public record index for chemistry search and academic references." />
   <meta name="theme-color" content="#f5f5f7" />
   <script src="/scripts/boot.js?v=20260618c"></script>
+  <link rel="canonical" href="https://chemvault.science/pages/public-data.html" />
+  <link rel="alternate" type="application/json" title="ChemVault public record index" href="/data/public-record-index.json" />
   <link rel="icon" href="/favicon.ico" sizes="any" />
   <link rel="icon" href="/assets/chemvault-icon-192.png" type="image/png" sizes="192x192" />
   <link rel="apple-touch-icon" href="/assets/chemvault-apple-touch-icon.png" />
   <link rel="manifest" href="/site.webmanifest" />
   <link rel="stylesheet" href="../assets/styles.css?v=20260622b" />
   <link rel="stylesheet" href="../assets/portal.css?v=20260619c" />
-  <link rel="stylesheet" href="../assets/framework-app.css?v=20260603a" />
-  <script src="../assets/vendor/react/react.production.min.js?v=20260603a" defer></script>
-  <script src="../assets/vendor/react/react-dom.production.min.js?v=20260603a" defer></script>
   <script src="../data/chem-data.js?v=20260603a" defer></script>
   <script src="../data/reagent-extension.js?v=20260603a" defer></script>
   <script src="../data/research-data.js?v=20260603a" defer></script>
@@ -32,15 +31,8 @@
   <script src="../scripts/api.js?v=20260603a" defer></script>
   <script src="../scripts/motion.js?v=20260618c" defer></script>
   <script src="../scripts/site-shell.js?v=20260624a" defer></script>
-  <script src="../scripts/react/panel-ui.js?v=20260603a" defer></script>
-  <script src="../scripts/react/research-desk.js?v=20260603a" defer></script>
-  <script src="../scripts/react/dossier-system.js?v=20260603a" defer></script>
-  <script src="../scripts/react/reaction-workbench.js?v=20260603a" defer></script>
-  <script src="../scripts/react/molecule-explorer.js?v=20260603a" defer></script>
-  <script src="../scripts/react/panel-showcase.js?v=20260603a" defer></script>
-  <script src="../scripts/react/framework-app.js?v=20260603a" defer></script>
 </head>
-<body class="page-shell" data-boot-label="App">
+<body class="page-shell" data-boot-label="Public Data">
   <a class="skip-link" href="#main">Skip to content</a>
   <header class="site-header">
     <div class="container nav-shell">
@@ -74,29 +66,71 @@
   </header>
 
   <main id="main">
-    <section class="page-hero framework-hero">
+    <section class="page-hero">
       <div class="container page-hero-grid">
         <div>
-          <p class="eyebrow">React · JSON data layer · component architecture</p>
-          <h1>Framework App</h1>
-          <p>A componentized ChemVault interface that dynamically reads JSON chemistry data and renders Research Desk, Dossier System, Reaction Matrix, Molecule Explorer and reusable Panel UI modules.</p>
+          <p class="eyebrow">machine-readable resources</p>
+          <h1>Public Data</h1>
+          <p>ChemVault publishes a structured public record index for compound search, chemistry records, methods, materials, dossiers and research-oriented navigation.</p>
         </div>
         <aside class="page-index-card">
-          <strong>Upgrade checklist</strong>
+          <strong>Data access</strong>
           <ol>
-            <li>React framework runtime hosted locally</li>
-            <li>JSON-driven chemistry records</li>
-            <li>Dynamic search and filtering</li>
-            <li>Independent component files</li>
+            <li>Human-readable overview</li>
+            <li>Structured JSON index</li>
+            <li>Search and record URLs</li>
           </ol>
         </aside>
       </div>
     </section>
 
-    <section class="section framework-section">
-      <div id="frameworkApp" class="container framework-app"></div>
+    <section class="section">
+      <div class="container">
+        <div class="portal-grid">
+          <a class="portal-card portal-card-featured" href="/data/public-record-index.json" download>
+            <span>json export</span>
+            <strong>Download public record index</strong>
+            <p>Machine-readable ChemVault records for search, metadata inspection and external indexing workflows.</p>
+            <em>Download JSON</em>
+          </a>
+          <a class="portal-card" href="search.html">
+            <span>human search</span>
+            <strong>Open compound search</strong>
+            <p>Use the public data through the ChemVault search interface instead of reading raw JSON in the browser.</p>
+            <em>Search records</em>
+          </a>
+          <a class="portal-card" href="library.html">
+            <span>reference layer</span>
+            <strong>Browse library</strong>
+            <p>Review concepts, source families and public knowledge records through a readable portal view.</p>
+            <em>Open library</em>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-tint">
+      <div class="container">
+        <div class="detail-grid">
+          <article class="page-panel">
+            <h2>What the index contains</h2>
+            <div class="micro-table">
+              <div class="micro-row"><span>Records</span><strong>Compounds, reagents, materials, methods, spectra, dossiers and research cases</strong></div>
+              <div class="micro-row"><span>Metadata</span><strong>Titles, summaries, tags, domains, maturity and canonical URLs</strong></div>
+              <div class="micro-row"><span>Use</span><strong>Search, citation-aware navigation, local indexing and public data inspection</strong></div>
+            </div>
+          </article>
+          <article class="page-panel">
+            <h2>Recommended entry points</h2>
+            <div class="portal-grid">
+              <a class="portal-card" href="search.html"><span>search</span><strong>Compound Search</strong><p>Use names, formulas, identifiers or research terms.</p></a>
+              <a class="portal-card" href="workbench.html"><span>workspace</span><strong>Research Workbench</strong><p>Inspect linked records and evidence surfaces.</p></a>
+            </div>
+          </article>
+        </div>
+      </div>
     </section>
   </main>
-    <script src="/scripts/visual-effects.js" defer></script>
-  </body>
+  <script src="/scripts/visual-effects.js" defer></script>
+</body>
 </html>
