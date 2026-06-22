@@ -1,0 +1,103 @@
+<style>
+  .native-layout { display:grid; gap:22px; }
+  .device-pair { display:grid; gap:22px; align-items:start; }
+  .device-label { margin:0 0 8px; color:#4b6280; font-size:12px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; }
+  .phone { width:min(100%, 330px); margin:auto; overflow:hidden; border:7px solid #102238; border-radius:31px; background:#f7f9fc; box-shadow:0 22px 45px rgba(12,31,56,.22); }
+  .notch { width:94px; height:20px; margin:auto; border-radius:0 0 14px 14px; background:#102238; }
+  .app-top { display:flex; align-items:center; justify-content:space-between; padding:15px 16px 12px; }
+  .brand { display:flex; align-items:center; gap:8px; color:#133f69; font-size:14px; font-weight:850; }
+  .brand b { display:grid; place-items:center; width:25px; height:25px; border-radius:8px; background:#0875ce; color:#fff; }
+  .avatar { display:grid; place-items:center; width:27px; height:27px; border:1px solid #d7e2ee; border-radius:50%; color:#1b6cad; background:#fff; }
+  .phone-content { padding:0 16px 15px; }
+  .greeting { margin:12px 0 14px; }
+  .greeting small { color:#5d7898; font-size:10px; font-weight:750; letter-spacing:.08em; text-transform:uppercase; }
+  .greeting h3 { margin:4px 0 0; color:#152e4a; font-size:23px; line-height:1.05; }
+  .searchbox { display:flex; align-items:center; gap:8px; border:1px solid #cedce9; border-radius:13px; padding:11px; color:#71829a; background:#fff; font-size:11px; }
+  .spotlight { margin-top:13px; border-radius:16px; padding:14px; color:#fff; background:linear-gradient(135deg,#0b365e,#0b78cf); }
+  .spotlight small { opacity:.7; font-size:9px; font-weight:800; letter-spacing:.09em; text-transform:uppercase; }
+  .spotlight h4 { margin:7px 0 5px; font-size:16px; }
+  .spotlight p { margin:0; font-size:10px; line-height:1.45; opacity:.88; }
+  .quick-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:8px; margin-top:12px; }
+  .quick { min-height:63px; border:1px solid #dbe4ee; border-radius:13px; padding:10px; background:#fff; color:#1e3b5a; font-size:11px; font-weight:780; }
+  .quick span { display:block; margin-top:5px; color:#71839a; font-size:9px; font-weight:600; }
+  .bottom-tabs { display:grid; grid-template-columns:repeat(4,1fr); gap:3px; border-top:1px solid #dce6f0; padding:10px 6px; background:#fff; color:#7890a8; text-align:center; font-size:9px; }
+  .bottom-tabs b { color:#0875ce; }
+  .desktop { overflow:hidden; border:1px solid #c8d6e5; border-radius:18px; background:#f7f9fc; box-shadow:0 18px 38px rgba(12,31,56,.14); }
+  .desktop-bar { display:flex; align-items:center; gap:7px; padding:11px 14px; border-bottom:1px solid #d8e2ed; background:#fff; }
+  .dot { width:8px; height:8px; border-radius:50%; background:#ef675c; box-shadow:13px 0 #f4bd4f,26px 0 #55be77; }
+  .desktop-body { display:grid; grid-template-columns:142px 1fr; min-height:290px; }
+  .sidebar { padding:17px 11px; color:#cbd9e8; background:#102a43; font-size:11px; }
+  .sidebar .side-brand { display:flex; align-items:center; gap:7px; margin-bottom:21px; color:#fff; font-weight:850; }
+  .side-item { margin:5px 0; border-radius:8px; padding:8px; }
+  .side-item.active { background:#0b71c4; color:#fff; }
+  .sidebar small { display:block; margin:17px 8px 6px; color:#85a4c3; font-size:9px; font-weight:750; letter-spacing:.08em; text-transform:uppercase; }
+  .desktop-main { padding:20px; }
+  .main-header { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; }
+  .main-header h3 { margin:3px 0; color:#152e4a; font-size:21px; }
+  .online { border-radius:999px; padding:6px 8px; color:#14703f; background:#e7f8ee; font-size:9px; font-weight:800; }
+  .desktop-search { margin-top:13px; border:1px solid #d3deea; border-radius:11px; padding:10px; color:#8494a8; background:#fff; font-size:11px; }
+  .record-grid { display:grid; grid-template-columns:1.2fr .8fr; gap:11px; margin-top:11px; }
+  .record-card { border:1px solid #dbe5ef; border-radius:13px; padding:13px; background:#fff; }
+  .record-card small { color:#6684a3; font-size:9px; font-weight:800; letter-spacing:.07em; text-transform:uppercase; }
+  .record-card h4 { margin:6px 0 5px; color:#1d3958; font-size:15px; }
+  .record-card p { margin:0; color:#718095; font-size:10px; line-height:1.45; }
+  .tag { display:inline-block; margin-top:9px; border-radius:999px; padding:4px 6px; color:#0872c8; background:#e8f4ff; font-size:9px; font-weight:800; }
+  .detail { display:grid; grid-template-columns:1fr .9fr; gap:16px; border-top:1px solid #d6e2ed; padding-top:18px; }
+  .detail-card { border:1px solid #dbe5ef; border-radius:15px; padding:14px; background:#fff; }
+  .detail-card h4 { margin:0 0 6px; color:#1b395a; font-size:15px; }
+  .detail-card p { margin:0; color:#6c7c91; font-size:11px; line-height:1.45; }
+  .design-notes { padding:18px; border:1px solid #cfe0ef; border-radius:17px; background:#f1f7fd; }
+  .design-notes h3 { margin:0 0 8px; color:#163d66; }
+  .design-notes ul { margin:0; padding-left:20px; color:#49627c; font-size:14px; line-height:1.65; }
+  @media (min-width: 900px) { .device-pair { grid-template-columns:.8fr 1.4fr; } }
+</style>
+
+<h2>ChemVault Native v1 · 研究工作台</h2>
+<p class="subtitle">一个自适应 SwiftUI 界面：iPhone 强调快速开始，iPad 和 Mac 提供高密度资料浏览。</p>
+
+<div class="native-layout">
+  <div class="device-pair">
+    <section>
+      <p class="device-label">iPhone · Library 首页</p>
+      <div class="phone">
+        <div class="notch"></div>
+        <div class="app-top"><span class="brand"><b>◇</b> ChemVault</span><span class="avatar">⌁</span></div>
+        <div class="phone-content">
+          <div class="greeting"><small>Research workspace</small><h3>从一个问题开始。</h3></div>
+          <div class="searchbox">⌕　搜索化合物、材料、方法或证据</div>
+          <div class="spotlight"><small>Continue exploring</small><h4>Carbonyl reduction</h4><p>浏览条件、反应物和可验证的参考记录。</p></div>
+          <div class="quick-grid"><div class="quick">Reagents<span>反应试剂与安全信息</span></div><div class="quick">Materials<span>材料图谱与性质</span></div><div class="quick">Methods<span>方法与证据链</span></div><div class="quick">Workspace<span>研究路线与笔记</span></div></div>
+        </div>
+        <div class="bottom-tabs"><b>Library</b><span>Explore</span><span>Workspace</span><span>Saved</span></div>
+      </div>
+    </section>
+
+    <section>
+      <p class="device-label">iPad / Mac · Library + Detail</p>
+      <div class="desktop">
+        <div class="desktop-bar"><span class="dot"></span><span style="margin-left:28px;color:#56708b;font-size:11px;font-weight:750">ChemVault</span></div>
+        <div class="desktop-body">
+          <aside class="sidebar"><div class="side-brand">◇ ChemVault</div><div class="side-item active">Library</div><div class="side-item">Explore</div><div class="side-item">Workspace</div><div class="side-item">Saved</div><small>Collection</small><div class="side-item">Recent</div><div class="side-item">Materials</div></aside>
+          <main class="desktop-main"><div class="main-header"><div><small style="color:#6484a5;font-weight:800;letter-spacing:.08em;text-transform:uppercase">Library</small><h3>Explore chemistry records</h3></div><span class="online">● API online</span></div><div class="desktop-search">⌕　Search local and academic records</div><div class="record-grid"><div class="record-card"><small>Material</small><h4>Graphene oxide</h4><p>Surface chemistry, processing context and characterization evidence.</p><span class="tag">Open record</span></div><div class="record-card"><small>Method</small><h4>Claim audit</h4><p>Separate observation, interpretation and unsupported claim.</p><span class="tag">Review</span></div></div></main>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="detail">
+    <div class="detail-card"><h4>原生记录详情</h4><p>大标题、类型、标签、摘要、安全提示、来源链接和“加入收藏”。外部网页只作为原始来源链接打开，不承担核心界面。</p></div>
+    <div class="detail-card"><h4>在线状态与容错</h4><p>显示 API online / unavailable；失败时保留最近成功结果和收藏，不静默回退为网页。</p></div>
+  </div>
+
+  <div class="design-notes" data-choice="approve-native-v1" onclick="toggleSelect(this)">
+    <h3>确认的设计边界</h3>
+    <ul>
+      <li>Library：搜索、筛选、分页和详情。</li>
+      <li>Explore：按 Reagents、Materials、Methods、Mechanisms 等分类浏览。</li>
+      <li>Workspace：研究入口与继续阅读，第一版不引入复杂编辑器。</li>
+      <li>Saved：仅本机收藏；数据访问统一经 API Repository，后续可替换为云同步。</li>
+    </ul>
+  </div>
+</div>
+
+<p class="subtitle" style="margin-top:20px">点击“确认的设计边界”并回复“确认”，或指出要调整的部分。</p>

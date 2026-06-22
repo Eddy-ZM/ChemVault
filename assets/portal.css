@@ -2171,6 +2171,14 @@ body.light-mode {
   gap: 14px;
 }
 
+.page-shell .search-result-tabs {
+  margin-bottom: 6px;
+}
+
+.page-shell .search-output-grid .workbench-tab-panel {
+  margin: 0;
+}
+
 .page-shell .local-results-panel {
   overflow: hidden;
   padding: 0;

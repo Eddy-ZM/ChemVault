@@ -1,0 +1,78 @@
+<style>
+  .chem-options { display: grid; gap: 18px; }
+  .chem-card { overflow: hidden; border: 1px solid #d9e0ea; border-radius: 18px; background: #fff; cursor: pointer; transition: transform .18s ease, box-shadow .18s ease; }
+  .chem-card:hover { transform: translateY(-2px); box-shadow: 0 16px 30px rgba(15, 45, 78, .12); }
+  .chem-preview { min-height: 220px; padding: 16px; color: #172535; background: linear-gradient(145deg, #f7faff, #edf3fa); }
+  .bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; font-size: 12px; font-weight: 750; }
+  .mark { display: inline-flex; align-items: center; gap: 7px; color: #0a5ea8; }
+  .mark b { display: grid; place-items: center; width: 22px; height: 22px; border-radius: 7px; background: #0a70c7; color: #fff; }
+  .search { border: 1px solid #d6deea; border-radius: 12px; padding: 10px 12px; background: #fff; color: #728094; font-size: 12px; }
+  .hero { margin-top: 12px; border-radius: 15px; padding: 15px; background: linear-gradient(135deg, #0b345d, #0d70bf); color: #fff; }
+  .hero small, .eyebrow { opacity: .72; font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+  .hero h4 { margin: 7px 0 5px; font-size: 19px; }
+  .hero p { margin: 0; font-size: 11px; opacity: .82; }
+  .tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
+  .tile { min-height: 58px; border: 1px solid #dbe5ef; border-radius: 11px; padding: 9px; background: #fff; font-size: 10px; font-weight: 720; }
+  .tile span { display: block; margin-top: 5px; color: #6c7c91; font-weight: 500; }
+  .tabs { display: flex; justify-content: space-around; margin: 14px -16px -16px; padding: 10px 8px; border-top: 1px solid #dde5ee; background: rgba(255, 255, 255, .96); color: #6c7c91; font-size: 10px; }
+  .tabs b { color: #0a70c7; }
+  .split-preview { display: grid; grid-template-columns: 84px 1fr; min-height: 220px; margin: -16px; background: #fff; }
+  .side { padding: 15px 10px; color: #dbeaff; background: #102a43; font-size: 10px; }
+  .side strong { display: block; margin-bottom: 20px; color: #fff; }
+  .side div { margin: 13px 0; opacity: .8; }
+  .side div.active { border-radius: 7px; padding: 7px; margin-left: -7px; background: #146eb7; color: #fff; opacity: 1; }
+  .detail { padding: 16px; }
+  .detail-head { display: flex; justify-content: space-between; align-items: center; }
+  .detail h4 { margin: 7px 0 2px; font-size: 18px; }
+  .list { display: grid; gap: 7px; margin-top: 13px; }
+  .row { display: flex; justify-content: space-between; align-items: center; padding: 10px; border: 1px solid #e0e7ef; border-radius: 10px; font-size: 10px; }
+  .row i { color: #0a70c7; font-style: normal; }
+  .browser-preview { min-height: 220px; padding: 13px; background: #f7f8fb; }
+  .browser-nav { display: flex; gap: 6px; overflow: hidden; padding-bottom: 12px; }
+  .browser-chip { flex: 0 0 auto; border-radius: 999px; padding: 7px 10px; background: #e6ebf2; color: #44546a; font-size: 10px; font-weight: 700; }
+  .browser-chip.active { background: #0a70c7; color: #fff; }
+  .record { margin-top: 9px; border: 1px solid #e0e5ec; border-radius: 12px; padding: 12px; background: #fff; }
+  .record strong { font-size: 13px; }
+  .record p { margin: 5px 0 0; color: #718095; font-size: 10px; }
+  .record .tag { display: inline-block; margin-top: 8px; border-radius: 999px; padding: 4px 7px; background: #eaf5ff; color: #0870c4; font-size: 9px; font-weight: 700; }
+  .chem-copy { padding: 15px 17px 17px; }
+  .chem-copy h3 { margin: 0 0 5px; font-size: 17px; }
+  .chem-copy p { margin: 0; color: #617087; font-size: 14px; line-height: 1.5; }
+  @media (min-width: 900px) { .chem-options { grid-template-columns: repeat(3, 1fr); } }
+</style>
+
+<h2>选择 ChemVault 的主导航布局</h2>
+<p class="subtitle">三个方案都使用原生 SwiftUI；推荐 A，因为它能在 iPhone 上保持聚焦，同时自然扩展到 iPad 和 Mac。</p>
+
+<div class="chem-options">
+  <article class="chem-card" data-choice="research-workspace" onclick="toggleSelect(this)">
+    <div class="chem-preview">
+      <div class="bar"><span class="mark"><b>◇</b> ChemVault</span><span>●</span></div>
+      <div class="search">⌕ 搜索化合物、方法和证据</div>
+      <div class="hero"><small>Research workspace</small><h4>今天想研究什么？</h4><p>从资料库、实验路线或结构证据开始。</p></div>
+      <div class="tiles"><div class="tile">Reagents<span>3,000+ records</span></div><div class="tile">Materials<span>Atlas</span></div><div class="tile">Methods<span>Evidence-led</span></div></div>
+      <div class="tabs"><b>Library</b><span>Explore</span><span>Workspace</span><span>Saved</span></div>
+    </div>
+    <div class="chem-copy"><h3>A · 研究工作台</h3><p>手机用 4 个核心 Tab；首页是搜索与任务入口。iPad、Mac 同内容切换为侧边栏。</p></div>
+  </article>
+
+  <article class="chem-card" data-choice="library-first" onclick="toggleSelect(this)">
+    <div class="chem-preview split-preview">
+      <aside class="side"><strong>◇ ChemVault</strong><div class="active">Library</div><div>Workbench</div><div>Research</div><div>Saved</div></aside>
+      <main class="detail"><div class="detail-head"><span class="eyebrow">Library</span><span>⌕</span></div><h4>Recent records</h4><div class="list"><div class="row"><span>Graphene oxide</span><i>Material</i></div><div class="row"><span>NaBH₄ reduction</span><i>Method</i></div><div class="row"><span>Acetophenone</span><i>Compound</i></div></div></main>
+    </div>
+    <div class="chem-copy"><h3>B · 资料库优先</h3><p>以记录列表和筛选为中心，适合长时间查阅；在小屏上信息层级较深。</p></div>
+  </article>
+
+  <article class="chem-card" data-choice="portal-first" onclick="toggleSelect(this)">
+    <div class="chem-preview browser-preview">
+      <div class="bar"><span class="mark"><b>◇</b> ChemVault</span><span>⌕</span></div>
+      <div class="browser-nav"><span class="browser-chip active">Home</span><span class="browser-chip">Search</span><span class="browser-chip">Workbench</span><span class="browser-chip">Atlas</span></div>
+      <div class="record"><strong>Search local records</strong><p>Find compounds, reaction systems, material profiles and source notes.</p><span class="tag">Open search</span></div>
+      <div class="record"><strong>Research Workbench</strong><p>Connect reactants, reagents, route logic and evidence.</p><span class="tag">Open workspace</span></div>
+    </div>
+    <div class="chem-copy"><h3>C · 门户式导航</h3><p>最接近现有网站结构，迁移风险低；但原生感和效率最低。</p></div>
+  </article>
+</div>
+
+<p class="subtitle" style="margin-top:20px">点击一项选择，然后在对话中告诉我你的确认或调整意见。</p>

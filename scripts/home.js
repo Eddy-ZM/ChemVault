@@ -386,7 +386,7 @@
     const gateway = $("#externalGateway");
     if (!gateway) return;
     gateway.innerHTML = external.sources.map((source) => `
-      <a class="external-source-card" href="${externalUrl(source, query)}" target="_blank" rel="noreferrer">
+      <a class="external-source-card" href="${externalUrl(source, query)}" target="_blank" rel="noopener noreferrer">
         <span class="eyebrow">${source.owner}</span>
         <strong>${source.name}</strong>
         <span>${source.scope}</span>
@@ -455,8 +455,8 @@
     `).join("");
     panel.innerHTML = `
       ${localLinks || `<a href="pages/search.html?q=${encode(query)}">No local preview matches. Open academic search.</a>`}
-      <a href="${externalUrl(external.sources[0], query)}" target="_blank" rel="noreferrer">Continue in PubMed</a>
-      <a href="${externalUrl(external.sources[1], query)}" target="_blank" rel="noreferrer">Continue in PubChem</a>
+      <a href="${externalUrl(external.sources[0], query)}" target="_blank" rel="noopener noreferrer">Continue in PubMed</a>
+      <a href="${externalUrl(external.sources[1], query)}" target="_blank" rel="noopener noreferrer">Continue in PubChem</a>
     `;
     wireImageFallbacks(panel);
   }
@@ -497,7 +497,7 @@
       const hits = [...localHits, ...externalHits].slice(0, 8);
       panel.classList.add("active");
       panel.innerHTML = hits.length ? hits.map((hit) => `
-        <a class="search-hit" href="${hit.href}"${hit.external ? ' target="_blank" rel="noreferrer"' : ""}>
+        <a class="search-hit" href="${hit.href}"${hit.external ? ' target="_blank" rel="noopener noreferrer"' : ""}>
           <img src="${escapeHTML(thumbnailFor(hit))}" data-fallback-src="${escapeHTML(placeholderImage(hit.type, hit.title, hit.formula || hit.family || hit.domain || ""))}" alt="" loading="lazy" referrerpolicy="no-referrer" />
           <span>${escapeHTML(hit.type)}</span>
           <strong>${escapeHTML(hit.title)}</strong>

@@ -55,7 +55,7 @@
       precautionaryStatements: safety.precautionaryStatements,
       disposalMethod: safety.disposalMethod,
       safetySource: safety.safetySource,
-      imageUrl: input.imageUrl || recordImage(input.typeLabel || input.type, title, input.subtitle || input.family || input.domain || input.formula || "", input),
+      imageUrl: normalizeImageUrl(input.imageUrl || recordImage(input.typeLabel || input.type, title, input.subtitle || input.family || input.domain || input.formula || "", input)),
       searchText,
       href: input.external ? input.href : recordUrl(input.type, input.id)
     };
@@ -491,15 +491,48 @@
   }
 
   function recordImage(type, title, subtitle = "", input = {}) {
+    const fallback = placeholderImage(type || "Record", title || "ChemVault", subtitle || "");
     const cid = pubChemCidFrom(input);
     if (cid && canUsePubChemName(title)) {
-      return `https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/${encodeURIComponent(cid)}/PNG?record_type=2d&image_size=large`;
+      const image = `https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/${encodeURIComponent(cid)}/PNG?record_type=2d&image_size=large`;
+      return normalizeImageUrl(image) || fallback;
     }
     const key = compact(`${type} ${title}`);
     if ((key.includes("reagent") || key.includes("compound")) && canUsePubChemName(title)) {
-      return `https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/${encodeURIComponent(title)}/PNG?record_type=2d&image_size=large`;
+      const cleanTitle = pubChemImageLookupName(title);
+      const image = `https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/${encodeURIComponent(cleanTitle)}/PNG?record_type=2d&image_size=large`;
+      return normalizeImageUrl(image) || fallback;
     }
-    return placeholderImage(type || "Record", title || "ChemVault", subtitle || "");
+    return fallback;
+  }
+
+  function normalizeImageUrl(url) {
+    const value = String(url || "").trim();
+    if (!value) return "";
+    if (/^data:image\//i.test(value)) return value;
+    try {
+      const parsed = value.startsWith("//")
+        ? new URL(`https:${value}`)
+        : new URL(value, window.location.href);
+      if (parsed.protocol === "http:") parsed.protocol = "https:";
+      if (parsed.pathname.includes("/PNG") && /\/compound\//.test(parsed.pathname)) {
+        parsed.searchParams.set("record_type", "2d");
+        if (!parsed.searchParams.get("image_size") || parsed.searchParams.get("image_size") === "small") {
+          parsed.searchParams.set("image_size", "large");
+        }
+      }
+      return parsed.toString();
+    } catch {
+      try {
+        return encodeURI(value);
+      } catch {
+        return "";
+      }
+    }
+  }
+
+  function pubChemImageLookupName(title) {
+    return String(title || "").replace(/^.*[·•]\s*/, "").trim();
   }
 
   function fallbackImage(type, title, subtitle = "") {

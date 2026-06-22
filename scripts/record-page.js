@@ -62,9 +62,9 @@
             <h1>${esc(record.title)}</h1>
             ${record.subtitle ? `<p>${esc(record.subtitle)}</p>` : ""}
             <div class="hero-actions record-actions">
-              ${sourceHref ? `<a class="primary-button" href="${esc(sourceHref)}"${/^https?:\/\//i.test(sourceHref) ? ' target="_blank" rel="noreferrer"' : ""}>Open source page</a>` : ""}
+              ${sourceHref ? `<a class="primary-button" href="${esc(sourceHref)}"${/^https?:\/\//i.test(sourceHref) ? ' target="_blank" rel="noopener noreferrer"' : ""}>Open source page</a>` : ""}
               <a class="secondary-button" href="search.html?q=${encode(record.title)}">Search this topic</a>
-              ${record.external && record.href ? `<a class="secondary-button" href="${record.href}" target="_blank" rel="noreferrer">Open external source</a>` : ""}
+              ${record.external && record.href ? `<a class="secondary-button" href="${record.href}" target="_blank" rel="noopener noreferrer">Open external source</a>` : ""}
             </div>
             ${trustStrip}
           </div>
@@ -156,7 +156,7 @@
               <p class="muted">Use public scholarly databases to verify identifiers, provenance, primary literature and safety-critical claims.</p>
               <div class="source-action-row">
                 ${(external.sources || []).slice(0, 6).map((source) => `
-                  <a class="secondary-button" href="${externalUrl(source, record.title)}" target="_blank" rel="noreferrer">${esc(source.name)}</a>
+                  <a class="secondary-button" href="${externalUrl(source, record.title)}" target="_blank" rel="noopener noreferrer">${esc(source.name)}</a>
                 `).join("")}
               </div>
             </section>
@@ -190,7 +190,7 @@
           ${stepCard("03", "Plan safe handling", safetyAction)}
         </div>
         <div class="record-next-actions">
-          ${sourceHref ? `<a class="secondary-button" href="${esc(sourceHref)}"${/^https?:\/\//i.test(sourceHref) ? ' target="_blank" rel="noreferrer"' : ""}>Open source</a>` : ""}
+          ${sourceHref ? `<a class="secondary-button" href="${esc(sourceHref)}"${/^https?:\/\//i.test(sourceHref) ? ' target="_blank" rel="noopener noreferrer"' : ""}>Open source</a>` : ""}
           <a class="secondary-button" href="#recordRelatedRecords">Review related</a>
           <a class="secondary-button" href="search.html?q=${encode(record.title)}">Search topic</a>
         </div>
@@ -290,7 +290,7 @@
 
   function relatedCard(record) {
     return `
-      <a class="related-record-card" href="${record.external ? record.href : api.recordUrl(record.type, record.id)}"${record.external ? ' target="_blank" rel="noreferrer"' : ""}>
+      <a class="related-record-card" href="${record.external ? record.href : api.recordUrl(record.type, record.id)}"${record.external ? ' target="_blank" rel="noopener noreferrer"' : ""}>
         <span class="eyebrow">${esc(record.typeLabel || record.type)}</span>
         <strong>${esc(record.title)}</strong>
         <small>${esc(record.body || record.subtitle || "").slice(0, 150)}${(record.body || "").length > 150 ? "..." : ""}</small>
@@ -440,7 +440,7 @@
   function field(label, value, link = false) {
     const text = String(value || "").trim() || "Not available";
     const content = link && /^https?:\/\//i.test(text)
-      ? `<a href="${esc(text)}" target="_blank" rel="noreferrer">${esc(text)}</a>`
+      ? `<a href="${esc(text)}" target="_blank" rel="noopener noreferrer">${esc(text)}</a>`
       : `<span>${esc(text)}</span>`;
     return `<div><strong>${esc(label)}</strong>${content}</div>`;
   }
@@ -452,7 +452,7 @@
       return `<div><strong>image</strong><span>Generated ChemVault preview</span></div>`;
     }
     if (/^https?:\/\//i.test(text)) {
-      return `<div><strong>image</strong><a href="${esc(text)}" target="_blank" rel="noreferrer">Open image source</a></div>`;
+      return `<div><strong>image</strong><a href="${esc(text)}" target="_blank" rel="noopener noreferrer">Open image source</a></div>`;
     }
     return `<div><strong>image</strong><span>${esc(text)}</span></div>`;
   }

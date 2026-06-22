@@ -3,16 +3,22 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ChemVault | About</title>
-  <meta name="description" content="About ChemVault: project purpose, core features and future development plans." />
-  <meta name="theme-color" content="#f5f5f7" />
+  <title>About | ChemVault</title>
+  <meta name="description" content="ChemVault is an independent academic technology initiative exploring chemistry, artificial intelligence and scientific knowledge infrastructure." />
+  <meta name="keywords" content="ChemVault about, chemistry infrastructure, AI for Science, research intelligence, scientific knowledge systems" />
+  <meta name="theme-color" content="#07111f" />
   <script src="/scripts/boot.js?v=20260618c"></script>
+  <meta property="og:title" content="About | ChemVault" />
+  <meta property="og:description" content="Mission, vision and long-term direction for ChemVault." />
+  <meta property="og:type" content="website" />
+  <link rel="canonical" href="https://chemvault.science/pages/about.html" />
   <link rel="icon" href="/favicon.ico" sizes="any" />
   <link rel="icon" href="/assets/chemvault-icon-192.png" type="image/png" sizes="192x192" />
   <link rel="apple-touch-icon" href="/assets/chemvault-apple-touch-icon.png" />
   <link rel="manifest" href="/site.webmanifest" />
   <link rel="stylesheet" href="../assets/styles.css?v=20260620a" />
   <link rel="stylesheet" href="../assets/portal.css?v=20260619c" />
+  <link rel="stylesheet" href="../assets/academic.css?v=20260622a" />
   <script src="../data/chem-data.js?v=20260603a" defer></script>
   <script src="../data/reagent-extension.js?v=20260603a" defer></script>
   <script src="../data/research-data.js?v=20260603a" defer></script>
@@ -26,83 +32,97 @@
   <script src="../data/local-catalog-10000.js?v=20260603a" defer></script>
   <script src="../data/external-sources.js?v=20260603a" defer></script>
   <script src="../scripts/record-utils.js?v=20260603a" defer></script>
+  <script src="../scripts/search-intent.js?v=20260608a" defer></script>
   <script src="../scripts/api.js?v=20260603a" defer></script>
   <script src="../scripts/motion.js?v=20260618c" defer></script>
-  <script src="../scripts/site-shell.js?v=20260620a" defer></script>
+  <script src="../scripts/site-shell.js?v=20260622a" defer></script>
 </head>
-<body class="page-shell" data-boot-label="About">
+<body class="page-shell academic-site academic-page" data-boot-label="About">
   <a class="skip-link" href="#main">Skip to content</a>
   <header class="site-header">
     <div class="container nav-shell">
-      <a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true"><img src="../assets/chemvault-logo-mark.png" alt="" /></span><span><strong>ChemVault</strong><small>academic portal</small></span></a>
+      <a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true"><img src="../assets/chemvault-logo-mark.png" alt="" /></span><span><strong>ChemVault</strong><small>scientific infrastructure</small></span></a>
       <button class="icon-button menu-toggle" type="button" aria-label="Open navigation" aria-expanded="false"><span></span><span></span><span></span></button>
       <nav class="site-nav" aria-label="Main navigation">
         <a href="../index.html">Home</a>
+        <a href="research.html">Research</a>
+        <a href="platform.html">Platform</a>
+        <a href="projects.html">Projects</a>
+        <a href="notes.html">Notes</a>
         <a href="search.html">Search</a>
-        <a href="workbench.html">Workbench</a>
-        <a href="reagents.html">Reagents</a>
-        <a href="materials.html">Materials</a>
-        <a href="methods.html">Methods</a>
-        <details class="nav-more">
-          <summary>More</summary>
-          <div class="nav-more-menu">
-            <a href="app.html">App</a>
-            <a href="research.html">Research</a>
-            <a href="dossiers.html">Dossiers</a>
-            <a href="spectroscopy.html">Spectroscopy</a>
-            <a href="atlas.html">Atlas</a>
-            <a href="library.html">Library</a>
-            <a href="about.html">About</a>
-            <a href="team.html">Team</a>
-            <a href="developer.html">Developer</a>
-          </div>
-        </details>
+        <a href="about.html">About</a>
+        <a href="contact.html">Contact</a>
       </nav>
-      <div class="header-actions"><label class="search-shell" for="shellSearch"><span>Search</span><input id="shellSearch" type="search" placeholder="Search local records..." /></label><button class="theme-toggle" type="button" data-shell-action="theme" aria-label="Switch theme"><span class="theme-toggle__icon" aria-hidden="true"></span></button></div>
+      <div class="header-actions"><label class="search-shell" for="shellSearch"><span>Search</span><input id="shellSearch" type="search" placeholder="Search compounds..." /></label><button class="theme-toggle" type="button" data-shell-action="theme" aria-label="Switch theme"><span class="theme-toggle__icon" aria-hidden="true"></span></button></div>
     </div>
     <div class="container shell-search-results" id="shellSearchResults" aria-live="polite"></div>
   </header>
+
   <main id="main">
-    <section class="page-hero">
-      <div class="container page-hero-grid">
+    <section class="academic-page-hero">
+      <div class="container">
         <div>
-          <p class="eyebrow">about</p>
-          <h1>About ChemVault</h1>
-          <p>ChemVault is an independent academic chemistry portal for local-first chemical records, research workflows and verified scientific source enrichment.</p>
+          <span class="section-kicker">About</span>
+          <h1>An independent academic technology initiative.</h1>
+          <p>ChemVault explores the intersection of chemistry, artificial intelligence, and scientific knowledge infrastructure.</p>
         </div>
-        <aside class="page-index-card">
-          <strong>Project focus</strong>
-          <ol>
-            <li>Searchable chemistry records</li>
-            <li>Research workflow tools</li>
-            <li>Academic source enrichment</li>
-          </ol>
+        <aside class="page-index-panel">
+          <strong>Focus</strong>
+          <span>Scientific data extraction</span>
+          <span>Chemical knowledge systems</span>
+          <span>Research intelligence</span>
+          <span>Academic technology infrastructure</span>
         </aside>
       </div>
     </section>
-    <section class="section">
+
+    <section class="academic-section">
+      <div class="container two-column">
+        <div class="text-column">
+          <div>
+            <span class="section-kicker">Mission</span>
+            <p>ChemVault is independently developed and research-oriented. Its mission is to build tools that make scientific knowledge easier to extract, structure, search and connect across chemistry, documents and research workflows.</p>
+          </div>
+          <div>
+            <span class="section-kicker">Vision</span>
+            <p>The long-term vision is a scientific knowledge infrastructure layer where papers, laboratory reports, compounds, methods, observations and project records can become part of transparent, source-backed systems for research understanding.</p>
+          </div>
+          <div>
+            <span class="section-kicker">What ChemVault Builds</span>
+            <p>ChemVault builds public chemistry search surfaces, data records, research pages, document extraction concepts, file infrastructure, documentation and early platform modules for AI-assisted scientific workflows.</p>
+          </div>
+          <div>
+            <span class="section-kicker">Why It Matters</span>
+            <p>Scientific work increasingly depends on the ability to move between unstructured documents and structured knowledge. Better infrastructure can help researchers compare evidence, trace claims, reuse data and understand complex bodies of literature more efficiently.</p>
+          </div>
+          <div>
+            <span class="section-kicker">Long-term Direction</span>
+            <p>ChemVault is moving toward tools for scientific understanding, data extraction and research intelligence: from chemical compound search to literature graphs, experiment knowledge bases and secure research workspaces.</p>
+          </div>
+        </div>
+        <aside class="page-index-panel">
+          <strong>Operating principles</strong>
+          <span>Academic tone and source-aware workflows.</span>
+          <span>Static-first public infrastructure with room for APIs.</span>
+          <span>Transparent project maturity and careful claims.</span>
+          <span>Designed for researchers, students, developers and scientific communities.</span>
+        </aside>
+      </div>
+    </section>
+
+    <section class="academic-section academic-band">
       <div class="container">
-        <div class="portal-grid">
-          <article class="portal-card">
-            <span>what it is</span>
-            <strong>What is ChemVault?</strong>
-            <p>ChemVault is a chemistry knowledge portal that combines curated local chemical records, searchable compound data, reagent notes, material profiles, mechanisms and academic source links in one public interface.</p>
-          </article>
-          <article class="portal-card">
-            <span>purpose</span>
-            <strong>Why was it created?</strong>
-            <p>It was created to make chemistry research information easier to search, compare and verify. The project is designed around local-first records, clear provenance and fast access to trusted scientific databases.</p>
-          </article>
-          <article class="portal-card">
-            <span>features</span>
-            <strong>Main functions</strong>
-            <p>ChemVault supports compound search, reagent dossiers, materials records, mechanism browsing, spectroscopy notes, research pages, D1-backed APIs, fallback local data and academic enrichment from sources such as PubChem and PubMed.</p>
-          </article>
-          <article class="portal-card">
-            <span>roadmap</span>
-            <strong>Future planning</strong>
-            <p>Future development will expand the verified database, improve structure and hazard coverage, add more scientific source checks, strengthen search quality and build more workflow tools for chemistry learning and research.</p>
-          </article>
+        <div class="section-header">
+          <div>
+            <span class="section-kicker">Platform identity</span>
+            <h2>Building tools for data extraction, literature understanding and research knowledge systems.</h2>
+          </div>
+          <p>ChemVault is intended to grow from a public chemistry portal into a broader scientific technology platform while preserving clarity, deployability and academic credibility.</p>
+        </div>
+        <div class="feature-grid">
+          <article class="feature-card"><h3>Chemistry foundation</h3><p>Compound records, reagent notes, materials, methods, spectra and source-aware search remain core to the platform.</p></article>
+          <article class="feature-card"><h3>AI science tooling</h3><p>Extraction and document understanding are developed as practical tools for scientific data workflows.</p></article>
+          <article class="feature-card"><h3>Research infrastructure</h3><p>Files, notifications, documentation and workspace interfaces form the basis for future collaboration layers.</p></article>
         </div>
       </div>
     </section>

@@ -4,6 +4,11 @@
 /search /pages/search.html 301
 /record /pages/record.html 301
 /research /pages/research.html 301
+/platform /pages/platform.html 301
+/projects /pages/projects.html 301
+/notes /pages/notes.html 301
+/about /pages/about.html 301
+/contact /pages/contact.html 301
 /dossiers /pages/dossiers.html 301
 /methods /pages/methods.html 301
 /spectroscopy /pages/spectroscopy.html 301

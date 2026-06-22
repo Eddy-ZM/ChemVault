@@ -1,8 +1,8 @@
 import fs from "node:fs";
 import vm from "node:vm";
 
-const SITE_ORIGIN = process.env.CHEMVAULT_SITE_ORIGIN || "https://chemvault.pages.dev";
-const LASTMOD = "2026-06-08";
+const SITE_ORIGIN = process.env.CHEMVAULT_SITE_ORIGIN || "https://chemvault.science";
+const LASTMOD = "2026-06-22";
 
 const dataFiles = [
   "data/chem-data.js",
@@ -22,10 +22,15 @@ const dataFiles = [
 
 const staticUrls = [
   { path: "/", priority: "1.0", changefreq: "weekly" },
+  { path: "/pages/research.html", priority: "0.9", changefreq: "monthly" },
+  { path: "/pages/platform.html", priority: "0.9", changefreq: "monthly" },
+  { path: "/pages/projects.html", priority: "0.8", changefreq: "monthly" },
+  { path: "/pages/notes.html", priority: "0.7", changefreq: "weekly" },
+  { path: "/pages/about.html", priority: "0.7", changefreq: "monthly" },
+  { path: "/pages/contact.html", priority: "0.7", changefreq: "monthly" },
   { path: "/pages/app.html", priority: "0.9", changefreq: "weekly" },
   { path: "/pages/workbench.html", priority: "0.9", changefreq: "weekly" },
   { path: "/pages/search.html", priority: "0.9", changefreq: "weekly" },
-  { path: "/pages/research.html", priority: "0.8", changefreq: "monthly" },
   { path: "/pages/dossiers.html", priority: "0.8", changefreq: "monthly" },
   { path: "/pages/methods.html", priority: "0.8", changefreq: "monthly" },
   { path: "/pages/spectroscopy.html", priority: "0.8", changefreq: "monthly" },
@@ -33,7 +38,6 @@ const staticUrls = [
   { path: "/pages/reagents.html", priority: "0.8", changefreq: "monthly" },
   { path: "/pages/atlas.html", priority: "0.7", changefreq: "monthly" },
   { path: "/pages/library.html", priority: "0.7", changefreq: "monthly" },
-  { path: "/pages/about.html", priority: "0.5", changefreq: "monthly" },
   { path: "/pages/team.html", priority: "0.5", changefreq: "monthly" },
   { path: "/pages/developer.html", priority: "0.5", changefreq: "monthly" },
   { path: "/data/public-record-index.json", priority: "0.6", changefreq: "weekly" }

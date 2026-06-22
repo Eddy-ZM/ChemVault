@@ -14,6 +14,8 @@
   let backendRecords = [];
   let latestSearchRun = 0;
   let currentResultMap = new Map();
+  let activeSearchTab = "index";
+  let setActiveSearchTab = () => {};
   const searchResultsPerPage = 3;
   const searchResultWindow = 24;
   let currentSearchPage = 1;
@@ -37,6 +39,28 @@
   const normalise = (value) => String(value || "").toLowerCase();
   const compact = (value) => normalise(value).replace(/[^a-z0-9.+-]/g, " ").replace(/\s+/g, " ").trim();
   const recordApi = () => window.CHEMVAULT_RECORDS;
+
+  function safeText(value, fallback = "") {
+    return String(value ?? fallback);
+  }
+
+  function safeType(value, fallback = "record") {
+    return safeText(value || fallback, fallback).trim() || fallback;
+  }
+
+  function toRecordArray(value) {
+    return Array.isArray(value) ? value.filter((item) => item && typeof item === "object") : [];
+  }
+
+  function normalizeSearchPayload(payload, fallbackSource = "browser-fallback") {
+    const safe = payload && typeof payload === "object" ? payload : {};
+    return {
+      ...safe,
+      source: safeText(safe.source, fallbackSource).trim() || fallbackSource,
+      records: toRecordArray(safe.records),
+      meta: safe.meta && typeof safe.meta === "object" ? safe.meta : {}
+    };
+  }
 
   function importedRecordsSignature() {
     try {
@@ -71,6 +95,40 @@
   }
 
   function toIndexRecord(record, fallbackSource = "imported", explicitDataSource = "") {
+    if (!record || typeof record !== "object") {
+      return {
+        id: `record-${compact(Math.random())}`,
+        recordType: "record",
+        type: "Record",
+        title: "Record",
+        subtitle: "",
+        body: "",
+        tags: [],
+        href: "record.html?type=record&id=record",
+        external: false,
+        domain: "",
+        family: "",
+        risk: "",
+        maturity: 0,
+        formula: "",
+        sourceHref: "",
+        sourceKind: "curated",
+        dataSource: explicitDataSource || fallbackSource || "Curated",
+        imageUrl: "",
+        hazardStatements: [],
+        hazardLevel: "",
+        signalWord: "",
+        precautionaryStatements: [],
+        disposalMethod: "",
+        safetySource: "",
+        checkStatus: "accepted",
+        checkedAt: "",
+        raw: {},
+        updatedAt: "",
+        searchText: "record"
+      };
+    }
+
     const type = record.type || "imported";
     const typeLabel = record.typeLabel || record.type_label || type;
     const body = record.body || record.subtitle || "";
@@ -97,18 +155,36 @@
       sourceHref: record.sourceHref || record.source_href || "",
       sourceKind: source === "Curated" || source === "D1" || source === "Fallback" ? "curated" : "imported",
       dataSource: source,
-      imageUrl: record.imageUrl || record.image_url || record.raw?.imageUrl || "",
+      imageUrl: normalizeImageUrl(record.imageUrl || record.image_url || record.raw?.imageUrl || ""),
       hazardStatements: record.hazardStatements || raw.hazardStatements || [],
       hazardLevel: record.hazardLevel || raw.hazardLevel || "",
       signalWord: record.signalWord || raw.signalWord || "",
       precautionaryStatements: record.precautionaryStatements || raw.precautionaryStatements || [],
       disposalMethod: record.disposalMethod || raw.disposalMethod || "",
       safetySource: record.safetySource || raw.safetySource || "",
-      checkStatus: record.checkStatus || raw.checkStatus || (raw.source ? "accepted" : source.toLowerCase()),
+      checkStatus: record.checkStatus || raw.checkStatus || (raw.source ? "accepted" : safeText(source, "curated").toLowerCase()),
       checkedAt: record.checkedAt || raw.checkedAt || record.updatedAt || record.updated_at || "",
       raw,
       updatedAt: record.updatedAt || record.updated_at || "",
       searchText: record.searchText || compact(`${typeLabel} ${record.title} ${record.subtitle || ""} ${body} ${record.formula || ""} ${(record.tags || []).join(" ")} ${(record.hazardStatements || raw.hazardStatements || []).join(" ")} ${record.disposalMethod || raw.disposalMethod || ""}`)
+    };
+  }
+
+  function normalizeImportedRecord(record) {
+    if (!record || typeof record !== "object") return null;
+    const recordType = safeType(record.type || record.typeLabel, "imported");
+    const recordId = record.id || compact(`${record.title || recordType} ${recordType}`);
+    return {
+      ...record,
+      id: recordId,
+      type: safeType(record.type, recordType),
+      typeLabel: safeType(record.typeLabel || record.type, recordType),
+      title: safeText(record.title, recordId || "Session import"),
+      body: safeText(record.body || record.subtitle, ""),
+      tags: Array.isArray(record.tags) ? record.tags : [],
+      sourceHref: safeText(record.sourceHref || record.href, ""),
+      imageUrl: normalizeImageUrl(record.imageUrl || record.raw?.imageUrl || ""),
+      raw: record.raw && typeof record.raw === "object" ? record.raw : {}
     };
   }
 
@@ -124,16 +200,54 @@
   }
 
   function thumbnailFor(item) {
-    if (item.imageUrl) return displayImageUrl(item.imageUrl);
+    const directUrl = normalizeImageUrl(item.imageUrl);
+    if (directUrl) return directUrl;
     const cid = pubChemCidFrom(item);
     if (cid && canUsePubChemName(item.title)) {
-      return `https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/${encodeURIComponent(cid)}/PNG?record_type=2d&image_size=large`;
+      return pubchemImageFromCid(cid);
     }
     const type = `${item.recordType || ""} ${item.type || ""}`.toLowerCase();
     if ((type.includes("compound") || type.includes("reagent")) && canUsePubChemName(item.title)) {
-      return `https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/${encodeURIComponent(item.title)}/PNG?record_type=2d&image_size=large`;
+      return pubchemImageFromName(item.title);
     }
     return placeholderImage(item.type || item.recordType || "Record", item.title || "ChemVault", item.family || item.domain || "");
+  }
+
+  function normalizeImageUrl(url) {
+    const value = String(url || "").trim();
+    if (!value) return "";
+    const lower = value.toLowerCase();
+    if (["n/a", "na", "null", "undefined"].includes(lower)) return "";
+    if (/^data:image\//i.test(value)) return value;
+    try {
+      const parsed = value.startsWith("//")
+        ? new URL(`https:${value}`)
+        : new URL(value, window.location.href);
+      if (parsed.protocol === "http:") parsed.protocol = "https:";
+      if (parsed.pathname.includes("/PNG") && /\/compound\//.test(parsed.pathname)) {
+        parsed.searchParams.set("record_type", "2d");
+        if (!parsed.searchParams.get("image_size") || parsed.searchParams.get("image_size") === "small") {
+          parsed.searchParams.set("image_size", "large");
+        }
+      }
+      return parsed.toString();
+    } catch {
+      try {
+        return encodeURI(value);
+      } catch {
+        return "";
+      }
+    }
+  }
+
+  function pubchemImageFromCid(cid) {
+    return normalizeImageUrl(`https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/${encodeURIComponent(cid)}/PNG?record_type=2d&image_size=large`);
+  }
+
+  function pubchemImageFromName(title) {
+    const name = String(title || "").replace(/^.*[·•]\s*/, "").trim();
+    if (!name) return "";
+    return normalizeImageUrl(`https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/${encodeURIComponent(name)}/PNG?record_type=2d&image_size=large`);
   }
 
   function canUsePubChemName(title) {
@@ -154,7 +268,11 @@
   }
 
   function displayImageUrl(url) {
-    return String(url || "").replace("image_size=small", "image_size=large");
+    return normalizeImageUrl(url);
+  }
+
+  function safeImageUrl(raw, fallback = "") {
+    return normalizeImageUrl(raw) || fallback;
   }
 
   function placeholderImage(type, title, subtitle = "") {
@@ -198,6 +316,68 @@
     });
   }
 
+function initSearchTabs() {
+  const tabButtons = [...document.querySelectorAll("[data-search-tab]")];
+  const tabPanels = [...document.querySelectorAll("[data-search-tab-panel]")];
+  if (!tabButtons.length || !tabPanels.length) return;
+  const panelByTab = new Map(tabPanels.map((panel) => [panel.dataset.searchTabPanel, panel]));
+  const buttonByTab = new Map(tabButtons.map((button, index) => {
+    if (!button.id) button.id = `search-tab-${button.dataset.searchTab || "panel"}-${index}`;
+    return [button.dataset.searchTab, button];
+  }));
+
+  tabPanels.forEach((panel, index) => {
+    const tab = panel.dataset.searchTabPanel;
+    const button = buttonByTab.get(tab);
+    if (!panel.id) panel.id = `search-tabpanel-${tab || index}`;
+    panel.setAttribute("role", "tabpanel");
+    if (button) panel.setAttribute("aria-labelledby", button.id);
+    panel.setAttribute("aria-hidden", "true");
+  });
+
+  setActiveSearchTab = (value) => {
+    const hasTarget = panelByTab.has(value);
+    const next = hasTarget ? value : tabPanels[0]?.dataset.searchTabPanel || "index";
+    activeSearchTab = next;
+    tabButtons.forEach((button) => {
+      const active = button.dataset.searchTab === next;
+      button.classList.toggle("active", active);
+      button.setAttribute("aria-selected", String(active));
+      button.setAttribute("tabindex", active ? "0" : "-1");
+      const panel = panelByTab.get(button.dataset.searchTab);
+      if (panel) button.setAttribute("aria-controls", panel.id);
+    });
+    tabPanels.forEach((panel) => {
+      const active = panel.dataset.searchTabPanel === next;
+      panel.classList.toggle("active", active);
+      panel.setAttribute("aria-hidden", String(!active));
+    });
+  };
+
+  tabButtons.forEach((button) => {
+    button.setAttribute("role", "tab");
+    if (!button.id) button.id = `search-tab-${button.dataset.searchTab || "panel"}`;
+    button.setAttribute("tabindex", button.classList.contains("active") ? "0" : "-1");
+    button.setAttribute("aria-selected", String(button.classList.contains("active")));
+      button.addEventListener("click", () => setActiveSearchTab(button.dataset.searchTab));
+      button.addEventListener("keydown", (event) => {
+        if (event.key === "ArrowRight" || event.key === "ArrowLeft") {
+          event.preventDefault();
+          const current = tabButtons.findIndex((item) => item.dataset.searchTab === activeSearchTab);
+          if (current < 0) return;
+          const next = event.key === "ArrowRight"
+            ? (current + 1) % tabButtons.length
+            : (current - 1 + tabButtons.length) % tabButtons.length;
+          tabButtons[next].focus();
+          setActiveSearchTab(tabButtons[next].dataset.searchTab);
+        }
+      });
+    });
+    if (!activeSearchTab) activeSearchTab = "index";
+    const initial = tabButtons.find((button) => button.classList.contains("active"))?.dataset.searchTab || activeSearchTab;
+    setActiveSearchTab(initial);
+  }
+
   function buildIndex() {
     const importSignature = importedRecordsSignature();
     const backendSignature = backendRecordsSignature();
@@ -213,17 +393,20 @@
     let rows = [];
     if (api?.buildRecords) {
       if (!localIndexCache || localIndexImportSignature !== importSignature) {
-        localIndexCache = api.buildRecords({ includeImported: true }).map((record) => {
+        localIndexCache = toRecordArray(api.buildRecords({ includeImported: true })).map((record) => {
+          const type = safeType(record.type);
+          const typeLabel = safeType(record.typeLabel || type, type);
+          const recordId = record.id || compact(`${typeLabel} ${record.title || type}`);
           const rawSource = record.raw?.source || record.raw?.raw?.source;
           const dataSource = record.external ? "Session import" : rawSource === "PubChem" || rawSource === "PubMed" ? rawSource : "Curated";
           return ({
-            id: record.id,
-            recordType: record.type,
-            type: record.typeLabel || record.type,
-            title: record.title,
-            body: record.body || record.subtitle || "",
-            tags: record.tags || [],
-            href: record.external ? record.href : api.recordUrl(record.type, record.id),
+            id: recordId,
+            recordType: type,
+            type: typeLabel,
+            title: safeText(record.title, typeLabel),
+            body: safeText(record.body || record.subtitle, ""),
+            tags: Array.isArray(record.tags) ? record.tags : [],
+            href: record.external ? safeText(record.href) : (api.recordUrl ? api.recordUrl(type, record.id) : `record.html?type=${encode(type)}&id=${encode(recordId)}`),
             external: record.external,
             domain: record.domain || "",
             family: record.family || "",
@@ -243,8 +426,8 @@
             checkedAt: record.checkedAt || record.raw?.checkedAt || "",
             sourceKind: record.external || dataSource === "PubChem" || dataSource === "PubMed" ? "imported" : "curated",
             dataSource,
-            imageUrl: record.imageUrl || record.raw?.imageUrl || "",
-            searchText: record.searchText || compact(`${record.title} ${record.body} ${(record.tags || []).join(" ")}`)
+            imageUrl: normalizeImageUrl(record.imageUrl || record.raw?.imageUrl || ""),
+            searchText: record.searchText || compact(`${typeLabel} ${safeText(record.title, typeLabel)} ${safeText(record.body, safeText(record.subtitle, ""))} ${(record.tags || []).join(" ")}`)
           });
         });
         localIndexImportSignature = importSignature;
@@ -376,7 +559,7 @@
     const panel = $("#externalSearchLinks");
     if (!panel) return;
     panel.innerHTML = external.sources.map((source) => `
-      <a class="external-source-card" href="${externalUrl(source, query)}" target="_blank" rel="noreferrer">
+      <a class="external-source-card" href="${externalUrl(source, query)}" target="_blank" rel="noopener noreferrer">
         <span class="eyebrow">${esc(source.family)}</span>
         <strong>${esc(source.name)}</strong>
         <span>${esc(source.bestFor)}</span>
@@ -454,12 +637,13 @@
     return true;
   }
 
-  function sortRows(rows, sort) {
-    if (sort === "title") return rows.sort((a, b) => a.item.title.localeCompare(b.item.title));
-    if (sort === "type") return rows.sort((a, b) => a.item.type.localeCompare(b.item.type) || a.item.title.localeCompare(b.item.title));
-    if (sort === "evidence") return rows.sort((a, b) => Number(b.item.maturity || 0) - Number(a.item.maturity || 0) || b.score - a.score);
-    return rows.sort((a, b) => b.score - a.score || a.item.title.localeCompare(b.item.title));
-  }
+function sortRows(rows, sort) {
+  const valueText = (value) => safeText(value, "");
+  if (sort === "title") return rows.sort((a, b) => valueText(a.item?.title).localeCompare(valueText(b.item?.title)));
+  if (sort === "type") return rows.sort((a, b) => valueText(a.item?.type).localeCompare(valueText(b.item?.type)) || valueText(a.item?.title).localeCompare(valueText(b.item?.title)));
+  if (sort === "evidence") return rows.sort((a, b) => Number(b.item.maturity || 0) - Number(a.item.maturity || 0) || b.score - a.score);
+  return rows.sort((a, b) => b.score - a.score || valueText(a.item?.title).localeCompare(valueText(b.item?.title)));
+}
 
   function backendType(scope) {
     const value = String(scope || "all").trim();
@@ -558,8 +742,14 @@
       currentSearchSignature = signature;
       currentSearchPage = 1;
     }
+    const scopeValue = String(scope || "all").trim().toLowerCase();
     const rows = sortRows(index
-      .filter((item) => scope === "all" || item.recordType === scope || item.type.toLowerCase() === scope || item.type.toLowerCase().includes(scope))
+      .filter((item) => {
+        if (scopeValue === "all") return true;
+        const recordType = safeText(item.recordType).toLowerCase();
+        const type = safeText(item.type).toLowerCase();
+        return recordType === scopeValue || type === scopeValue || type.includes(scopeValue);
+      })
       .filter((item) => passesAdvanced(item, filters, query))
       .map((item) => ({ item, score: filters.exact ? score(item, query) : tokenScore(item, query) }))
       .filter((row) => query ? row.score > 0 : row.score > 0)
@@ -598,16 +788,17 @@
     return rows.length;
   }
 
-  function academicResultItem(item) {
-    const key = recordKey(item);
-    const fallback = placeholderImage(item.type, item.title, item.formula || item.family || item.domain || "");
-    const body = item.body || item.subtitle || "Checked academic metadata.";
+function academicResultItem(item) {
+  const key = recordKey(item);
+  const fallback = placeholderImage(item.type, item.title, item.formula || item.family || item.domain || "");
+  const thumbnail = safeImageUrl(item.imageUrl, thumbnailFor(item));
+  const body = item.body || item.subtitle || "Checked academic metadata.";
     const tags = resultTags(item);
     const hazards = hazardLines(item);
     return `
       <a class="local-result-card academic-result-item" href="${esc(focusRecordHref(item))}" data-record-key="${esc(key)}">
         <span class="result-thumb academic-result-media" aria-hidden="true">
-          <img src="${esc(thumbnailFor(item))}" data-fallback-src="${esc(fallback)}" alt="" loading="lazy" referrerpolicy="no-referrer" />
+          <img src="${esc(thumbnail)}" data-fallback-src="${esc(fallback)}" alt="" loading="lazy" referrerpolicy="no-referrer" />
         </span>
         <span class="local-result-copy academic-result-body">
           <span class="result-kicker">
@@ -627,12 +818,12 @@
     `;
   }
 
-  function resultSourceLabel(item) {
-    return item.dataSource || dataSourceFromRecord(item, item.sourceKind);
-  }
+function resultSourceLabel(item) {
+  return item?.dataSource || dataSourceFromRecord(item || {}, item?.sourceKind) || "Curated";
+}
 
-  function sourcePillClass(item) {
-    const source = resultSourceLabel(item).toLowerCase().replace(/\s+/g, "-");
+function sourcePillClass(item) {
+  const source = safeText(resultSourceLabel(item), "Curated").toLowerCase().replace(/\s+/g, "-");
     if (source.includes("pubchem")) return "source-pubchem";
     if (source.includes("pubmed")) return "source-pubmed";
     if (source.includes("session")) return "source-session";
@@ -680,7 +871,7 @@
       key: recordKey(record),
       record: {
         ...record,
-        imageUrl: record.imageUrl || thumbnailFor(record),
+        imageUrl: normalizeImageUrl(record.imageUrl) || thumbnailFor(record),
         sourceHref: record.sourceHref || record.raw?.href || record.href || "",
         dataSource: resultSourceLabel(record)
       },
@@ -742,20 +933,20 @@
     else url.searchParams.delete("exact");
     window.history.replaceState({}, "", url);
 
-    if (query.length >= 3 && window.CHEMVAULT_API?.searchRecords) {
-      const status = $("#liveEnrichmentStatus");
-      if (status) setSearchStage("Searching local records", "Checking ChemVault API and D1 before academic sources.");
-      try {
-        const payload = await window.CHEMVAULT_API.searchRecords({
-          q: query,
-          type: backendType(scope?.value),
-          limit: 24
-        }, { signal: liveController.signal });
-        if (searchRun !== latestSearchRun) return;
-        const dataSource = payload.source === "d1" ? "D1" : payload.source === "fallback" || payload.source === "browser-fallback" ? "Fallback" : "";
-        backendRecords = (payload.records || []).map((record) => toIndexRecord(record, payload.source === "d1" ? "d1" : payload.source, dataSource));
-        localCount = renderLocal(query, scope ? scope.value : "all", filters);
-        if (localCount > 0) {
+      if (query.length >= 3 && window.CHEMVAULT_API?.searchRecords) {
+        const status = $("#liveEnrichmentStatus");
+        if (status) setSearchStage("Searching local records", "Checking ChemVault API and D1 before academic sources.");
+        try {
+          const payload = normalizeSearchPayload(await window.CHEMVAULT_API.searchRecords({
+            q: query,
+            type: backendType(scope?.value),
+            limit: 24
+          }, { signal: liveController.signal }));
+          if (searchRun !== latestSearchRun) return;
+          const dataSource = payload.source === "d1" ? "D1" : payload.source === "fallback" || payload.source === "browser-fallback" ? "Fallback" : "";
+          backendRecords = (payload.records || []).map((record) => toIndexRecord(record, payload.source === "d1" ? "d1" : payload.source, dataSource));
+          localCount = renderLocal(query, scope ? scope.value : "all", filters);
+          if (localCount > 0) {
           setSearchStage(payload.source === "d1" ? "Already exists in ChemVault" : "Local match found", `${localCount} record${localCount === 1 ? "" : "s"} ready for review.`);
         }
       } catch (error) {
@@ -804,12 +995,12 @@
 
     try {
       if (window.CHEMVAULT_API?.enrichRecords) {
-        const payload = await window.CHEMVAULT_API.enrichRecords({ q: query, limit: 8 }, { signal });
-        if (payload.records?.length) {
+        const payload = normalizeSearchPayload(await window.CHEMVAULT_API.enrichRecords({ q: query, limit: 8 }, { signal }));
+        if (payload.records.length) {
           backendRecords = mergeIndexRows(backendRecords, payload.records.map((record) => toIndexRecord(record, "imported")));
           localCount = renderLocal(query, $("#searchScope")?.value || "all");
         }
-        if (payload.records?.length || payload.meta?.status !== "browser-fallback") {
+        if (payload.records.length || payload.meta?.status !== "browser-fallback") {
           liveCache.set(cacheKey, payload);
           renderLiveResults(query, localCount, payload);
           return;
@@ -984,22 +1175,34 @@
   function renderLiveResults(query, localCount, result) {
     const status = $("#liveEnrichmentStatus");
     const panel = $("#liveEnrichmentResults");
+    if (!status || !panel) return;
     const cards = [];
     latestLiveCandidates = [];
+    if (!result || typeof result !== "object") {
+      setSearchStage("Checking academic sources", `No metadata was returned for "${query}".`);
+      panel.innerHTML = fallbackCards(query, "Live enrichment is temporarily unavailable. Use direct NIH/PubChem links.");
+      toggleImportAll(false);
+      wireImageFallbacks(panel);
+      renderImportedRecords();
+      return;
+    }
 
-    if (Array.isArray(result.records)) {
-      latestLiveCandidates = result.records.map((record) => toSessionRecord(record, query));
-      const stored = Number(result.meta?.stored || 0);
-      if (result.meta?.status === "local-first" || result.meta?.status === "fallback-local-first") {
-        setSearchStage("Already exists in ChemVault", `${result.records.length} existing record${result.records.length === 1 ? "" : "s"} found.`);
+    const records = Array.isArray(result?.records) ? result.records : [];
+
+    if (records.length) {
+      if (!localCount) setActiveSearchTab("academic");
+      latestLiveCandidates = records.map((record) => toSessionRecord(record, query));
+      const stored = Number(result?.meta?.stored || 0);
+      if (result?.meta?.status === "local-first" || result?.meta?.status === "fallback-local-first") {
+        setSearchStage("Already exists in ChemVault", `${records.length} existing record${records.length === 1 ? "" : "s"} found.`);
       } else if (stored) {
         setSearchStage("Saved to ChemVault database", `${stored} PubChem/PubMed record${stored === 1 ? "" : "s"} saved to D1.`);
-      } else if (result.records.length) {
-        setSearchStage("Imported from PubChem/PubMed", `${result.records.length} checked academic record${result.records.length === 1 ? "" : "s"} added to the search results list.`);
+      } else if (records.length) {
+        setSearchStage("Imported from PubChem/PubMed", `${records.length} checked academic record${records.length === 1 ? "" : "s"} added to the search results list.`);
       } else {
         setSearchStage("Checking academic sources", `No checked PubChem or PubMed metadata returned for "${query}".`);
       }
-      panel.innerHTML = result.records.length ? academicSyncSummary(result.records.length, stored) : fallbackCards(query, "No metadata was returned. Use direct NIH/PubChem search links.");
+      panel.innerHTML = records.length ? academicSyncSummary(records.length, stored) : fallbackCards(query, "No metadata was returned. Use direct NIH/PubChem search links.");
       toggleImportAll(Boolean(latestLiveCandidates.length));
       wireImportButtons();
       wireImageFallbacks(panel);
@@ -1008,18 +1211,20 @@
     }
 
     if (result.compound) {
+      if (!localCount) setActiveSearchTab("academic");
       const compound = result.compound;
       const imported = toImportedCompound(compound, query);
       latestLiveCandidates.push(imported);
       backendRecords = mergeIndexRows(backendRecords, [sessionRecordToIndex(imported)]);
+      const fallback = placeholderImage("PubChem", compound.title, compound.formula);
       cards.push(`
         <article class="live-card live-card-wide">
           <div class="live-card-media">
-            <img src="${esc(compound.imageUrl || placeholderImage("PubChem", compound.title, compound.formula))}" data-fallback-src="${esc(placeholderImage("PubChem", compound.title, compound.formula))}" alt="" loading="lazy" referrerpolicy="no-referrer" />
+            <img src="${esc(safeImageUrl(compound.imageUrl, fallback))}" data-fallback-src="${esc(fallback)}" alt="" loading="lazy" referrerpolicy="no-referrer" />
           </div>
           <div class="live-card-head">
             <span class="eyebrow">NIH / NCBI PubChem import</span>
-            <a href="${compound.href}" target="_blank" rel="noreferrer">CID ${esc(compound.cid)}</a>
+            <a href="${compound.href}" target="_blank" rel="noopener noreferrer">CID ${esc(compound.cid)}</a>
           </div>
           <h3>${esc(compound.title)}</h3>
           <div class="compound-property-grid">
@@ -1048,14 +1253,15 @@
       const imported = toImportedArticle(article, query);
       const index = latestLiveCandidates.push(imported) - 1;
       backendRecords = mergeIndexRows(backendRecords, [sessionRecordToIndex(imported)]);
+      const fallback = placeholderImage("PubMed", article.title, article.journal);
       cards.push(`
         <article class="live-card">
           <div class="live-card-media">
-            <img src="${esc(article.imageUrl || placeholderImage("PubMed", article.title, article.journal))}" data-fallback-src="${esc(placeholderImage("PubMed", article.title, article.journal))}" alt="" loading="lazy" referrerpolicy="no-referrer" />
+            <img src="${esc(safeImageUrl(article.imageUrl, fallback))}" data-fallback-src="${esc(fallback)}" alt="" loading="lazy" referrerpolicy="no-referrer" />
           </div>
           <div class="live-card-head">
             <span class="eyebrow">NIH / NLM PubMed metadata</span>
-            <a href="${article.href}" target="_blank" rel="noreferrer">PMID ${esc(article.pmid)}</a>
+            <a href="${article.href}" target="_blank" rel="noopener noreferrer">PMID ${esc(article.pmid)}</a>
           </div>
           <h3>${esc(article.title)}</h3>
           <p>${esc(article.journal)}${article.date ? ` · ${esc(article.date)}` : ""}</p>
@@ -1130,17 +1336,18 @@
     }, "imported");
   }
 
-  function academicRecordCard(record, index) {
-    const image = thumbnailFor(toIndexRecord(record));
-    const fallback = placeholderImage(record.typeLabel || record.type, record.title, record.formula || record.family || record.domain);
-    return `
+function academicRecordCard(record, index) {
+  const indexRecord = toIndexRecord(record);
+  const image = safeImageUrl(record.imageUrl, thumbnailFor(indexRecord));
+  const fallback = placeholderImage(record.typeLabel || record.type, record.title, record.formula || record.family || record.domain);
+  return `
       <article class="live-card live-card-imported">
         <div class="live-card-media">
           <img src="${esc(image)}" data-fallback-src="${esc(fallback)}" alt="" loading="lazy" referrerpolicy="no-referrer" />
         </div>
         <div class="live-card-head">
           <span class="eyebrow">${esc(record.typeLabel || record.type || "Academic import")}</span>
-          ${record.href ? `<a href="${esc(record.href)}" target="_blank" rel="noreferrer">${esc(record.raw?.cid ? `CID ${record.raw.cid}` : record.raw?.pmid ? `PMID ${record.raw.pmid}` : "Open source")}</a>` : ""}
+          ${record.href ? `<a href="${esc(record.href)}" target="_blank" rel="noopener noreferrer">${esc(record.raw?.cid ? `CID ${record.raw.cid}` : record.raw?.pmid ? `PMID ${record.raw.pmid}` : "Open source")}</a>` : ""}
         </div>
         <h3>${esc(record.title)}</h3>
         <p>${esc(record.body || record.subtitle || "Checked academic metadata.").slice(0, 520)}${(record.body || "").length > 520 ? "..." : ""}</p>
@@ -1267,7 +1474,7 @@
       tags: [query, ...(record.tags || [])].filter(Boolean),
       href: record.href,
       sourceHref: record.sourceHref || record.href || "",
-      imageUrl: record.imageUrl || record.raw?.imageUrl || "",
+      imageUrl: normalizeImageUrl(record.imageUrl || record.raw?.imageUrl || ""),
       raw: record.raw || {},
       hazardStatements: record.hazardStatements || record.raw?.hazardStatements || [],
       hazardLevel: record.hazardLevel || record.raw?.hazardLevel || "",
@@ -1301,32 +1508,42 @@
     button.textContent = "Save all";
   }
 
-  function getImportedRecords() {
-    try {
-      const records = JSON.parse(localStorage.getItem(importedStoreKey) || "[]");
-      return Array.isArray(records) ? records : [];
-    } catch {
-      return [];
-    }
+function getImportedRecords() {
+  try {
+    const records = JSON.parse(localStorage.getItem(importedStoreKey) || "[]");
+    if (!Array.isArray(records)) return [];
+    const seen = new Set();
+    return records.map(normalizeImportedRecord).filter(Boolean).filter((record) => {
+      if (seen.has(record.id)) return false;
+      seen.add(record.id);
+      return true;
+    });
+  } catch {
+    return [];
   }
+}
 
-  function saveImportedRecord(item) {
-    const records = getImportedRecords();
-    const next = [item, ...records.filter((record) => record.id !== item.id)].slice(0, 40);
-    try {
-      localStorage.setItem(importedStoreKey, JSON.stringify(next));
-    } catch {
-      return;
+function saveImportedRecord(item) {
+  const record = normalizeImportedRecord(item);
+  if (!record) return;
+  const records = getImportedRecords();
+  const next = [record, ...records.filter((current) => current.id !== record.id)].slice(0, 40);
+  try {
+    localStorage.setItem(importedStoreKey, JSON.stringify(next));
+  } catch {
+    return;
     }
     renderImportedRecords();
     renderLocal($("#academicSearch")?.value.trim() || "", $("#searchScope")?.value || "all");
   }
 
-  function saveImportedRecords(items) {
-    const records = getImportedRecords();
-    const merged = [...items, ...records].filter((record, index, all) => {
-      return all.findIndex((item) => item.id === record.id) === index;
-    }).slice(0, 60);
+function saveImportedRecords(items) {
+  const records = getImportedRecords();
+  const incoming = Array.isArray(items) ? items : [];
+  const normalized = incoming.map(normalizeImportedRecord).filter(Boolean);
+  const merged = [...normalized, ...records].filter((record, index, all) => {
+    return all.findIndex((item) => item.id === record.id) === index;
+  }).slice(0, 60);
     try {
       localStorage.setItem(importedStoreKey, JSON.stringify(merged));
     } catch {
@@ -1351,13 +1568,17 @@
       </div>
       <button class="small-button" type="button" data-clear-imports>Clear session imports</button>
       <div class="imported-record-list">
-        ${records.slice(0, 8).map((record) => `
-          <a href="${record.href}" target="_blank" rel="noreferrer">
-            <img src="${esc(record.imageUrl || placeholderImage(record.type, record.title, record.formula || record.family || record.domain || ""))}" data-fallback-src="${esc(placeholderImage(record.type, record.title, record.formula || record.family || record.domain || ""))}" alt="" loading="lazy" referrerpolicy="no-referrer" />
+        ${records.slice(0, 8).map((record) => {
+          const fallback = placeholderImage(record.type, record.title, record.formula || record.family || record.domain || "");
+          const recordHref = safeText(record.href, "#");
+          return `
+          <a href="${recordHref}" target="_blank" rel="noopener noreferrer">
+            <img src="${esc(safeImageUrl(record.imageUrl, fallback))}" data-fallback-src="${esc(fallback)}" alt="" loading="lazy" referrerpolicy="no-referrer" />
             <span>${esc(record.type)}</span>
             <strong>${esc(record.title)}</strong>
           </a>
-        `).join("")}
+          `;
+        }).join("")}
       </div>
     `;
     wireImageFallbacks(panel);
@@ -1385,6 +1606,7 @@
     if (hasAdvancedFilters && $("#advancedSearchDisclosure")) $("#advancedSearchDisclosure").open = true;
     syncScopeChips(scope?.value || "all");
     updateAdvancedFilterSummary();
+    initSearchTabs();
 
     if (form) {
       form.addEventListener("submit", (event) => {

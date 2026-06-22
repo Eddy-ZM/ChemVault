@@ -364,7 +364,7 @@
 
   function renderSources(sources = data.sources) {
     $("#sourceGrid").innerHTML = sources.map((source) => `
-      <a class="source-card" href="${escapeHTML(source.url)}" target="_blank" rel="noreferrer">
+      <a class="source-card" href="${escapeHTML(source.url)}" target="_blank" rel="noopener noreferrer">
         <span>${escapeHTML(source.family)}</span>
         <strong>${escapeHTML(source.short)}</strong>
         <p>${escapeHTML(source.note)}</p>
@@ -395,7 +395,7 @@
       </div>
       <div class="reference-list">
         ${sources.map((source) => `
-          <a href="${escapeHTML(source.url)}" target="_blank" rel="noreferrer">
+          <a href="${escapeHTML(source.url)}" target="_blank" rel="noopener noreferrer">
             <strong>${escapeHTML(source.short)}</strong>
             <span>${escapeHTML(source.reliability)}</span>
           </a>

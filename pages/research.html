@@ -3,17 +3,22 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ChemVault | Research Desk</title>
-  <meta name="description" content="A multi-window academic research desk for evidence-backed chemistry reasoning." />
-  <meta name="theme-color" content="#f5f5f7" />
+  <title>Research Directions | ChemVault</title>
+  <meta name="description" content="ChemVault research directions in AI scientific data extraction, chemical knowledge systems, research intelligence and scientific document understanding." />
+  <meta name="keywords" content="ChemVault research, AI for Science, chemical knowledge infrastructure, scientific document understanding, research intelligence" />
+  <meta name="theme-color" content="#07111f" />
   <script src="/scripts/boot.js?v=20260618c"></script>
+  <meta property="og:title" content="Research Directions | ChemVault" />
+  <meta property="og:description" content="Research directions for transforming scientific knowledge into structured, searchable and machine-actionable systems." />
+  <meta property="og:type" content="website" />
+  <link rel="canonical" href="https://chemvault.science/pages/research.html" />
   <link rel="icon" href="/favicon.ico" sizes="any" />
   <link rel="icon" href="/assets/chemvault-icon-192.png" type="image/png" sizes="192x192" />
   <link rel="apple-touch-icon" href="/assets/chemvault-apple-touch-icon.png" />
   <link rel="manifest" href="/site.webmanifest" />
   <link rel="stylesheet" href="../assets/styles.css?v=20260620a" />
-  <link rel="stylesheet" href="../assets/research.css?v=20260603a" />
   <link rel="stylesheet" href="../assets/portal.css?v=20260619c" />
+  <link rel="stylesheet" href="../assets/academic.css?v=20260622a" />
   <script src="../data/chem-data.js?v=20260603a" defer></script>
   <script src="../data/reagent-extension.js?v=20260603a" defer></script>
   <script src="../data/research-data.js?v=20260603a" defer></script>
@@ -27,87 +32,110 @@
   <script src="../data/local-catalog-10000.js?v=20260603a" defer></script>
   <script src="../data/external-sources.js?v=20260603a" defer></script>
   <script src="../scripts/record-utils.js?v=20260603a" defer></script>
+  <script src="../scripts/search-intent.js?v=20260608a" defer></script>
   <script src="../scripts/api.js?v=20260603a" defer></script>
   <script src="../scripts/motion.js?v=20260618c" defer></script>
-  <script src="../scripts/site-shell.js?v=20260620a" defer></script>
-  <script src="../scripts/research-desk.js?v=20260603a" defer></script>
+  <script src="../scripts/site-shell.js?v=20260622a" defer></script>
 </head>
-<body class="page-shell" data-boot-label="Research">
+<body class="page-shell academic-site academic-page" data-boot-label="Research">
   <a class="skip-link" href="#main">Skip to content</a>
   <header class="site-header">
     <div class="container nav-shell">
-      <a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true"><img src="../assets/chemvault-logo-mark.png" alt="" /></span><span><strong>ChemVault</strong><small>academic portal</small></span></a>
+      <a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true"><img src="../assets/chemvault-logo-mark.png" alt="" /></span><span><strong>ChemVault</strong><small>scientific infrastructure</small></span></a>
       <button class="icon-button menu-toggle" type="button" aria-label="Open navigation" aria-expanded="false"><span></span><span></span><span></span></button>
       <nav class="site-nav" aria-label="Main navigation">
         <a href="../index.html">Home</a>
+        <a href="research.html">Research</a>
+        <a href="platform.html">Platform</a>
+        <a href="projects.html">Projects</a>
+        <a href="notes.html">Notes</a>
         <a href="search.html">Search</a>
-        <a href="workbench.html">Workbench</a>
-        <a href="reagents.html">Reagents</a>
-        <a href="materials.html">Materials</a>
-        <a href="methods.html">Methods</a>
-        <details class="nav-more">
-          <summary>More</summary>
-          <div class="nav-more-menu">
-            <a href="app.html">App</a>
-            <a href="research.html">Research</a>
-            <a href="dossiers.html">Dossiers</a>
-            <a href="spectroscopy.html">Spectroscopy</a>
-            <a href="atlas.html">Atlas</a>
-            <a href="library.html">Library</a>
-            <a href="about.html">About</a>
-            <a href="team.html">Team</a>
-            <a href="developer.html">Developer</a>
-          </div>
-        </details>
+        <a href="about.html">About</a>
+        <a href="contact.html">Contact</a>
       </nav>
-      <div class="header-actions">
-        <label class="search-shell" for="shellSearch"><span>Search</span><input id="shellSearch" type="search" placeholder="Search local records..." /></label>
-        <button class="theme-toggle" type="button" data-shell-action="theme" aria-label="Switch theme"><span class="theme-toggle__icon" aria-hidden="true"></span></button>
-      </div>
+      <div class="header-actions"><label class="search-shell" for="shellSearch"><span>Search</span><input id="shellSearch" type="search" placeholder="Search compounds..." /></label><button class="theme-toggle" type="button" data-shell-action="theme" aria-label="Switch theme"><span class="theme-toggle__icon" aria-hidden="true"></span></button></div>
     </div>
     <div class="container shell-search-results" id="shellSearchResults" aria-live="polite"></div>
   </header>
 
   <main id="main">
-    <section class="page-hero">
-      <div class="container page-hero-grid">
+    <section class="academic-page-hero">
+      <div class="container">
         <div>
-          <p class="eyebrow">dynamic page · academic case reasoning</p>
-          <h1>Research Desk</h1>
-          <p>Use a multi-window environment to inspect claim, evidence, limitation, citation and peer-review checks for chemistry case files.</p>
+          <span class="section-kicker">Research</span>
+          <h1>Research Directions</h1>
+          <p>ChemVault focuses on the infrastructure required to transform scientific knowledge into structured, searchable and machine-actionable systems.</p>
         </div>
-        <aside class="page-index-card">
-          <strong>Workflow</strong>
-          <ol>
-            <li>Select a case file</li>
-            <li>Audit evidence and limitations</li>
-            <li>Export a source-backed report note</li>
-          </ol>
+        <aside class="page-index-panel" aria-label="Research page index">
+          <strong>Direction map</strong>
+          <a href="#ai-extraction">AI Scientific Data Extraction</a>
+          <a href="#chemical-knowledge">Chemical Knowledge Infrastructure</a>
+          <a href="#research-intelligence">Research Intelligence</a>
+          <a href="#document-understanding">Scientific Document Understanding</a>
+          <a href="#molecular-systems">Molecular and Experimental Data Systems</a>
         </aside>
       </div>
     </section>
 
-    <section class="section">
+    <section class="academic-section">
+      <div class="container two-column">
+        <div class="research-list">
+          <article class="research-direction" id="ai-extraction">
+            <span class="section-kicker">Extraction systems</span>
+            <h2>AI Scientific Data Extraction</h2>
+            <p>ChemVault studies how models and structured parsers can extract chemical entities, experimental variables, tables, methods, measurements and evidence statements from papers, PDFs, lab reports and experimental documents. The goal is not merely text summarization, but conversion from unstructured scientific material into reviewable data objects with source context.</p>
+            <div class="tag-list"><span>AI for Science</span><span>PDF Parsing</span><span>Tables</span><span>Evidence</span></div>
+          </article>
+          <article class="research-direction" id="chemical-knowledge">
+            <span class="section-kicker">Knowledge systems</span>
+            <h2>Chemical Knowledge Infrastructure</h2>
+            <p>Chemical knowledge requires precise connections between compounds, reactions, reagents, methods, experimental conditions, observations and reported results. ChemVault explores data models and interfaces that keep these relationships explicit, searchable and suitable for later automation.</p>
+            <div class="tag-list"><span>Compounds</span><span>Reactions</span><span>Methods</span><span>Provenance</span></div>
+          </article>
+          <article class="research-direction" id="research-intelligence">
+            <span class="section-kicker">Research intelligence</span>
+            <h2>Research Intelligence</h2>
+            <p>Research intelligence combines literature understanding, trend analysis, knowledge graph construction and source-backed synthesis. ChemVault aims to support workflows where researchers can compare evidence, identify gaps, trace claims and make better decisions from connected scientific records.</p>
+            <div class="tag-list"><span>Literature Graph</span><span>Retrieval</span><span>Trend Analysis</span><span>Decision Support</span></div>
+          </article>
+          <article class="research-direction" id="document-understanding">
+            <span class="section-kicker">Document understanding</span>
+            <h2>Scientific Document Understanding</h2>
+            <p>Scientific documents include tables, figures, spectra, experimental procedures, references, claims and conclusions. ChemVault treats document understanding as a multimodal infrastructure problem: the system must preserve layout, units, uncertainty, methods and evidence relationships rather than flattening documents into plain text.</p>
+            <div class="tag-list"><span>Figures</span><span>Spectra</span><span>Methods</span><span>Claims</span></div>
+          </article>
+          <article class="research-direction" id="molecular-systems">
+            <span class="section-kicker">Experimental systems</span>
+            <h2>Molecular and Experimental Data Systems</h2>
+            <p>Future ChemVault layers can support molecular records, experimental data, laboratory knowledge bases and reproducible research notes. The direction is to connect molecular identifiers, experimental designs, conditions, outcomes and interpretation in a form that remains useful across projects and disciplines.</p>
+            <div class="tag-list"><span>Molecular Data</span><span>Lab Reports</span><span>Knowledge Base</span><span>Reproducibility</span></div>
+          </article>
+        </div>
+        <aside class="academic-panel note-panel">
+          <div class="page-index-panel">
+            <strong>Research principles</strong>
+            <span>Source-backed records before generated claims.</span>
+            <span>Structured data models before interface decoration.</span>
+            <span>Scientific uncertainty represented explicitly.</span>
+            <span>Static-first deployment with room for platform services.</span>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="academic-section academic-band">
       <div class="container">
-        <div class="research-shell">
-          <div class="research-topbar">
-            <label for="caseStudySelect"><span>Case file</span><select id="caseStudySelect"></select></label>
-            <label for="citationStyle"><span>Citation style</span><select id="citationStyle"><option value="harvard">Harvard note</option><option value="vancouver">Numbered note</option><option value="lab">Lab notebook</option></select></label>
-            <div class="research-actions">
-              <button class="secondary-button" type="button" data-research-action="focus-all">Restore windows</button>
-              <button class="primary-button" type="button" data-research-action="save-note">Save academic note</button>
-            </div>
+        <div class="section-header">
+          <div>
+            <span class="section-kicker">Applications</span>
+            <h2>Where the research directions can become useful systems.</h2>
           </div>
-          <div class="research-status" id="researchStatus"></div>
-          <div class="research-window-grid" id="researchWindowGrid">
-            <section class="research-window large" data-window="case"><div class="window-titlebar"><div><span>Case File</span><strong id="caseTitle">Loading...</strong></div><button type="button" class="text-button" data-research-action="toggle-window" data-window-target="case">collapse</button></div><div class="window-body" id="caseWindow"></div></section>
-            <section class="research-window" data-window="evidence"><div class="window-titlebar"><div><span>Evidence Matrix</span><strong>observations to claims</strong></div><button type="button" class="text-button" data-research-action="toggle-window" data-window-target="evidence">collapse</button></div><div class="window-body" id="evidenceWindow"></div></section>
-            <section class="research-window" data-window="argument"><div class="window-titlebar"><div><span>Mechanistic Argument</span><strong>claim, warrant, limits</strong></div><button type="button" class="text-button" data-research-action="toggle-window" data-window-target="argument">collapse</button></div><div class="window-body" id="argumentWindow"></div></section>
-            <section class="research-window" data-window="spectral"><div class="window-titlebar"><div><span>Spectral Evidence Board</span><strong>confidence scoring</strong></div><button type="button" class="text-button" data-research-action="toggle-window" data-window-target="spectral">collapse</button></div><div class="window-body" id="spectralWindow"></div></section>
-            <section class="research-window" data-window="citation"><div class="window-titlebar"><div><span>Citation Export</span><strong>source-backed note</strong></div><button type="button" class="text-button" data-research-action="toggle-window" data-window-target="citation">collapse</button></div><div class="window-body" id="citationWindow"></div></section>
-            <section class="research-window large" data-window="report"><div class="window-titlebar"><div><span>Academic Report Draft</span><strong>structured claim record</strong></div><button type="button" class="text-button" data-research-action="toggle-window" data-window-target="report">collapse</button></div><div class="window-body"><textarea id="reportDraft" spellcheck="true"></textarea></div></section>
-            <section class="research-window" data-window="review"><div class="window-titlebar"><div><span>Peer Review Checklist</span><strong id="reviewScore">0 / 0</strong></div><button type="button" class="text-button" data-research-action="toggle-window" data-window-target="review">collapse</button></div><div class="window-body" id="reviewWindow"></div></section>
-          </div>
+          <p>The research agenda supports practical workflows for students, researchers, independent builders and scientific communities.</p>
+        </div>
+        <div class="feature-grid">
+          <article class="feature-card"><h3>Paper-to-database pipelines</h3><p>Transform articles and supporting materials into structured data records with identifiers and provenance.</p></article>
+          <article class="feature-card"><h3>Research review workspaces</h3><p>Compare claims, methods, observations and source quality across related papers and project notes.</p></article>
+          <article class="feature-card"><h3>Chemistry-aware search</h3><p>Search by names, formulas, identifiers, reactions, methods and research context rather than only keywords.</p></article>
         </div>
       </div>
     </section>

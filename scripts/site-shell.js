@@ -9,6 +9,7 @@
     wireShellNav();
     wireShellTheme();
     wireShellSearch();
+    upgradeAcademicNavigation();
     markActivePage();
     adaptShellLayout();
     ensureDeveloperFooter();
@@ -74,7 +75,7 @@
       const hits = [...localHits, ...externalHits].slice(0, 8);
       panel.classList.add("active");
       panel.innerHTML = hits.length ? hits.map((hit) => `
-        <a class="search-hit" href="${hit.href}"${hit.external ? ' target="_blank" rel="noreferrer"' : ""}>
+        <a class="search-hit" href="${hit.href}"${hit.external ? ' target="_blank" rel="noopener noreferrer"' : ""}>
           <img src="${escapeHTML(thumbnailFor(hit))}" data-fallback-src="${escapeHTML(placeholderImage(hit.type, hit.title, hit.formula || hit.family || hit.domain || ""))}" alt="" loading="lazy" referrerpolicy="no-referrer" />
           <span>${escapeHTML(hit.type)}</span>
           <strong>${escapeHTML(hit.title)}</strong>
@@ -175,6 +176,26 @@
     });
   }
 
+  function upgradeAcademicNavigation() {
+    const nav = document.querySelector(".site-nav");
+    if (!nav) return;
+    nav.innerHTML = [
+      ["Home", "/index.html"],
+      ["Research", "/pages/research.html"],
+      ["Platform", "/pages/platform.html"],
+      ["Projects", "/pages/projects.html"],
+      ["Notes", "/pages/notes.html"],
+      ["Search", "/pages/search.html"],
+      ["About", "/pages/about.html"],
+      ["Contact", "/pages/contact.html"]
+    ].map(([label, href]) => `<a href="${href}">${label}</a>`).join("");
+
+    const brand = document.querySelector(".brand");
+    const brandSmall = brand?.querySelector("small");
+    if (brand) brand.setAttribute("href", "/index.html");
+    if (brandSmall) brandSmall.textContent = "scientific infrastructure";
+  }
+
   function applyTheme(theme, options = {}) {
     const setting = normaliseTheme(theme);
     const mode = resolveTheme(setting);
@@ -246,7 +267,34 @@
   }
 
   function ensureDeveloperFooter() {
-    if (document.querySelector(".site-footer")) return;
+    if (document.querySelector(".site-footer, .academic-footer")) return;
+    if (document.body.classList.contains("academic-site")) {
+      const footer = document.createElement("footer");
+      footer.className = "academic-footer";
+      footer.setAttribute("aria-label", "ChemVault footer");
+      footer.innerHTML = `
+        <div class="container academic-footer-grid">
+          <div>
+            <a class="footer-brand" href="/index.html">
+              <span class="footer-brand-mark" aria-hidden="true"><img src="/assets/chemvault-logo-mark.png" alt="" /></span>
+              <span><strong>ChemVault</strong><small>Scientific knowledge infrastructure</small></span>
+            </a>
+            <p>ChemVault is an independent academic technology initiative exploring chemistry, artificial intelligence and scientific knowledge infrastructure.</p>
+          </div>
+          <nav class="academic-footer-links" aria-label="Footer navigation">
+            <div><span>Platform</span><a href="/pages/research.html">Research</a><a href="/pages/platform.html">Platform</a><a href="/pages/projects.html">Projects</a></div>
+            <div><span>Tools</span><a href="/pages/search.html">Compound Search</a><a href="/pages/workbench.html">Workbench</a><a href="/data/public-record-index.json">Public Data</a></div>
+            <div><span>Connect</span><a href="/pages/notes.html">Notes</a><a href="/pages/about.html">About</a><a href="/pages/contact.html">Contact</a></div>
+          </nav>
+        </div>
+        <div class="container footer-bottom-line">
+          <span>© 2026 ChemVault. Research-oriented academic technology initiative.</span>
+          <span>Verify primary literature and safety data before applying chemical information.</span>
+        </div>
+      `;
+      document.body.appendChild(footer);
+      return;
+    }
     const versionLabel = "ChemVault v0.2.4";
     const footer = document.createElement("footer");
     footer.className = "site-footer";
@@ -260,46 +308,48 @@
               <div class="footer-brand-block footer-reveal" style="--footer-delay: 0ms">
                 <a class="footer-brand" href="/index.html">
                   <span class="footer-brand-mark" aria-hidden="true"><img src="/assets/chemvault-logo-mark.png" alt="" /></span>
-                  <span><strong>ChemVault</strong><small>Academic chemistry knowledge portal</small></span>
+                  <span><strong>ChemVault</strong><small>Scientific knowledge infrastructure</small></span>
                 </a>
-                <p>A focused chemistry workspace for searchable records, reagent notes, materials profiles, spectroscopy evidence and academic source review. Educational use only; verify primary data before applying it.</p>
+                <p>An academic technology initiative for chemistry, scientific data extraction, research intelligence and AI-assisted knowledge systems. Verify primary data before applying chemical information.</p>
                 <div class="footer-social-row" aria-label="Quick footer actions">
-                  <a class="footer-social" href="/pages/search.html" aria-label="Search ChemVault">Search</a>
-                  <a class="footer-social" href="/pages/workbench.html" aria-label="Open workbench">Workbench</a>
-                  <a class="footer-social" href="/data/public-record-index.json" aria-label="Open public record index">Data</a>
+                  <a class="footer-social" href="/pages/search.html" aria-label="Search ChemVault">Compound Search</a>
+                  <a class="footer-social" href="/pages/platform.html" aria-label="Open platform">Platform</a>
+                  <a class="footer-social" href="/data/public-record-index.json" aria-label="Open public record index">Public Data</a>
                 </div>
               </div>
               <div class="footer-link-groups">
                 <div class="footer-column footer-reveal" style="--footer-delay: 90ms">
-                  <span class="footer-heading">Explore</span>
-                  <a href="/pages/search.html">Search records</a>
+                  <span class="footer-heading">Platform</span>
+                  <a href="/pages/research.html">Research</a>
+                  <a href="/pages/platform.html">Platform</a>
+                  <a href="/pages/projects.html">Projects</a>
+                  <a href="/pages/notes.html">Notes</a>
+                  <a href="/pages/about.html">About</a>
+                </div>
+                <div class="footer-column footer-reveal" style="--footer-delay: 180ms">
+                  <span class="footer-heading">Tools</span>
+                  <a href="/pages/search.html">Compound Search</a>
+                  <a href="/pages/workbench.html">Research Workbench</a>
+                  <a href="/pages/app.html">Framework App</a>
                   <a href="/pages/reagents.html">Reagents</a>
                   <a href="/pages/materials.html">Materials</a>
+                  <a href="/pages/atlas.html">Atlas</a>
+                </div>
+                <div class="footer-column footer-reveal" style="--footer-delay: 270ms">
+                  <span class="footer-heading">Resources</span>
+                  <a href="/pages/library.html">Library</a>
                   <a href="/pages/methods.html">Methods</a>
                   <a href="/pages/spectroscopy.html">Spectroscopy</a>
                   <a href="/pages/dossiers.html">Dossiers</a>
-                </div>
-                <div class="footer-column footer-reveal" style="--footer-delay: 180ms">
-                  <span class="footer-heading">Workspaces</span>
-                  <a href="/pages/workbench.html">Research Workbench</a>
-                  <a href="/pages/app.html">Framework App</a>
-                  <a href="/pages/research.html">Research Desk</a>
-                  <a href="/pages/atlas.html">Atlas</a>
-                  <a href="/pages/library.html">Library</a>
-                </div>
-                <div class="footer-column footer-reveal" style="--footer-delay: 270ms">
-                  <span class="footer-heading">Project</span>
-                  <a href="/pages/about.html">About</a>
-                  <a href="/pages/team.html">Team</a>
-                  <a href="/pages/developer.html">Developer</a>
                   <a href="/data/public-record-index.json">Public data</a>
                   <a href="/sitemap.xml">Sitemap</a>
                 </div>
                 <div class="footer-column footer-reveal" style="--footer-delay: 360ms">
                   <span class="footer-heading">Contact</span>
                   <a href="mailto:contact@chemvault.science">Email ChemVault</a>
-                  <span>Created and maintained by Ziwen M.</span>
-                  <span>Research chemistry portal</span>
+                  <a href="/pages/contact.html">Collaborate</a>
+                  <a href="https://github.com/Eddy-ZM" target="_blank" rel="noopener noreferrer">GitHub</a>
+                  <span>Independent academic technology initiative</span>
                   <span>© 2026 ChemVault</span>
                 </div>
               </div>
@@ -308,21 +358,21 @@
               <div class="footer-mobile-identity">
                 <a class="footer-brand" href="/index.html">
                   <span class="footer-brand-mark" aria-hidden="true"><img src="/assets/chemvault-logo-mark.png" alt="" /></span>
-                  <span><strong>ChemVault</strong><small>Academic chemistry portal</small></span>
+                  <span><strong>ChemVault</strong><small>Scientific infrastructure</small></span>
                 </a>
-                <p>Educational reference only. Verify primary data before use.</p>
+                <p>Academic technology for chemistry and scientific knowledge systems. Verify primary data before use.</p>
               </div>
               <nav class="footer-mobile-links" aria-label="Footer navigation">
                 <a href="/pages/search.html">Search</a>
-                <a href="/pages/workbench.html">Workbench</a>
-                <a href="/data/public-record-index.json">Data</a>
-                <a href="mailto:contact@chemvault.science">Contact</a>
+                <a href="/pages/platform.html">Platform</a>
+                <a href="/pages/projects.html">Projects</a>
+                <a href="/pages/contact.html">Contact</a>
               </nav>
             </div>
             <div class="container footer-bottom">
               <p>© 2026 ChemVault. All rights reserved.</p>
               <div class="footer-bottom-meta">
-                <p>Educational reference, not a substitute for primary literature or safety review.</p>
+                <p>Research-oriented reference, not a substitute for primary literature or safety review.</p>
                 <span class="footer-version">${versionLabel}</span>
               </div>
             </div>
