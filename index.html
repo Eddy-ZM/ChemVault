@@ -108,60 +108,91 @@
           </div>
         </div>
 
-        <aside class="hero-instrument" aria-label="ChemVault compound search and system overview">
-          <form class="compound-search-panel" id="homeSearchForm">
-            <div class="tool-label"><span>Chemical compound search</span><strong>Active</strong></div>
-            <label for="homeSearch">Search Chemical Compounds</label>
-            <div class="academic-search-row">
-              <div class="academic-search-input home-search-input" data-home-search-input>
-                <input id="homeSearch" type="search" placeholder="Search compounds by name, formula, CAS number or identifier" autocomplete="off" />
-                <button class="academic-search-clear home-search-clear" type="button" data-home-search-clear hidden aria-label="Clear home search">
-                  <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12" /></svg>
-                </button>
-              </div>
-              <button class="academic-button primary" type="submit">Search</button>
+        <aside class="hero-instrument template-stage" aria-label="ChemVault compound search and research operating system preview">
+          <div class="stage-glow" aria-hidden="true"></div>
+
+          <form class="compound-search-panel command-search" id="homeSearchForm">
+            <div class="command-topline">
+              <span>Active Tool</span>
+              <strong>Chemical Compound Search</strong>
             </div>
-            <div class="home-quick-links" id="homeQuickLinks"></div>
+            <label for="homeSearch">Search Chemical Compounds</label>
+            <p class="search-hint">Query molecular names, formulas, CAS numbers or identifiers across curated chemistry sources.</p>
+            <div class="search-row">
+              <input id="homeSearch" name="q" type="search" placeholder="Search compounds by name, formula, CAS number or identifier" autocomplete="off" />
+              <button type="submit">Search</button>
+            </div>
+            <div class="quick-searches" id="homeQuickLinks" aria-label="Example compound searches">
+              <button type="button" data-query="aspirin">Aspirin</button>
+              <button type="button" data-query="caffeine">Caffeine</button>
+              <button type="button" data-query="benzene">Benzene</button>
+              <button type="button" data-query="sodium chloride">Sodium chloride</button>
+            </div>
+            <p class="search-status" id="homeSearchStatus" aria-live="polite">Compound search is available as an active ChemVault capability.</p>
           </form>
 
-          <div class="graph-panel molecular-map" aria-hidden="true">
-            <svg viewBox="0 0 520 300" role="img">
-              <line x1="80" y1="92" x2="176" y2="52"></line>
-              <line x1="176" y1="52" x2="286" y2="88"></line>
-              <line x1="286" y1="88" x2="412" y2="58"></line>
-              <line x1="80" y1="92" x2="146" y2="178"></line>
-              <line x1="146" y1="178" x2="266" y2="210"></line>
-              <line x1="266" y1="210" x2="388" y2="170"></line>
-              <line x1="286" y1="88" x2="266" y2="210"></line>
-              <line x1="412" y1="58" x2="388" y2="170"></line>
-              <circle cx="80" cy="92" r="22"></circle>
-              <circle cx="176" cy="52" r="18"></circle>
-              <circle cx="286" cy="88" r="26"></circle>
-              <circle cx="412" cy="58" r="20"></circle>
-              <circle cx="146" cy="178" r="24"></circle>
-              <circle cx="266" cy="210" r="28"></circle>
-              <circle cx="388" cy="170" r="23"></circle>
-              <text x="54" y="98">PDF</text>
-              <text x="153" y="58">NLP</text>
-              <text x="254" y="94">ENTITY</text>
-              <text x="388" y="64">GRAPH</text>
-              <text x="112" y="184">ASSAY</text>
-              <text x="232" y="216">COMPOUND</text>
-              <text x="360" y="176">METHOD</text>
-            </svg>
-            <div class="hero-stat-grid">
-              <div><strong id="metricSystems">0</strong><span>reaction systems</span></div>
-              <div><strong id="metricReagents">0</strong><span>reagent records</span></div>
-              <div><strong id="metricCompounds">0</strong><span>compounds</span></div>
-              <div><strong id="metricMaterials">0</strong><span>materials</span></div>
-              <div hidden><strong id="metricReactants">0</strong><span>reactants</span></div>
-              <div hidden><strong id="metricMechanisms">0</strong><span>mechanisms</span></div>
-              <div hidden><strong id="metricSources">0</strong><span>sources</span></div>
+          <div class="lab-console" aria-label="ChemVault platform interface preview">
+            <div class="console-topbar">
+              <div class="console-window-dots" aria-hidden="true"><span></span><span></span><span></span></div>
+              <span class="console-title">ChemVault Research OS</span>
+              <span class="console-status">Live prototype</span>
+            </div>
+
+            <div class="console-grid">
+              <article class="console-panel console-panel-primary">
+                <div class="console-panel-header">
+                  <span>Extraction Pipeline</span>
+                  <strong>Paper-to-Database</strong>
+                </div>
+                <div class="pipeline-row"><span>PDF ingestion</span><i style="--level: 84%"></i><strong>84%</strong></div>
+                <div class="pipeline-row"><span>Entity linking</span><i style="--level: 71%"></i><strong>71%</strong></div>
+                <div class="pipeline-row"><span>Evidence mapping</span><i style="--level: 63%"></i><strong>63%</strong></div>
+              </article>
+
+              <article class="console-panel mini-graph-panel">
+                <div class="console-panel-header">
+                  <span>Knowledge Graph</span>
+                  <strong>12 linked nodes</strong>
+                </div>
+                <svg viewBox="0 0 260 150" role="img" aria-label="Scientific knowledge graph preview">
+                  <line x1="52" y1="78" x2="128" y2="42"></line>
+                  <line x1="52" y1="78" x2="128" y2="112"></line>
+                  <line x1="128" y1="42" x2="204" y2="78"></line>
+                  <line x1="128" y1="112" x2="204" y2="78"></line>
+                  <line x1="128" y1="42" x2="128" y2="112"></line>
+                  <circle cx="52" cy="78" r="16"></circle>
+                  <circle cx="128" cy="42" r="13"></circle>
+                  <circle cx="128" cy="112" r="13"></circle>
+                  <circle cx="204" cy="78" r="16"></circle>
+                  <text x="52" y="82">C</text>
+                  <text x="128" y="46">R</text>
+                  <text x="128" y="116">M</text>
+                  <text x="204" y="82">D</text>
+                </svg>
+              </article>
+
+              <article class="console-panel console-command">
+                <div class="console-line"><span>$</span> extract --source paper.pdf --schema chemistry</div>
+                <div class="console-line muted">identified compounds, methods, tables and evidence spans</div>
+                <div class="console-line success">structured record ready for review</div>
+              </article>
+            </div>
+
+            <div class="console-metrics" aria-label="ChemVault data system metrics">
+              <div><strong id="metricCompounds">Active</strong><span>compound search</span></div>
+              <div><strong id="metricSystems">5</strong><span>research systems</span></div>
+              <div><strong id="metricReagents">8</strong><span>platform modules</span></div>
+              <div><strong id="metricMaterials">Academic</strong><span>knowledge layer</span></div>
+            </div>
+
+            <div class="hidden-metrics" hidden>
+              <span id="metricReactants"></span>
+              <span id="metricMechanisms"></span>
+              <span id="metricSources"></span>
+              <span id="backendStatus"></span>
+              <span id="backendPing"></span>
             </div>
           </div>
-          <div id="backendStatusList" hidden></div>
-          <span id="backendStatusLabel" hidden>API pending</span>
-          <code id="backendStatusMode" hidden>Cloudflare Pages</code>
         </aside>
       </div>
     </section>
