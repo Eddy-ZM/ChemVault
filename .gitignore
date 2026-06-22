@@ -1,5 +1,7 @@
 node_modules/
 .wrangler/
+.superpowers/
+ChemVault/
 .DS_Store
 .env
 .env.local
