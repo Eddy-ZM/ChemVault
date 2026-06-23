@@ -5099,3 +5099,43 @@ html.dark-mode body.academic-home .academic-hero .academic-button.primary {
   border-color: rgba(32, 213, 255, 0.58) !important;
   color: #03111f !important;
 }
+
+/* Button contrast normalization inside cards and dark themed pages. */
+html.dark-mode body :is(.contact-card, .project-card, .platform-capability-card, .research-area-card, .feature-card, .roadmap-item, .page-panel) :is(.academic-button, .academic-button.dark, .academic-button.primary),
+html.dark-mode body :is(.contact-card, .project-card, .platform-capability-card, .research-area-card, .feature-card, .roadmap-item, .page-panel) a.academic-button,
+html.dark-mode body :is(.contact-card, .project-card, .platform-capability-card, .research-area-card, .feature-card, .roadmap-item, .page-panel) .contact-link-row a {
+  background: #f8fbff !important;
+  border-color: rgba(248, 251, 255, 0.28) !important;
+  color: #07111f !important;
+  text-shadow: none !important;
+}
+
+html.dark-mode body :is(.contact-card, .project-card, .platform-capability-card, .research-area-card, .feature-card, .roadmap-item, .page-panel) :is(.academic-button, .academic-button.dark, .academic-button.primary):hover,
+html.dark-mode body :is(.contact-card, .project-card, .platform-capability-card, .research-area-card, .feature-card, .roadmap-item, .page-panel) a.academic-button:hover,
+html.dark-mode body :is(.contact-card, .project-card, .platform-capability-card, .research-area-card, .feature-card, .roadmap-item, .page-panel) .contact-link-row a:hover {
+  background: #ffffff !important;
+  color: #020817 !important;
+  border-color: rgba(255, 255, 255, 0.48) !important;
+}
+
+html.dark-mode body :is(.contact-card, .project-card, .platform-capability-card, .research-area-card, .feature-card, .roadmap-item, .page-panel) a:not(.academic-button):not(.footer-social) {
+  color: #8bd8ff !important;
+}
+
+html.light-mode body :is(.contact-card, .project-card, .platform-capability-card, .research-area-card, .feature-card, .roadmap-item, .page-panel) :is(.academic-button.dark, .academic-button.primary),
+html:not(.dark-mode) body :is(.contact-card, .project-card, .platform-capability-card, .research-area-card, .feature-card, .roadmap-item, .page-panel) :is(.academic-button.dark, .academic-button.primary),
+html.light-mode body :is(.contact-card, .project-card, .platform-capability-card, .research-area-card, .feature-card, .roadmap-item, .page-panel) .contact-link-row a,
+html:not(.dark-mode) body :is(.contact-card, .project-card, .platform-capability-card, .research-area-card, .feature-card, .roadmap-item, .page-panel) .contact-link-row a {
+  background: #07111f !important;
+  border-color: #07111f !important;
+  color: #ffffff !important;
+  text-shadow: none !important;
+}
+
+html.light-mode body :is(.contact-card, .project-card, .platform-capability-card, .research-area-card, .feature-card, .roadmap-item, .page-panel) :is(.academic-button.dark, .academic-button.primary):hover,
+html:not(.dark-mode) body :is(.contact-card, .project-card, .platform-capability-card, .research-area-card, .feature-card, .roadmap-item, .page-panel) :is(.academic-button.dark, .academic-button.primary):hover,
+html.light-mode body :is(.contact-card, .project-card, .platform-capability-card, .research-area-card, .feature-card, .roadmap-item, .page-panel) .contact-link-row a:hover,
+html:not(.dark-mode) body :is(.contact-card, .project-card, .platform-capability-card, .research-area-card, .feature-card, .roadmap-item, .page-panel) .contact-link-row a:hover {
+  background: #10213a !important;
+  color: #ffffff !important;
+}
