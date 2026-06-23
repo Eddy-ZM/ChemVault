@@ -3372,6 +3372,121 @@ html.dark-mode .leader-discipline {
   background-size: auto, auto, 64px 64px, 64px 64px, auto;
 }
 
+.team-directory-page .leadership-hero {
+  padding: clamp(46px, 7vw, 78px) 0 clamp(34px, 5vw, 58px) !important;
+}
+
+.team-directory-page .leadership-hero h1 {
+  max-width: 720px;
+  font-size: clamp(38px, 5.6vw, 68px) !important;
+  letter-spacing: -0.052em;
+}
+
+.team-directory-page .leadership-hero p {
+  max-width: 640px;
+  margin-top: 18px;
+  font-size: clamp(16px, 1.8vw, 20px) !important;
+}
+
+.team-directory-page .leadership-section,
+.team-directory-page .leadership-operating-model {
+  padding-top: clamp(34px, 5vw, 58px) !important;
+  padding-bottom: clamp(38px, 5vw, 64px) !important;
+}
+
+.team-directory-page .leadership-section-header {
+  margin-bottom: clamp(20px, 3vw, 30px) !important;
+}
+
+.team-directory-page .leadership-section-header h2 {
+  font-size: clamp(28px, 3.2vw, 42px) !important;
+}
+
+.team-directory-page .leadership-section-header p {
+  font-size: 16px !important;
+}
+
+.team-directory-page .leader-grid {
+  gap: 18px !important;
+}
+
+.team-directory-page .leader-grid-founder {
+  grid-template-columns: minmax(0, 320px) !important;
+}
+
+.team-directory-page .leader-grid-secondary {
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+}
+
+.team-directory-page .leader-card {
+  min-height: 326px !important;
+  border-radius: 22px !important;
+}
+
+.team-directory-page .leader-portrait {
+  height: 176px !important;
+}
+
+.team-directory-page .leader-portrait span {
+  width: 86px !important;
+  height: 86px !important;
+  font-size: 22px !important;
+}
+
+.team-directory-page .leader-copy {
+  padding: 18px 20px 20px !important;
+}
+
+.team-directory-page .leader-copy h3 {
+  font-size: 21px !important;
+}
+
+.team-directory-page .leader-role {
+  font-size: 14px !important;
+}
+
+.team-directory-page .leader-affiliation {
+  margin-top: 8px !important;
+  font-size: 13px !important;
+}
+
+.team-directory-page .leader-discipline {
+  font-size: 11px !important;
+}
+
+.team-directory-page .operating-model-card {
+  border-radius: 24px !important;
+  padding: clamp(24px, 4vw, 38px) !important;
+}
+
+.team-directory-page .operating-model-card h2 {
+  font-size: clamp(27px, 3.4vw, 40px) !important;
+}
+
+.team-directory-page .operating-model-card p {
+  font-size: 16px !important;
+}
+
+@media (max-width: 1100px) {
+  .team-directory-page .leader-grid-secondary {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (max-width: 680px) {
+  .team-directory-page .leader-grid-secondary {
+    grid-template-columns: 1fr !important;
+  }
+
+  .team-directory-page .leader-card {
+    min-height: 300px !important;
+  }
+
+  .team-directory-page .leader-portrait {
+    height: 156px !important;
+  }
+}
+
 .team-directory-page .leadership-hero::after {
   content: "";
   position: absolute;
