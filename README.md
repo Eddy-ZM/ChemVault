@@ -2,10 +2,12 @@
 
 ## License
 
-This repository is source-available but not open source.
+This repository is source-available but not open source. Public visibility is
+for review and reference only; no rights are granted to use, copy, modify,
+distribute, host, deploy, or create derivative works without prior written
+permission from Ziwen Mu or the repository owner.
 
-Copyright © 2026 Ziwen Mu.
-All rights reserved.
+See [LICENSE](./LICENSE). All rights reserved.
 
 ChemVault is a Cloudflare Pages-ready chemistry portal with a local-first chemistry database, academic search enrichment and a D1-backed dynamic API route.
 
