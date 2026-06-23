@@ -3976,3 +3976,211 @@ html.dark-mode .apple-board-grid span {
     grid-template-columns: 1fr;
   }
 }
+
+/* Compact Apple-style leadership profile sizing. */
+.apple-profile-section {
+  padding-bottom: 38px !important;
+}
+
+.apple-profile-grid {
+  grid-template-columns: repeat(auto-fill, minmax(156px, 188px)) !important;
+  justify-content: start !important;
+  gap: 26px 28px !important;
+}
+
+.apple-profile-card {
+  max-width: 188px !important;
+}
+
+.apple-profile-photo {
+  aspect-ratio: 1 / 1 !important;
+}
+
+.apple-profile-photo span {
+  width: 64px !important;
+  height: 64px !important;
+  font-size: 20px !important;
+}
+
+.apple-profile-card h2 {
+  margin-top: 13px !important;
+  font-size: 17px !important;
+}
+
+.apple-profile-card p,
+.apple-profile-card span {
+  font-size: 13px !important;
+}
+
+@media (max-width: 760px) {
+  .apple-profile-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .apple-profile-card {
+    max-width: none !important;
+  }
+}
+
+/* Light-mode readability safety net across ChemVault pages. */
+html.light-mode,
+html:not(.dark-mode) {
+  color-scheme: light;
+}
+
+html.light-mode body,
+html:not(.dark-mode) body {
+  color: var(--cv-ink, #172033);
+}
+
+html.light-mode :is(
+  .academic-page,
+  .academic-home,
+  .academic-section,
+  .academic-page-hero,
+  .section-header,
+  .text-column,
+  .page-index-panel,
+  .feature-card,
+  .research-area-card,
+  .platform-capability-card,
+  .project-card,
+  .academic-note-card,
+  .contact-card,
+  .roadmap-item,
+  .page-panel,
+  .search-panel,
+  .local-results-panel,
+  .nih-import-panel,
+  .session-import-panel
+),
+html:not(.dark-mode) :is(
+  .academic-page,
+  .academic-home,
+  .academic-section,
+  .academic-page-hero,
+  .section-header,
+  .text-column,
+  .page-index-panel,
+  .feature-card,
+  .research-area-card,
+  .platform-capability-card,
+  .project-card,
+  .academic-note-card,
+  .contact-card,
+  .roadmap-item,
+  .page-panel,
+  .search-panel,
+  .local-results-panel,
+  .nih-import-panel,
+  .session-import-panel
+) {
+  color: var(--cv-ink, #172033) !important;
+}
+
+html.light-mode :is(
+  .academic-page,
+  .academic-home,
+  .academic-section,
+  .academic-page-hero,
+  .section-header,
+  .text-column,
+  .page-index-panel,
+  .feature-card,
+  .research-area-card,
+  .platform-capability-card,
+  .project-card,
+  .academic-note-card,
+  .contact-card,
+  .roadmap-item,
+  .page-panel,
+  .search-panel,
+  .local-results-panel,
+  .nih-import-panel,
+  .session-import-panel
+) :is(h1, h2, h3, h4, strong, b, label, summary),
+html:not(.dark-mode) :is(
+  .academic-page,
+  .academic-home,
+  .academic-section,
+  .academic-page-hero,
+  .section-header,
+  .text-column,
+  .page-index-panel,
+  .feature-card,
+  .research-area-card,
+  .platform-capability-card,
+  .project-card,
+  .academic-note-card,
+  .contact-card,
+  .roadmap-item,
+  .page-panel,
+  .search-panel,
+  .local-results-panel,
+  .nih-import-panel,
+  .session-import-panel
+) :is(h1, h2, h3, h4, strong, b, label, summary) {
+  color: var(--cv-ink, #172033) !important;
+}
+
+html.light-mode :is(
+  .academic-page,
+  .academic-home,
+  .academic-section,
+  .academic-page-hero,
+  .section-header,
+  .text-column,
+  .page-index-panel,
+  .feature-card,
+  .research-area-card,
+  .platform-capability-card,
+  .project-card,
+  .academic-note-card,
+  .contact-card,
+  .roadmap-item,
+  .page-panel,
+  .search-panel,
+  .local-results-panel,
+  .nih-import-panel,
+  .session-import-panel
+) :is(p, li, span, small, time),
+html:not(.dark-mode) :is(
+  .academic-page,
+  .academic-home,
+  .academic-section,
+  .academic-page-hero,
+  .section-header,
+  .text-column,
+  .page-index-panel,
+  .feature-card,
+  .research-area-card,
+  .platform-capability-card,
+  .project-card,
+  .academic-note-card,
+  .contact-card,
+  .roadmap-item,
+  .page-panel,
+  .search-panel,
+  .local-results-panel,
+  .nih-import-panel,
+  .session-import-panel
+) :is(p, li, span, small, time) {
+  color: var(--cv-muted, #667085) !important;
+}
+
+html.light-mode :is(.tag-list span, .capability-meta span, .project-meta span, .note-meta span, .project-stack code),
+html:not(.dark-mode) :is(.tag-list span, .capability-meta span, .project-meta span, .note-meta span, .project-stack code) {
+  background: var(--cv-paper, #ffffff) !important;
+  color: var(--cv-ink, #172033) !important;
+  border-color: var(--cv-border, rgba(15, 23, 42, 0.14)) !important;
+}
+
+html.light-mode :is(.vision-panel, .operating-model-card),
+html:not(.dark-mode) :is(.vision-panel, .operating-model-card) {
+  color: var(--cv-paper, #ffffff) !important;
+}
+
+html.light-mode :is(.vision-panel, .operating-model-card) :is(h1, h2, h3, h4, strong, p, span),
+html:not(.dark-mode) :is(.vision-panel, .operating-model-card) :is(h1, h2, h3, h4, strong, p, span) {
+  color: inherit !important;
+}
