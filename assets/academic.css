@@ -4184,3 +4184,373 @@ html.light-mode :is(.vision-panel, .operating-model-card) :is(h1, h2, h3, h4, st
 html:not(.dark-mode) :is(.vision-panel, .operating-model-card) :is(h1, h2, h3, h4, strong, p, span) {
   color: inherit !important;
 }
+
+/* Final contrast normalization for light and dark themes. */
+html.light-mode body,
+html:not(.dark-mode) body {
+  --cv-readable-heading: #0f172a;
+  --cv-readable-body: #334155;
+  --cv-readable-muted: #526178;
+  --cv-readable-surface: rgba(255, 255, 255, 0.96);
+  --cv-readable-surface-2: #f6f8fb;
+  --cv-readable-border: rgba(15, 23, 42, 0.14);
+  --cv-readable-link: #155eef;
+}
+
+html.dark-mode body {
+  --cv-readable-heading: #f6faff;
+  --cv-readable-body: #d7e0ee;
+  --cv-readable-muted: #aebbd0;
+  --cv-readable-surface: rgba(19, 33, 52, 0.96);
+  --cv-readable-surface-2: rgba(12, 22, 40, 0.96);
+  --cv-readable-border: rgba(154, 178, 209, 0.26);
+  --cv-readable-link: #8bd8ff;
+}
+
+html.light-mode body .site-header,
+html:not(.dark-mode) body .site-header {
+  background: rgba(245, 247, 251, 0.9) !important;
+  border-bottom-color: rgba(15, 23, 42, 0.12) !important;
+  color: #111827 !important;
+}
+
+html.light-mode body :is(.brand, .site-nav a, .nav-more > summary),
+html:not(.dark-mode) body :is(.brand, .site-nav a, .nav-more > summary) {
+  color: #111827 !important;
+}
+
+html.light-mode body :is(.brand small, .search-shell span),
+html:not(.dark-mode) body :is(.brand small, .search-shell span) {
+  color: #526178 !important;
+}
+
+html.light-mode body :is(.site-nav a:hover, .site-nav a:focus-visible, .nav-more > summary:hover, .nav-more > summary:focus-visible, .site-nav a[aria-current="page"], .nav-more > summary[aria-current="page"]),
+html:not(.dark-mode) body :is(.site-nav a:hover, .site-nav a:focus-visible, .nav-more > summary:hover, .nav-more > summary:focus-visible, .site-nav a[aria-current="page"], .nav-more > summary[aria-current="page"]) {
+  background: rgba(15, 23, 42, 0.075) !important;
+  color: #0f172a !important;
+}
+
+html.dark-mode body .site-header {
+  background: rgba(8, 16, 30, 0.9) !important;
+  border-bottom-color: rgba(226, 232, 240, 0.14) !important;
+  color: #f8fbff !important;
+}
+
+html.dark-mode body :is(.brand, .site-nav a, .nav-more > summary) {
+  color: #f8fbff !important;
+}
+
+html.dark-mode body :is(.brand small, .search-shell span) {
+  color: rgba(226, 232, 240, 0.72) !important;
+}
+
+html.dark-mode body :is(.site-nav a:hover, .site-nav a:focus-visible, .nav-more > summary:hover, .nav-more > summary:focus-visible, .site-nav a[aria-current="page"], .nav-more > summary[aria-current="page"]) {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: #ffffff !important;
+}
+
+html.light-mode body :is(.search-shell, .theme-toggle, .menu-toggle),
+html:not(.dark-mode) body :is(.search-shell, .theme-toggle, .menu-toggle) {
+  background: rgba(255, 255, 255, 0.88) !important;
+  border-color: rgba(15, 23, 42, 0.16) !important;
+  color: #111827 !important;
+}
+
+html.light-mode body .search-shell input,
+html:not(.dark-mode) body .search-shell input {
+  color: #111827 !important;
+}
+
+html.light-mode body .search-shell input::placeholder,
+html:not(.dark-mode) body .search-shell input::placeholder {
+  color: rgba(82, 97, 120, 0.72) !important;
+}
+
+html.dark-mode body :is(.search-shell, .theme-toggle, .menu-toggle) {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(255, 255, 255, 0.16) !important;
+  color: #f8fbff !important;
+}
+
+html.dark-mode body .search-shell input {
+  color: #ffffff !important;
+}
+
+html.dark-mode body .search-shell input::placeholder {
+  color: rgba(226, 232, 240, 0.58) !important;
+}
+
+html.light-mode :is(
+  .page-index-panel,
+  .feature-card,
+  .research-area-card,
+  .platform-capability-card,
+  .project-card,
+  .academic-note-card,
+  .contact-card,
+  .roadmap-item,
+  .page-panel,
+  .search-panel,
+  .local-results-panel,
+  .nih-import-panel,
+  .session-import-panel,
+  .search-hit,
+  .result-card,
+  .record-card
+),
+html:not(.dark-mode) :is(
+  .page-index-panel,
+  .feature-card,
+  .research-area-card,
+  .platform-capability-card,
+  .project-card,
+  .academic-note-card,
+  .contact-card,
+  .roadmap-item,
+  .page-panel,
+  .search-panel,
+  .local-results-panel,
+  .nih-import-panel,
+  .session-import-panel,
+  .search-hit,
+  .result-card,
+  .record-card
+) {
+  background-color: var(--cv-readable-surface) !important;
+  color: var(--cv-readable-body) !important;
+  border-color: var(--cv-readable-border) !important;
+}
+
+html.dark-mode :is(
+  .page-index-panel,
+  .feature-card,
+  .research-area-card,
+  .platform-capability-card,
+  .project-card,
+  .academic-note-card,
+  .contact-card,
+  .roadmap-item,
+  .page-panel,
+  .search-panel,
+  .local-results-panel,
+  .nih-import-panel,
+  .session-import-panel,
+  .search-hit,
+  .result-card,
+  .record-card
+) {
+  background-color: var(--cv-readable-surface) !important;
+  color: var(--cv-readable-body) !important;
+  border-color: var(--cv-readable-border) !important;
+}
+
+html.light-mode :is(
+  .page-index-panel,
+  .feature-card,
+  .research-area-card,
+  .platform-capability-card,
+  .project-card,
+  .academic-note-card,
+  .contact-card,
+  .roadmap-item,
+  .page-panel,
+  .search-panel,
+  .local-results-panel,
+  .nih-import-panel,
+  .session-import-panel,
+  .search-hit,
+  .result-card,
+  .record-card
+) :is(h1, h2, h3, h4, h5, strong, b, label),
+html:not(.dark-mode) :is(
+  .page-index-panel,
+  .feature-card,
+  .research-area-card,
+  .platform-capability-card,
+  .project-card,
+  .academic-note-card,
+  .contact-card,
+  .roadmap-item,
+  .page-panel,
+  .search-panel,
+  .local-results-panel,
+  .nih-import-panel,
+  .session-import-panel,
+  .search-hit,
+  .result-card,
+  .record-card
+) :is(h1, h2, h3, h4, h5, strong, b, label) {
+  color: var(--cv-readable-heading) !important;
+}
+
+html.dark-mode :is(
+  .page-index-panel,
+  .feature-card,
+  .research-area-card,
+  .platform-capability-card,
+  .project-card,
+  .academic-note-card,
+  .contact-card,
+  .roadmap-item,
+  .page-panel,
+  .search-panel,
+  .local-results-panel,
+  .nih-import-panel,
+  .session-import-panel,
+  .search-hit,
+  .result-card,
+  .record-card
+) :is(h1, h2, h3, h4, h5, strong, b, label) {
+  color: var(--cv-readable-heading) !important;
+}
+
+html.light-mode :is(
+  .page-index-panel,
+  .feature-card,
+  .research-area-card,
+  .platform-capability-card,
+  .project-card,
+  .academic-note-card,
+  .contact-card,
+  .roadmap-item,
+  .page-panel,
+  .search-panel,
+  .local-results-panel,
+  .nih-import-panel,
+  .session-import-panel,
+  .search-hit,
+  .result-card,
+  .record-card
+) :is(p, li, small, time, dd, dt),
+html:not(.dark-mode) :is(
+  .page-index-panel,
+  .feature-card,
+  .research-area-card,
+  .platform-capability-card,
+  .project-card,
+  .academic-note-card,
+  .contact-card,
+  .roadmap-item,
+  .page-panel,
+  .search-panel,
+  .local-results-panel,
+  .nih-import-panel,
+  .session-import-panel,
+  .search-hit,
+  .result-card,
+  .record-card
+) :is(p, li, small, time, dd, dt) {
+  color: var(--cv-readable-muted) !important;
+}
+
+html.dark-mode :is(
+  .page-index-panel,
+  .feature-card,
+  .research-area-card,
+  .platform-capability-card,
+  .project-card,
+  .academic-note-card,
+  .contact-card,
+  .roadmap-item,
+  .page-panel,
+  .search-panel,
+  .local-results-panel,
+  .nih-import-panel,
+  .session-import-panel,
+  .search-hit,
+  .result-card,
+  .record-card
+) :is(p, li, small, time, dd, dt) {
+  color: var(--cv-readable-muted) !important;
+}
+
+html.light-mode :is(.page-index-panel, .feature-card, .research-area-card, .platform-capability-card, .project-card, .academic-note-card, .contact-card, .roadmap-item) a:not(.academic-button),
+html:not(.dark-mode) :is(.page-index-panel, .feature-card, .research-area-card, .platform-capability-card, .project-card, .academic-note-card, .contact-card, .roadmap-item) a:not(.academic-button) {
+  color: var(--cv-readable-link) !important;
+}
+
+html.dark-mode :is(.page-index-panel, .feature-card, .research-area-card, .platform-capability-card, .project-card, .academic-note-card, .contact-card, .roadmap-item) a:not(.academic-button) {
+  color: var(--cv-readable-link) !important;
+}
+
+html.light-mode :is(.section-kicker, .card-kicker, .status-pill),
+html:not(.dark-mode) :is(.section-kicker, .card-kicker, .status-pill) {
+  color: #155eef !important;
+}
+
+html.dark-mode :is(.section-kicker, .card-kicker, .status-pill) {
+  color: #8bd8ff !important;
+}
+
+html.light-mode :is(.tag-list span, .capability-meta span, .project-meta span, .note-meta span, .project-stack code),
+html:not(.dark-mode) :is(.tag-list span, .capability-meta span, .project-meta span, .note-meta span, .project-stack code) {
+  background: #f8fafc !important;
+  color: #172033 !important;
+  border-color: rgba(15, 23, 42, 0.14) !important;
+}
+
+html.dark-mode :is(.tag-list span, .capability-meta span, .project-meta span, .note-meta span, .project-stack code) {
+  background: rgba(226, 232, 240, 0.08) !important;
+  color: #e5edf8 !important;
+  border-color: rgba(226, 232, 240, 0.2) !important;
+}
+
+.academic-page-hero {
+  color: #f8fbff !important;
+}
+
+.academic-page-hero :is(h1, h2, h3, strong) {
+  color: #ffffff !important;
+}
+
+.academic-page-hero p {
+  color: rgba(248, 251, 255, 0.86) !important;
+}
+
+.academic-page-hero .page-index-panel {
+  color: var(--cv-readable-body) !important;
+}
+
+.academic-page-hero .page-index-panel :is(strong, h2, h3, a) {
+  color: var(--cv-readable-heading) !important;
+}
+
+.academic-page-hero .page-index-panel :is(span, p) {
+  color: var(--cv-readable-muted) !important;
+}
+
+:is(.vision-panel, .operating-model-card) {
+  background: linear-gradient(135deg, #07111f, #10213a) !important;
+  color: #f8fbff !important;
+}
+
+:is(.vision-panel, .operating-model-card) :is(h1, h2, h3, h4, strong) {
+  color: #ffffff !important;
+}
+
+:is(.vision-panel, .operating-model-card) :is(p, span) {
+  color: rgba(248, 251, 255, 0.82) !important;
+}
+
+:is(.vision-panel, .operating-model-card) .academic-button.primary {
+  background: #ffffff !important;
+  color: #07111f !important;
+}
+
+:is(.vision-panel, .operating-model-card) .academic-button.ghost {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(255, 255, 255, 0.24) !important;
+  color: #ffffff !important;
+}
+
+/* Ensure Team profile initials are optically centered in portrait circles. */
+.apple-profile-photo span,
+.leader-portrait span,
+.team-card-orb {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  line-height: 1 !important;
+  padding: 0 !important;
+}
