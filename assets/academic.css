@@ -3751,3 +3751,33 @@ html.dark-mode .team-directory-page .leader-portrait {
     height: 104px !important;
   }
 }
+
+/* Compact Apple-leadership-like page header: directory first, not a landing hero. */
+.team-directory-page .leadership-hero-compact {
+  padding: 28px 0 18px !important;
+  text-align: left !important;
+  background: var(--cv-bg) !important;
+}
+
+.team-directory-page .leadership-hero-compact::after {
+  display: none !important;
+}
+
+.team-directory-page .leadership-hero-compact .leadership-hero-inner {
+  max-width: var(--container, 1180px) !important;
+}
+
+.team-directory-page .leadership-hero-compact h1 {
+  max-width: none !important;
+  margin: 0 !important;
+  font-size: clamp(28px, 3vw, 40px) !important;
+  line-height: 1.08 !important;
+  letter-spacing: -0.035em !important;
+}
+
+.team-directory-page .leadership-hero-compact p {
+  max-width: 620px !important;
+  margin: 8px 0 0 !important;
+  font-size: 14px !important;
+  line-height: 1.45 !important;
+}
