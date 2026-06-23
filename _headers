@@ -17,5 +17,8 @@
 /data/*
   Cache-Control: public, max-age=3600
 
+/scripts/site-shell.js
+  Cache-Control: no-cache, no-store, must-revalidate
+
 /scripts/*
   Cache-Control: public, max-age=300, must-revalidate
