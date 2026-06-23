@@ -196,8 +196,9 @@
       ["Platform", "/pages/platform.html"],
       ["Projects", "/pages/projects.html"],
       ["Notes", "/pages/notes.html"],
-      ["Search", "/pages/search.html"],
+      ["Compounds", "/pages/search.html"],
       ["About", "/pages/about.html"],
+      ["Team", "/pages/team.html"],
       ["Contact", "/pages/contact.html"]
     ].map(([label, href]) => `<a href="${href}">${label}</a>`).join("");
 
@@ -309,6 +310,7 @@
                   <a href="/pages/projects.html">Projects</a>
                   <a href="/pages/notes.html">Notes</a>
                   <a href="/pages/about.html">About</a>
+                  <a href="/pages/team.html">Team</a>
                 </div>
                 <div class="footer-column footer-reveal" style="--footer-delay: 180ms">
                   <span class="footer-heading">Tools</span>
@@ -347,7 +349,7 @@
                 <p>Academic technology for chemistry and scientific knowledge systems. Verify primary data before use.</p>
               </div>
               <nav class="footer-mobile-links" aria-label="Footer navigation">
-                <a href="/pages/search.html">Search</a>
+                <a href="/pages/search.html">Compounds</a>
                 <a href="/pages/platform.html">Platform</a>
                 <a href="/pages/projects.html">Projects</a>
                 <a href="/pages/contact.html">Contact</a>
