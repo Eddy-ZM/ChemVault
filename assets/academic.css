@@ -3781,3 +3781,198 @@ html.dark-mode .team-directory-page .leader-portrait {
   font-size: 14px !important;
   line-height: 1.45 !important;
 }
+
+/* Apple Leadership-aligned Team page reset. */
+.team-directory-page {
+  background: #f5f5f7 !important;
+  color: #1d1d1f !important;
+}
+
+.team-directory-page .site-header {
+  background: rgba(245, 245, 247, 0.88) !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08) !important;
+  backdrop-filter: saturate(180%) blur(20px);
+}
+
+.apple-leadership-main {
+  background: #f5f5f7;
+  color: #1d1d1f;
+  min-height: 72vh;
+}
+
+.apple-leadership-heading {
+  padding: 48px 0 34px;
+}
+
+.apple-leadership-heading h1 {
+  margin: 0;
+  color: #1d1d1f;
+  font-size: clamp(40px, 5vw, 64px);
+  font-weight: 720;
+  line-height: 1.05;
+  letter-spacing: -0.055em;
+}
+
+.apple-profile-section {
+  padding: 0 0 54px;
+}
+
+.apple-profile-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 34px 28px;
+}
+
+.apple-profile-card {
+  min-width: 0;
+}
+
+.apple-profile-photo {
+  display: grid;
+  aspect-ratio: 1 / 1.08;
+  place-items: center;
+  background: #e8e8ed;
+  overflow: hidden;
+}
+
+.apple-profile-photo span {
+  display: grid;
+  width: 86px;
+  height: 86px;
+  place-items: center;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #2d2d2f, #111113);
+  color: #f5f5f7;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.045em;
+}
+
+.apple-profile-card h2 {
+  margin: 17px 0 4px;
+  color: #1d1d1f;
+  font-size: 19px;
+  font-weight: 700;
+  line-height: 1.16;
+  letter-spacing: -0.022em;
+}
+
+.apple-profile-card p,
+.apple-profile-card span {
+  display: block;
+  margin: 0;
+  color: #1d1d1f;
+  font-size: 14px;
+  line-height: 1.35;
+  letter-spacing: -0.012em;
+}
+
+.apple-profile-card span {
+  margin-top: 4px;
+  color: #6e6e73;
+}
+
+.apple-board-section {
+  border-top: 1px solid #d2d2d7;
+  padding: 42px 0 70px;
+}
+
+.apple-board-section h2 {
+  margin: 0 0 24px;
+  color: #1d1d1f;
+  font-size: clamp(30px, 3.4vw, 44px);
+  font-weight: 720;
+  line-height: 1.08;
+  letter-spacing: -0.045em;
+}
+
+.apple-board-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 26px 42px;
+}
+
+.apple-board-grid article {
+  border-top: 1px solid #d2d2d7;
+  padding-top: 16px;
+}
+
+.apple-board-grid h3 {
+  margin: 0 0 4px;
+  color: #1d1d1f;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.apple-board-grid p,
+.apple-board-grid span {
+  display: block;
+  margin: 0;
+  color: #1d1d1f;
+  font-size: 14px;
+  line-height: 1.38;
+}
+
+.apple-board-grid span {
+  margin-top: 4px;
+  color: #6e6e73;
+}
+
+html.dark-mode .team-directory-page,
+html.dark-mode .apple-leadership-main {
+  background: #f5f5f7 !important;
+  color: #1d1d1f !important;
+}
+
+html.dark-mode .team-directory-page .site-header {
+  background: rgba(245, 245, 247, 0.88) !important;
+  border-bottom-color: rgba(0, 0, 0, 0.08) !important;
+}
+
+html.dark-mode .apple-leadership-heading h1,
+html.dark-mode .apple-profile-card h2,
+html.dark-mode .apple-profile-card p,
+html.dark-mode .apple-board-section h2,
+html.dark-mode .apple-board-grid h3,
+html.dark-mode .apple-board-grid p {
+  color: #1d1d1f !important;
+}
+
+html.dark-mode .apple-profile-card span,
+html.dark-mode .apple-board-grid span {
+  color: #6e6e73 !important;
+}
+
+@media (max-width: 1024px) {
+  .apple-profile-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .apple-leadership-heading {
+    padding: 34px 0 26px;
+  }
+
+  .apple-profile-grid,
+  .apple-board-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 28px 18px;
+  }
+
+  .apple-profile-photo span {
+    width: 70px;
+    height: 70px;
+    font-size: 22px;
+  }
+}
+
+@media (max-width: 480px) {
+  .apple-profile-grid,
+  .apple-board-grid {
+    grid-template-columns: 1fr;
+  }
+}
