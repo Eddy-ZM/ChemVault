@@ -4770,3 +4770,120 @@ html:not(.dark-mode) body.team-directory-page .apple-profile-photo {
     --fixed-header-height: 68px;
   }
 }
+
+/* Preserve readable text inside intentionally dark home hero and footer surfaces. */
+.academic-hero,
+.academic-hero :is(.academic-hero-content, .hero-title, .hero-subtitle, .hero-lead, .hero-proof-row, .hero-proof-row span),
+.academic-hero :is(.command-topline, .command-topline span, .command-topline strong, .compound-search-panel, .compound-search-panel label, .compound-search-panel p, .search-hint, .search-status),
+.site-footer,
+.site-footer :is(.footer-panel, .footer-brand-block, .footer-brand, .footer-brand span, .footer-column, .footer-bottom, .footer-mobile-identity) {
+  color: #f8fbff !important;
+}
+
+.academic-hero :is(.hero-title, .hero-subtitle, .command-topline strong, .compound-search-panel label),
+.site-footer :is(.footer-brand strong, .footer-heading, .footer-social, .footer-column a) {
+  color: #ffffff !important;
+}
+
+.academic-hero :is(.hero-lead, .search-hint, .search-status, .hero-proof-row span),
+.site-footer :is(.footer-brand small, .footer-brand-block p, .footer-column span, .footer-bottom p, .footer-mobile-identity p) {
+  color: rgba(248, 251, 255, 0.76) !important;
+}
+
+.site-footer :is(.footer-social, .footer-column a, .footer-mobile-links a) {
+  color: #f8fbff !important;
+}
+
+.site-footer :is(.footer-social:hover, .footer-column a:hover, .footer-mobile-links a:hover) {
+  color: #ffffff !important;
+}
+
+.academic-hero :is(.academic-button.ghost, .academic-button.ghost:visited) {
+  color: #ffffff !important;
+  border-color: rgba(255, 255, 255, 0.26) !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+
+.academic-hero .academic-button.primary {
+  color: #03111f !important;
+}
+
+.academic-hero .compound-search-panel input {
+  color: #f8fbff !important;
+}
+
+.academic-hero .compound-search-panel input::placeholder {
+  color: rgba(248, 251, 255, 0.56) !important;
+}
+
+.academic-hero .quick-searches button {
+  color: #f8fbff !important;
+}
+
+/* Light mode footer keeps its dark glass design, so force high-contrast footer typography. */
+html.light-mode body .site-footer,
+html:not(.dark-mode) body .site-footer {
+  background: #07111f !important;
+  color: #f8fbff !important;
+}
+
+html.light-mode body .site-footer :is(strong, a, .footer-heading),
+html:not(.dark-mode) body .site-footer :is(strong, a, .footer-heading) {
+  color: #ffffff !important;
+}
+
+html.light-mode body .site-footer :is(p, small, span),
+html:not(.dark-mode) body .site-footer :is(p, small, span) {
+  color: rgba(248, 251, 255, 0.76) !important;
+}
+
+/* Team page header must follow the active theme instead of Apple light override. */
+html.dark-mode body.team-directory-page .site-header {
+  background: rgba(8, 16, 30, 0.92) !important;
+  border-bottom-color: rgba(226, 232, 240, 0.14) !important;
+  color: #f8fbff !important;
+}
+
+html.dark-mode body.team-directory-page :is(.brand, .site-nav a, .nav-more > summary) {
+  color: #f8fbff !important;
+}
+
+html.dark-mode body.team-directory-page :is(.brand small, .search-shell span) {
+  color: rgba(226, 232, 240, 0.72) !important;
+}
+
+html.dark-mode body.team-directory-page :is(.site-nav a:hover, .site-nav a:focus-visible, .site-nav a[aria-current="page"], .nav-more > summary:hover, .nav-more > summary:focus-visible, .nav-more > summary[aria-current="page"]) {
+  background: rgba(255, 255, 255, 0.12) !important;
+  color: #ffffff !important;
+}
+
+html.dark-mode body.team-directory-page :is(.search-shell, .theme-toggle, .menu-toggle) {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(226, 232, 240, 0.16) !important;
+  color: #f8fbff !important;
+}
+
+html.dark-mode body.team-directory-page .search-shell input {
+  color: #f8fbff !important;
+}
+
+html.dark-mode body.team-directory-page .search-shell input::placeholder {
+  color: rgba(226, 232, 240, 0.58) !important;
+}
+
+html.light-mode body.team-directory-page .site-header,
+html:not(.dark-mode) body.team-directory-page .site-header {
+  background: rgba(245, 247, 251, 0.92) !important;
+  border-bottom-color: rgba(15, 23, 42, 0.12) !important;
+  color: #111827 !important;
+}
+
+html.light-mode body.team-directory-page :is(.brand, .site-nav a, .nav-more > summary),
+html:not(.dark-mode) body.team-directory-page :is(.brand, .site-nav a, .nav-more > summary) {
+  color: #111827 !important;
+}
+
+html.light-mode body.team-directory-page :is(.brand small, .search-shell span),
+html:not(.dark-mode) body.team-directory-page :is(.brand small, .search-shell span) {
+  color: #526178 !important;
+}
