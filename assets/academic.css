@@ -5384,3 +5384,324 @@ html.dark-mode :is(.feature-card, .research-area-card, .platform-capability-card
     transform: none;
   }
 }
+
+/* Mobile layout stabilization pass. */
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+@media (max-width: 900px) {
+  :root {
+    --fixed-header-height: 72px;
+  }
+
+  body.academic-site,
+  body.page-shell {
+    padding-top: var(--fixed-header-height) !important;
+  }
+
+  .site-header {
+    min-height: var(--fixed-header-height) !important;
+  }
+
+  .nav-shell {
+    min-height: var(--fixed-header-height) !important;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto auto !important;
+    gap: 10px !important;
+    align-items: center !important;
+  }
+
+  .brand {
+    min-width: 0 !important;
+  }
+
+  .brand strong {
+    font-size: 15px !important;
+  }
+
+  .brand small {
+    display: none !important;
+  }
+
+  .brand-mark,
+  .brand-mark img {
+    width: 36px !important;
+    height: 36px !important;
+  }
+
+  .header-actions {
+    gap: 8px !important;
+  }
+
+  .header-actions .search-shell {
+    display: none !important;
+  }
+
+  .menu-toggle {
+    display: inline-flex !important;
+  }
+
+  .site-nav {
+    position: fixed !important;
+    left: 12px !important;
+    right: 12px !important;
+    top: calc(var(--fixed-header-height) + 8px) !important;
+    z-index: 1210 !important;
+    display: none !important;
+    max-height: calc(100vh - var(--fixed-header-height) - 28px) !important;
+    overflow-y: auto !important;
+    grid-template-columns: 1fr !important;
+    padding: 12px !important;
+    border: 1px solid var(--theme-border, rgba(148, 163, 184, 0.22)) !important;
+    border-radius: 20px !important;
+    background: var(--theme-panel-bg, rgba(255, 255, 255, 0.96)) !important;
+    box-shadow: 0 22px 60px rgba(7, 17, 31, 0.22) !important;
+  }
+
+  html.dark-mode .site-nav {
+    background: rgba(12, 22, 40, 0.98) !important;
+    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.42) !important;
+  }
+
+  .site-header.nav-open .site-nav {
+    display: grid !important;
+  }
+
+  .site-nav a,
+  .nav-more > summary {
+    width: 100% !important;
+    justify-content: flex-start !important;
+    padding: 12px 14px !important;
+    border-radius: 14px !important;
+  }
+
+  .academic-hero {
+    min-height: auto !important;
+    padding: 0 !important;
+  }
+
+  .academic-hero-grid {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 22px !important;
+    min-height: auto !important;
+    padding-top: 34px !important;
+    padding-bottom: 42px !important;
+  }
+
+  .academic-hero .academic-hero-content {
+    padding: 18px !important;
+    border-radius: 20px !important;
+    background: linear-gradient(180deg, rgba(3, 10, 24, 0.78), rgba(3, 10, 24, 0.42)) !important;
+  }
+
+  .hero-title {
+    font-size: clamp(44px, 14vw, 62px) !important;
+    line-height: 0.98 !important;
+  }
+
+  .hero-subtitle {
+    margin-top: 12px !important;
+    font-size: clamp(26px, 8.5vw, 40px) !important;
+    line-height: 1.08 !important;
+  }
+
+  .hero-lead {
+    margin-top: 18px !important;
+    font-size: 15.5px !important;
+    line-height: 1.62 !important;
+  }
+
+  .hero-proof-row {
+    gap: 8px !important;
+  }
+
+  .hero-proof-row span {
+    max-width: 100% !important;
+    white-space: normal !important;
+    font-size: 12px !important;
+    padding: 8px 10px !important;
+  }
+
+  .hero-actions {
+    gap: 10px !important;
+  }
+
+  .academic-hero .hero-actions .academic-button {
+    flex: 1 1 160px !important;
+    min-width: 0 !important;
+    padding-inline: 12px !important;
+  }
+
+  .hero-instrument,
+  .template-stage {
+    width: 100% !important;
+    max-width: 100% !important;
+    transform: none !important;
+  }
+
+  .compound-search-panel,
+  .command-search,
+  .research-os-panel,
+  .glass-console {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    transform: none !important;
+    border-radius: 18px !important;
+  }
+
+  .compound-search-panel {
+    padding: 16px !important;
+  }
+
+  .search-row {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+
+  .search-row input,
+  .search-row button {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  .quick-searches {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+  }
+
+  .quick-searches button {
+    flex: 1 1 130px !important;
+    min-width: 0 !important;
+    white-space: normal !important;
+  }
+
+  .research-os-panel {
+    display: none !important;
+  }
+
+  .academic-page-hero .container,
+  .two-column,
+  .section-header,
+  .operating-model-card {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 18px !important;
+  }
+
+  .feature-grid,
+  .research-grid,
+  .capability-grid,
+  .project-grid,
+  .note-grid,
+  .contact-grid,
+  .roadmap,
+  .apple-profile-grid,
+  .apple-board-grid {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+
+  :is(.feature-card, .research-area-card, .platform-capability-card, .project-card, .academic-note-card, .contact-card, .roadmap-item, .page-index-panel, .page-panel) {
+    border-radius: 16px !important;
+    padding: 18px !important;
+  }
+
+  .apple-profile-card {
+    max-width: none !important;
+  }
+
+  .apple-profile-photo {
+    aspect-ratio: 16 / 10 !important;
+  }
+
+  .footer-grid,
+  .developer-footer-grid,
+  .footer-link-groups {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 22px !important;
+  }
+
+  .footer-panel {
+    padding-inline: 0 !important;
+  }
+
+  .footer-social-row,
+  .footer-mobile-links {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 10px !important;
+  }
+
+  .footer-social,
+  .footer-mobile-links a {
+    flex: 1 1 140px !important;
+    min-width: 0 !important;
+    text-align: center !important;
+  }
+}
+
+@media (max-width: 520px) {
+  :root {
+    --fixed-header-height: 66px;
+  }
+
+  .container {
+    width: min(100% - 28px, 1180px) !important;
+  }
+
+  .nav-shell {
+    gap: 8px !important;
+  }
+
+  .theme-toggle,
+  .menu-toggle {
+    width: 40px !important;
+    height: 40px !important;
+    min-width: 40px !important;
+  }
+
+  .hero-title {
+    font-size: clamp(38px, 16vw, 52px) !important;
+  }
+
+  .hero-subtitle {
+    font-size: clamp(24px, 9vw, 34px) !important;
+  }
+
+  .academic-section,
+  .leadership-section,
+  .leadership-operating-model {
+    padding-top: 34px !important;
+    padding-bottom: 34px !important;
+  }
+
+  .academic-page-hero {
+    padding-top: 36px !important;
+    padding-bottom: 36px !important;
+  }
+
+  .academic-page-hero h1,
+  .apple-leadership-heading h1 {
+    font-size: clamp(34px, 11vw, 46px) !important;
+  }
+
+  .academic-button {
+    width: 100% !important;
+  }
+
+  .contact-link-row .academic-button,
+  .project-card .academic-button,
+  .platform-capability-card .academic-button {
+    width: fit-content !important;
+    max-width: 100% !important;
+  }
+}
