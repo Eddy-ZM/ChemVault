@@ -4978,3 +4978,124 @@ html:not(.dark-mode) body.team-directory-page :is(.brand small, .search-shell sp
 .academic-hero .hero-instrument :is(p, span, small) {
   color: rgba(248, 251, 255, 0.78) !important;
 }
+
+/* Home hero is a brand dark scene in every theme. */
+body.academic-home .academic-hero,
+html.light-mode body.academic-home .academic-hero,
+html:not(.dark-mode) body.academic-home .academic-hero,
+html.dark-mode body.academic-home .academic-hero {
+  color-scheme: dark !important;
+  background:
+    linear-gradient(180deg, rgba(3, 10, 24, 0.02), rgba(3, 10, 24, 0.92)),
+    radial-gradient(circle at 66% 8%, rgba(0, 163, 199, 0.22), transparent 34%),
+    radial-gradient(circle at 22% 64%, rgba(37, 99, 235, 0.14), transparent 42%),
+    linear-gradient(135deg, #030a18 0%, #07111f 48%, #0d1b2e 100%) !important;
+  color: #f8fbff !important;
+}
+
+body.academic-home .academic-hero::before,
+html.light-mode body.academic-home .academic-hero::before,
+html:not(.dark-mode) body.academic-home .academic-hero::before,
+html.dark-mode body.academic-home .academic-hero::before {
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px) !important;
+  background-size: 44px 44px !important;
+}
+
+body.academic-home .academic-hero :is(.hero-title, .hero-subtitle, .hero-lead, .hero-proof-row span),
+html.light-mode body.academic-home .academic-hero :is(.hero-title, .hero-subtitle, .hero-lead, .hero-proof-row span),
+html:not(.dark-mode) body.academic-home .academic-hero :is(.hero-title, .hero-subtitle, .hero-lead, .hero-proof-row span),
+html.dark-mode body.academic-home .academic-hero :is(.hero-title, .hero-subtitle, .hero-lead, .hero-proof-row span) {
+  opacity: 1 !important;
+}
+
+body.academic-home .academic-hero .hero-title,
+html.light-mode body.academic-home .academic-hero .hero-title,
+html:not(.dark-mode) body.academic-home .academic-hero .hero-title,
+html.dark-mode body.academic-home .academic-hero .hero-title {
+  color: #ffffff !important;
+  text-shadow: 0 3px 26px rgba(0, 0, 0, 0.76) !important;
+}
+
+body.academic-home .academic-hero .hero-subtitle,
+html.light-mode body.academic-home .academic-hero .hero-subtitle,
+html:not(.dark-mode) body.academic-home .academic-hero .hero-subtitle,
+html.dark-mode body.academic-home .academic-hero .hero-subtitle {
+  color: #f8fbff !important;
+  text-shadow: 0 3px 24px rgba(0, 0, 0, 0.72) !important;
+}
+
+body.academic-home .academic-hero .hero-lead,
+html.light-mode body.academic-home .academic-hero .hero-lead,
+html:not(.dark-mode) body.academic-home .academic-hero .hero-lead,
+html.dark-mode body.academic-home .academic-hero .hero-lead {
+  color: rgba(248, 251, 255, 0.9) !important;
+  text-shadow: 0 2px 16px rgba(0, 0, 0, 0.64) !important;
+}
+
+body.academic-home .academic-hero .hero-proof-row span,
+html.light-mode body.academic-home .academic-hero .hero-proof-row span,
+html:not(.dark-mode) body.academic-home .academic-hero .hero-proof-row span,
+html.dark-mode body.academic-home .academic-hero .hero-proof-row span {
+  background: rgba(12, 24, 42, 0.84) !important;
+  border-color: rgba(226, 232, 240, 0.24) !important;
+  color: rgba(248, 251, 255, 0.9) !important;
+}
+
+body.academic-home .academic-hero :is(.compound-search-panel, .command-search, .research-os-panel, .glass-console, .pipeline-card, .knowledge-card, .terminal-strip),
+html.light-mode body.academic-home .academic-hero :is(.compound-search-panel, .command-search, .research-os-panel, .glass-console, .pipeline-card, .knowledge-card, .terminal-strip),
+html:not(.dark-mode) body.academic-home .academic-hero :is(.compound-search-panel, .command-search, .research-os-panel, .glass-console, .pipeline-card, .knowledge-card, .terminal-strip),
+html.dark-mode body.academic-home .academic-hero :is(.compound-search-panel, .command-search, .research-os-panel, .glass-console, .pipeline-card, .knowledge-card, .terminal-strip) {
+  background-color: rgba(11, 24, 43, 0.9) !important;
+  border-color: rgba(139, 216, 255, 0.26) !important;
+  color: #f8fbff !important;
+}
+
+body.academic-home .academic-hero :is(.compound-search-panel, .command-search, .research-os-panel, .glass-console, .pipeline-card, .knowledge-card, .terminal-strip) :is(h1, h2, h3, h4, strong, b, label),
+html.light-mode body.academic-home .academic-hero :is(.compound-search-panel, .command-search, .research-os-panel, .glass-console, .pipeline-card, .knowledge-card, .terminal-strip) :is(h1, h2, h3, h4, strong, b, label),
+html:not(.dark-mode) body.academic-home .academic-hero :is(.compound-search-panel, .command-search, .research-os-panel, .glass-console, .pipeline-card, .knowledge-card, .terminal-strip) :is(h1, h2, h3, h4, strong, b, label),
+html.dark-mode body.academic-home .academic-hero :is(.compound-search-panel, .command-search, .research-os-panel, .glass-console, .pipeline-card, .knowledge-card, .terminal-strip) :is(h1, h2, h3, h4, strong, b, label) {
+  color: #ffffff !important;
+}
+
+body.academic-home .academic-hero :is(.compound-search-panel, .command-search, .research-os-panel, .glass-console, .pipeline-card, .knowledge-card, .terminal-strip) :is(p, span, small),
+html.light-mode body.academic-home .academic-hero :is(.compound-search-panel, .command-search, .research-os-panel, .glass-console, .pipeline-card, .knowledge-card, .terminal-strip) :is(p, span, small),
+html:not(.dark-mode) body.academic-home .academic-hero :is(.compound-search-panel, .command-search, .research-os-panel, .glass-console, .pipeline-card, .knowledge-card, .terminal-strip) :is(p, span, small),
+html.dark-mode body.academic-home .academic-hero :is(.compound-search-panel, .command-search, .research-os-panel, .glass-console, .pipeline-card, .knowledge-card, .terminal-strip) :is(p, span, small) {
+  color: rgba(248, 251, 255, 0.78) !important;
+}
+
+body.academic-home .academic-hero :is(input, textarea),
+html.light-mode body.academic-home .academic-hero :is(input, textarea),
+html:not(.dark-mode) body.academic-home .academic-hero :is(input, textarea),
+html.dark-mode body.academic-home .academic-hero :is(input, textarea) {
+  background: rgba(3, 10, 24, 0.84) !important;
+  border-color: rgba(226, 232, 240, 0.2) !important;
+  color: #ffffff !important;
+}
+
+body.academic-home .academic-hero :is(input, textarea)::placeholder,
+html.light-mode body.academic-home .academic-hero :is(input, textarea)::placeholder,
+html:not(.dark-mode) body.academic-home .academic-hero :is(input, textarea)::placeholder,
+html.dark-mode body.academic-home .academic-hero :is(input, textarea)::placeholder {
+  color: rgba(248, 251, 255, 0.64) !important;
+}
+
+body.academic-home .academic-hero .academic-button.ghost,
+html.light-mode body.academic-home .academic-hero .academic-button.ghost,
+html:not(.dark-mode) body.academic-home .academic-hero .academic-button.ghost,
+html.dark-mode body.academic-home .academic-hero .academic-button.ghost {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(255, 255, 255, 0.28) !important;
+  color: #ffffff !important;
+}
+
+body.academic-home .academic-hero .academic-button.primary,
+html.light-mode body.academic-home .academic-hero .academic-button.primary,
+html:not(.dark-mode) body.academic-home .academic-hero .academic-button.primary,
+html.dark-mode body.academic-home .academic-hero .academic-button.primary {
+  background: linear-gradient(135deg, #20d5ff, #00a3c7) !important;
+  border-color: rgba(32, 213, 255, 0.58) !important;
+  color: #03111f !important;
+}
