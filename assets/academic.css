@@ -4887,3 +4887,94 @@ html.light-mode body.team-directory-page :is(.brand small, .search-shell span),
 html:not(.dark-mode) body.team-directory-page :is(.brand small, .search-shell span) {
   color: #526178 !important;
 }
+
+/* Home hero high-contrast correction. */
+.academic-hero .academic-hero-content {
+  position: relative;
+  border-radius: 24px;
+  padding: clamp(18px, 2.5vw, 30px);
+  background: linear-gradient(90deg, rgba(3, 10, 24, 0.72), rgba(3, 10, 24, 0.38) 64%, transparent) !important;
+  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.52);
+}
+
+.academic-hero .hero-title {
+  color: #ffffff !important;
+  opacity: 1 !important;
+  text-shadow: 0 3px 24px rgba(0, 0, 0, 0.72) !important;
+  -webkit-text-stroke: 0 !important;
+}
+
+.academic-hero .hero-subtitle {
+  color: #f8fbff !important;
+  opacity: 1 !important;
+  text-shadow: 0 3px 22px rgba(0, 0, 0, 0.68) !important;
+}
+
+.academic-hero .hero-lead {
+  color: rgba(248, 251, 255, 0.92) !important;
+  opacity: 1 !important;
+  text-shadow: 0 2px 16px rgba(0, 0, 0, 0.62) !important;
+}
+
+.academic-hero .hero-proof-row span {
+  background: rgba(12, 24, 42, 0.82) !important;
+  border-color: rgba(226, 232, 240, 0.24) !important;
+  color: rgba(248, 251, 255, 0.88) !important;
+  opacity: 1 !important;
+}
+
+.academic-hero .compound-search-panel,
+.academic-hero .command-search {
+  background: rgba(11, 26, 46, 0.9) !important;
+  border-color: rgba(139, 216, 255, 0.32) !important;
+  color: #f8fbff !important;
+  box-shadow: 0 22px 70px rgba(0, 0, 0, 0.36) !important;
+}
+
+.academic-hero .command-topline span,
+.academic-hero .command-topline strong,
+.academic-hero .compound-search-panel label,
+.academic-hero .compound-search-panel .search-hint,
+.academic-hero .compound-search-panel .search-status {
+  color: #f8fbff !important;
+  opacity: 1 !important;
+}
+
+.academic-hero .command-topline span,
+.academic-hero .compound-search-panel .search-hint,
+.academic-hero .compound-search-panel .search-status {
+  color: rgba(248, 251, 255, 0.82) !important;
+}
+
+.academic-hero .command-topline strong,
+.academic-hero .compound-search-panel label {
+  color: #ffffff !important;
+}
+
+.academic-hero .search-row input {
+  background: rgba(3, 10, 24, 0.82) !important;
+  border-color: rgba(226, 232, 240, 0.18) !important;
+  color: #ffffff !important;
+}
+
+.academic-hero .search-row input::placeholder {
+  color: rgba(248, 251, 255, 0.66) !important;
+}
+
+.academic-hero .quick-searches button {
+  background: rgba(3, 10, 24, 0.82) !important;
+  border-color: rgba(226, 232, 240, 0.18) !important;
+  color: rgba(248, 251, 255, 0.9) !important;
+}
+
+.academic-hero .hero-instrument :is(.glass-console, .research-os-panel, .pipeline-card, .knowledge-card, .terminal-strip) {
+  color: #f8fbff !important;
+}
+
+.academic-hero .hero-instrument :is(h2, h3, strong, b) {
+  color: #ffffff !important;
+}
+
+.academic-hero .hero-instrument :is(p, span, small) {
+  color: rgba(248, 251, 255, 0.78) !important;
+}
