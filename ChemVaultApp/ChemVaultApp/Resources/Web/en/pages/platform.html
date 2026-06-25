@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Platform Capabilities | ChemVault</title>
+  <meta name="description" content="ChemVault platform capabilities for paper-to-database workflows, compound search, lab report parsing, literature graphs and secure scientific file infrastructure." />
+  <meta name="keywords" content="ChemVault platform, compound search, paper to database, chemical entity recognition, literature graph, research workspace" />
+  <meta name="theme-color" content="#07111f" />
+  <script src="../scripts/boot.js?v=20260618c"></script>
+  <meta property="og:title" content="Platform Capabilities | ChemVault" />
+  <meta property="og:description" content="Platform capabilities for scientific data extraction, chemistry search and research knowledge systems." />
+  <meta property="og:type" content="website" />
+  <link rel="canonical" href="https://chemvault.science/pages/platform.html" />
+  <link rel="icon" href="../favicon.ico" sizes="any" />
+  <link rel="icon" href="../assets/chemvault-icon-192.png" type="image/png" sizes="192x192" />
+  <link rel="apple-touch-icon" href="../assets/chemvault-apple-touch-icon.png" />
+  <link rel="manifest" href="../site.webmanifest" />
+  <link rel="stylesheet" href="../assets/styles.css?v=20260622b" />
+  <link rel="stylesheet" href="../assets/portal.css?v=20260619c" />
+  <link rel="stylesheet" href="../assets/academic.css?v=20260622b" />
+  <script src="../data/chem-data.js?v=20260603a" defer></script>
+  <script src="../data/reagent-extension.js?v=20260603a" defer></script>
+  <script src="../data/research-data.js?v=20260603a" defer></script>
+  <script src="../data/dossier-data.js?v=20260603a" defer></script>
+  <script src="../data/method-data.js?v=20260603a" defer></script>
+  <script src="../data/spectroscopy-data.js?v=20260603a" defer></script>
+  <script src="../data/materials-data.js?v=20260603a" defer></script>
+  <script src="../data/database-expansion.js?v=20260603a" defer></script>
+  <script src="../data/reagent-megalibrary.js?v=20260603a" defer></script>
+  <script src="../data/knowledge-expansion.js?v=20260603a" defer></script>
+  <script src="../data/local-catalog-10000.js?v=20260603a" defer></script>
+  <script src="../data/external-sources.js?v=20260603a" defer></script>
+  <script src="../scripts/record-utils.js?v=20260603a" defer></script>
+  <script src="../scripts/search-intent.js?v=20260608a" defer></script>
+  <script src="../scripts/api.js?v=20260603a" defer></script>
+  <script src="../scripts/motion.js?v=20260618c" defer></script>
+  <script src="../scripts/site-shell.js?v=20260624a" defer></script>
+</head>
+<body class="page-shell academic-site academic-page" data-boot-label="Platform">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="container nav-shell">
+      <a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true"><img src="../assets/chemvault-logo-mark.png" alt="" /></span><span><strong>ChemVault</strong><small>scientific infrastructure</small></span></a>
+      <button class="icon-button menu-toggle" type="button" aria-label="Open navigation" aria-expanded="false"><span></span><span></span><span></span></button>
+      <nav class="site-nav" aria-label="Main navigation">
+        <a href="../index.html">Home</a>
+        <a href="research.html">Research</a>
+        <a href="platform.html">Platform</a>
+        <a href="projects.html">Projects</a>
+        <a href="notes.html">Notes</a>
+        <a href="search.html">Compounds</a>
+        <a href="about.html">About</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+      <div class="header-actions"><label class="search-shell" for="shellSearch"><span>Search</span><input id="shellSearch" type="search" placeholder="Search compounds..." /></label><button class="theme-toggle" type="button" data-shell-action="theme" aria-label="Switch theme"><span class="theme-toggle__icon" aria-hidden="true"></span></button></div>
+    </div>
+    <div class="container shell-search-results" id="shellSearchResults" aria-live="polite"></div>
+  </header>
+
+  <main id="main">
+    <section class="academic-page-hero">
+      <div class="container">
+        <div>
+          <span class="section-kicker">Platform</span>
+          <h1>Platform Capabilities</h1>
+          <p>ChemVault is designed as a modular research infrastructure platform for chemistry data, scientific documents, compound information and AI-assisted knowledge workflows.</p>
+        </div>
+        <aside class="page-index-panel">
+          <strong>Core modules</strong>
+          <a href="#compound-search">Compound Search</a>
+          <a href="#paper-to-database">Paper-to-Database</a>
+          <a href="#literature-graph">Literature Graph</a>
+          <a href="#workspace">Research Workspace</a>
+        </aside>
+      </div>
+    </section>
+
+    <section class="academic-section">
+      <div class="container">
+        <div class="section-header">
+          <div>
+            <span class="section-kicker">Capability Architecture</span>
+            <h2>Independent modules with a shared knowledge layer.</h2>
+          </div>
+          <p>Each capability can mature on its own while contributing to the same scientific data model: entities, sources, methods, claims, observations and project context.</p>
+        </div>
+        <div class="capability-grid">
+          <article class="platform-capability-card" id="compound-search">
+            <span class="status-pill active">Active</span>
+            <h3>Compound Search</h3>
+            <p>A fast chemical compound search interface for looking up chemical names, formulas, identifiers, molecular data and related compound information.</p>
+            <div class="capability-use"><strong>Use cases</strong><p>Name, formula, CAS-style identifier and PubChem-oriented lookup for chemistry records.</p></div>
+            <div class="capability-use"><strong>Future direction</strong><p>Clearer compound metadata, stronger identifier handling and links from molecular records into document-derived research evidence.</p></div>
+            <div class="capability-meta"><span>Compound Search</span><span>Chemistry</span><span>Molecular Data</span><span>PubChem</span><span>Identifiers</span></div>
+            <a class="academic-button dark" href="search.html">Open Compounds</a>
+          </article>
+          <article class="platform-capability-card" id="paper-to-database">
+            <span class="status-pill prototype">Prototype</span>
+            <h3>Paper-to-Database</h3>
+            <p>Transforms unstructured papers, PDFs and reports into structured scientific records.</p>
+            <div class="capability-use"><strong>Use cases</strong><p>Extract compounds, experimental variables, methods, tables and source-linked evidence.</p></div>
+            <div class="capability-use"><strong>Future direction</strong><p>Reviewable extraction pipelines with source citations, confidence signals and exportable database records.</p></div>
+            <div class="capability-meta"><span>Data Extraction</span><span>PDFs</span><span>Scientific Records</span></div>
+          </article>
+          <article class="platform-capability-card">
+            <span class="status-pill prototype">Prototype</span>
+            <h3>Lab Report Parser</h3>
+            <p>Parses experimental reports into entities, steps, conditions, observations and result summaries.</p>
+            <div class="capability-use"><strong>Use cases</strong><p>Convert laboratory notes into searchable experiment records and reproducibility checklists.</p></div>
+            <div class="capability-use"><strong>Future direction</strong><p>Support structured procedure capture, reagent linking, result tables and reusable experiment templates.</p></div>
+            <div class="capability-meta"><span>Lab Reports</span><span>Methods</span><span>Experiments</span></div>
+          </article>
+          <article class="platform-capability-card">
+            <span class="status-pill prototype">Prototype</span>
+            <h3>Chemical Entity Recognition</h3>
+            <p>Identifies chemical names, formulas, identifiers, materials, reaction terms and method phrases in scientific documents.</p>
+            <div class="capability-use"><strong>Use cases</strong><p>Index chemistry-aware documents and connect extracted mentions to compound or method records.</p></div>
+            <div class="capability-use"><strong>Future direction</strong><p>Improve entity linking across names, formulas, identifiers, synonyms and context-specific chemical mentions.</p></div>
+            <div class="capability-meta"><span>NER</span><span>Identifiers</span><span>Entity Linking</span></div>
+          </article>
+          <article class="platform-capability-card" id="literature-graph">
+            <span class="status-pill concept">Concept</span>
+            <h3>Literature Graph</h3>
+            <p>Connects papers, claims, methods, entities and evidence relationships across research materials.</p>
+            <div class="capability-use"><strong>Use cases</strong><p>Build literature maps, compare related work and trace scientific claims to source records.</p></div>
+            <div class="capability-use"><strong>Future direction</strong><p>Expose navigable paper, compound, method and claim relationships for source-backed research review.</p></div>
+            <div class="capability-meta"><span>Knowledge Graph</span><span>Literature Review</span><span>Claims</span></div>
+          </article>
+          <article class="platform-capability-card">
+            <span class="status-pill concept">Concept</span>
+            <h3>Experiment Knowledge Base</h3>
+            <p>Stores experiment context, methods, conditions, observations, failures and outcomes in structured form.</p>
+            <div class="capability-use"><strong>Use cases</strong><p>Maintain reusable project memory for experimental science and reproducible workflows.</p></div>
+            <div class="capability-use"><strong>Future direction</strong><p>Connect experiments to compounds, protocols, datasets, negative results and project-level interpretation.</p></div>
+            <div class="capability-meta"><span>Experiments</span><span>Knowledge Base</span><span>Reproducibility</span></div>
+          </article>
+          <article class="platform-capability-card" id="workspace">
+            <span class="status-pill active">Active</span>
+            <h3>Research Workspace</h3>
+            <p>A browsing and review surface for local records, reaction systems, reagents, materials, methods and evidence.</p>
+            <div class="capability-use"><strong>Use cases</strong><p>Inspect chemistry records, source context and cross-linked knowledge inside the existing ChemVault site.</p></div>
+            <div class="capability-use"><strong>Future direction</strong><p>Evolve into a workspace for notes, documents, datasets and AI-assisted research workflow review.</p></div>
+            <div class="capability-meta"><span>Workbench</span><span>Review</span><span>Chemistry Records</span></div>
+            <a class="academic-button dark" href="workbench.html">Open Workbench</a>
+          </article>
+          <article class="platform-capability-card">
+            <span class="status-pill concept">Concept / In Development</span>
+            <h3>Notification Layer</h3>
+            <p>Connects system alerts, research workflow events and ChemVault-related updates.</p>
+            <div class="capability-use"><strong>Use cases</strong><p>Coordinate long-running extraction jobs, project updates and user-facing research notifications.</p></div>
+            <div class="capability-use"><strong>Future direction</strong><p>Provide opt-in alerts for extraction status, file events, project releases and research workflow changes.</p></div>
+            <div class="capability-meta"><span>Alerts</span><span>Workflow Events</span><span>Communication</span></div>
+          </article>
+          <article class="platform-capability-card">
+            <span class="status-pill active">Active</span>
+            <h3>Secure File Infrastructure</h3>
+            <p>A private layer for organising academic materials, experimental files and project resources.</p>
+            <div class="capability-use"><strong>Use cases</strong><p>Host project files behind controlled access while connecting them to scientific knowledge workflows.</p></div>
+            <div class="capability-use"><strong>Future direction</strong><p>Attach file metadata, document indexing and collaboration access controls to research project materials.</p></div>
+            <div class="capability-meta"><span>Files</span><span>Cloudflare Access</span><span>Storage</span></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="academic-section academic-band">
+      <div class="container">
+        <div class="vision-panel">
+          <span class="section-kicker">Platform direction</span>
+          <h2>The platform is designed to connect document extraction, chemical search and research workflow intelligence without forcing the public site into server-only architecture.</h2>
+          <p>The current implementation remains static and Cloudflare-friendly, while future services can attach through APIs, D1-backed records, private file infrastructure and controlled research tools.</p>
+          <div class="hero-actions"><a class="academic-button primary" href="projects.html">View Projects</a><a class="academic-button ghost" href="contact.html">Discuss Collaboration</a></div>
+        </div>
+      </div>
+    </section>
+  </main>
+    <script src="../scripts/visual-effects.js" defer></script>
+  </body>
+</html>

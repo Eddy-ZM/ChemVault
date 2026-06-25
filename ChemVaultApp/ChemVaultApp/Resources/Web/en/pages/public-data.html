@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Public Data | ChemVault</title>
+  <meta name="description" content="Human-readable overview of ChemVault public data resources, including the public record index for chemistry search and academic references." />
+  <meta name="theme-color" content="#f5f5f7" />
+  <script src="../scripts/boot.js?v=20260618c"></script>
+  <link rel="canonical" href="https://chemvault.science/pages/public-data.html" />
+  <link rel="alternate" type="application/json" title="ChemVault public record index" href="../data/public-record-index.json" />
+  <link rel="icon" href="../favicon.ico" sizes="any" />
+  <link rel="icon" href="../assets/chemvault-icon-192.png" type="image/png" sizes="192x192" />
+  <link rel="apple-touch-icon" href="../assets/chemvault-apple-touch-icon.png" />
+  <link rel="manifest" href="../site.webmanifest" />
+  <link rel="stylesheet" href="../assets/styles.css?v=20260622b" />
+  <link rel="stylesheet" href="../assets/portal.css?v=20260619c" />
+  <script src="../data/chem-data.js?v=20260603a" defer></script>
+  <script src="../data/reagent-extension.js?v=20260603a" defer></script>
+  <script src="../data/research-data.js?v=20260603a" defer></script>
+  <script src="../data/dossier-data.js?v=20260603a" defer></script>
+  <script src="../data/method-data.js?v=20260603a" defer></script>
+  <script src="../data/spectroscopy-data.js?v=20260603a" defer></script>
+  <script src="../data/materials-data.js?v=20260603a" defer></script>
+  <script src="../data/database-expansion.js?v=20260603a" defer></script>
+  <script src="../data/reagent-megalibrary.js?v=20260603a" defer></script>
+  <script src="../data/knowledge-expansion.js?v=20260603a" defer></script>
+  <script src="../data/local-catalog-10000.js?v=20260603a" defer></script>
+  <script src="../data/external-sources.js?v=20260603a" defer></script>
+  <script src="../scripts/record-utils.js?v=20260603a" defer></script>
+  <script src="../scripts/api.js?v=20260603a" defer></script>
+  <script src="../scripts/motion.js?v=20260618c" defer></script>
+  <script src="../scripts/site-shell.js?v=20260624a" defer></script>
+</head>
+<body class="page-shell" data-boot-label="Public Data">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="container nav-shell">
+      <a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true"><img src="../assets/chemvault-logo-mark.png" alt="" /></span><span><strong>ChemVault</strong><small>academic portal</small></span></a>
+      <button class="icon-button menu-toggle" type="button" aria-label="Open navigation" aria-expanded="false"><span></span><span></span><span></span></button>
+      <nav class="site-nav" aria-label="Main navigation">
+        <a href="../index.html">Home</a>
+        <a href="search.html">Compounds</a>
+        <a href="workbench.html">Workbench</a>
+        <a href="reagents.html">Reagents</a>
+        <a href="materials.html">Materials</a>
+        <a href="methods.html">Methods</a>
+        <details class="nav-more">
+          <summary>More</summary>
+          <div class="nav-more-menu">
+            <a href="app.html">App</a>
+            <a href="research.html">Research</a>
+            <a href="dossiers.html">Dossiers</a>
+            <a href="spectroscopy.html">Spectroscopy</a>
+            <a href="atlas.html">Atlas</a>
+            <a href="library.html">Library</a>
+            <a href="about.html">About</a>
+            <a href="team.html">Team</a>
+            <a href="developer.html">Developer</a>
+          </div>
+        </details>
+      </nav>
+      <div class="header-actions"><label class="search-shell" for="shellSearch"><span>Search</span><input id="shellSearch" type="search" placeholder="Search local records..." /></label><button class="theme-toggle" type="button" data-shell-action="theme" aria-label="Switch theme"><span class="theme-toggle__icon" aria-hidden="true"></span></button></div>
+    </div>
+    <div class="container shell-search-results" id="shellSearchResults" aria-live="polite"></div>
+  </header>
+
+  <main id="main">
+    <section class="page-hero">
+      <div class="container page-hero-grid">
+        <div>
+          <p class="eyebrow">machine-readable resources</p>
+          <h1>Public Data</h1>
+          <p>ChemVault publishes a structured public record index for compound search, chemistry records, methods, materials, dossiers and research-oriented navigation.</p>
+        </div>
+        <aside class="page-index-card">
+          <strong>Data access</strong>
+          <ol>
+            <li>Human-readable overview</li>
+            <li>Structured JSON index</li>
+            <li>Search and record URLs</li>
+          </ol>
+        </aside>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="portal-grid">
+          <a class="portal-card portal-card-featured" href="../data/public-record-index.json" download>
+            <span>json export</span>
+            <strong>Download public record index</strong>
+            <p>Machine-readable ChemVault records for search, metadata inspection and external indexing workflows.</p>
+            <em>Download JSON</em>
+          </a>
+          <a class="portal-card" href="search.html">
+            <span>human search</span>
+            <strong>Open compound search</strong>
+            <p>Use the public data through the ChemVault search interface instead of reading raw JSON in the browser.</p>
+            <em>Search records</em>
+          </a>
+          <a class="portal-card" href="library.html">
+            <span>reference layer</span>
+            <strong>Browse library</strong>
+            <p>Review concepts, source families and public knowledge records through a readable portal view.</p>
+            <em>Open library</em>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-tint">
+      <div class="container">
+        <div class="detail-grid">
+          <article class="page-panel">
+            <h2>What the index contains</h2>
+            <div class="micro-table">
+              <div class="micro-row"><span>Records</span><strong>Compounds, reagents, materials, methods, spectra, dossiers and research cases</strong></div>
+              <div class="micro-row"><span>Metadata</span><strong>Titles, summaries, tags, domains, maturity and canonical URLs</strong></div>
+              <div class="micro-row"><span>Use</span><strong>Search, citation-aware navigation, local indexing and public data inspection</strong></div>
+            </div>
+          </article>
+          <article class="page-panel">
+            <h2>Recommended entry points</h2>
+            <div class="portal-grid">
+              <a class="portal-card" href="search.html"><span>search</span><strong>Compound Search</strong><p>Use names, formulas, identifiers or research terms.</p></a>
+              <a class="portal-card" href="workbench.html"><span>workspace</span><strong>Research Workbench</strong><p>Inspect linked records and evidence surfaces.</p></a>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+  </main>
+  <script src="../scripts/visual-effects.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+{
+  "generatedAt": "2026-06-15T13:11:41.884Z",
+  "outputDir": "dist",
+  "files": 78,
+  "bytes": 28874242,
+  "excluded": [
+    "data/chemvault-data.json",
+    "scripts/build-pages.mjs",
+    "scripts/export-d1-seed.mjs",
+    "scripts/export-data-json.mjs",
+    "scripts/generate-public-index.mjs",
+    "scripts/generate-sitemap.mjs"
+  ]
+}
