@@ -1,0 +1,292 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		B100000000000000000002 /* ChemVaultApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F100000000000000000001 /* ChemVaultApp.swift */; };
+		B200000000000000000003 /* ChemVaultApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F100000000000000000001 /* ChemVaultApp.swift */; };
+		B100000000000000000005 /* AppConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = F100000000000000000004 /* AppConfig.swift */; };
+		B200000000000000000006 /* AppConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = F100000000000000000004 /* AppConfig.swift */; };
+		B100000000000000000008 /* AppLanguage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F100000000000000000007 /* AppLanguage.swift */; };
+		B200000000000000000009 /* AppLanguage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F100000000000000000007 /* AppLanguage.swift */; };
+		B100000000000000000011 /* AppRegion.swift in Sources */ = {isa = PBXBuildFile; fileRef = F100000000000000000010 /* AppRegion.swift */; };
+		B200000000000000000012 /* AppRegion.swift in Sources */ = {isa = PBXBuildFile; fileRef = F100000000000000000010 /* AppRegion.swift */; };
+		B100000000000000000014 /* ChemVaultModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = F100000000000000000013 /* ChemVaultModule.swift */; };
+		B200000000000000000015 /* ChemVaultModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = F100000000000000000013 /* ChemVaultModule.swift */; };
+		B100000000000000000017 /* FeatureItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = F100000000000000000016 /* FeatureItem.swift */; };
+		B200000000000000000018 /* FeatureItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = F100000000000000000016 /* FeatureItem.swift */; };
+		B100000000000000000020 /* NavigationItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = F100000000000000000019 /* NavigationItem.swift */; };
+		B200000000000000000021 /* NavigationItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = F100000000000000000019 /* NavigationItem.swift */; };
+		B100000000000000000023 /* UserPermission.swift in Sources */ = {isa = PBXBuildFile; fileRef = F100000000000000000022 /* UserPermission.swift */; };
+		B200000000000000000024 /* UserPermission.swift in Sources */ = {isa = PBXBuildFile; fileRef = F100000000000000000022 /* UserPermission.swift */; };
+		B100000000000000000026 /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = F100000000000000000025 /* APIClient.swift */; };
+		B200000000000000000027 /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = F100000000000000000025 /* APIClient.swift */; };
+		B100000000000000000029 /* LanguageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F100000000000000000028 /* LanguageManager.swift */; };
+		B200000000000000000030 /* LanguageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F100000000000000000028 /* LanguageManager.swift */; };
+		B100000000000000000032 /* RegionDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = F100000000000000000031 /* RegionDetector.swift */; };
+		B200000000000000000033 /* RegionDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = F100000000000000000031 /* RegionDetector.swift */; };
+		B100000000000000000035 /* ChemVaultButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = F100000000000000000034 /* ChemVaultButton.swift */; };
+		B200000000000000000036 /* ChemVaultButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = F100000000000000000034 /* ChemVaultButton.swift */; };
+		B100000000000000000038 /* ChemVaultCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = F100000000000000000037 /* ChemVaultCard.swift */; };
+		B200000000000000000039 /* ChemVaultCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = F100000000000000000037 /* ChemVaultCard.swift */; };
+		B100000000000000000041 /* ChemVaultSearchBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = F100000000000000000040 /* ChemVaultSearchBar.swift */; };
+		B200000000000000000042 /* ChemVaultSearchBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = F100000000000000000040 /* ChemVaultSearchBar.swift */; };
+		B100000000000000000044 /* ChemVaultTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = F100000000000000000043 /* ChemVaultTextField.swift */; };
+		B200000000000000000045 /* ChemVaultTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = F100000000000000000043 /* ChemVaultTextField.swift */; };
+		B100000000000000000047 /* EmptyStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F100000000000000000046 /* EmptyStateView.swift */; };
+		B200000000000000000048 /* EmptyStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F100000000000000000046 /* EmptyStateView.swift */; };
+		B100000000000000000050 /* ErrorStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F100000000000000000049 /* ErrorStateView.swift */; };
+		B200000000000000000051 /* ErrorStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F100000000000000000049 /* ErrorStateView.swift */; };
+		B100000000000000000053 /* LoadingStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F100000000000000000052 /* LoadingStateView.swift */; };
+		B200000000000000000054 /* LoadingStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F100000000000000000052 /* LoadingStateView.swift */; };
+		B100000000000000000056 /* FeatureGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F100000000000000000055 /* FeatureGridView.swift */; };
+		B200000000000000000057 /* FeatureGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F100000000000000000055 /* FeatureGridView.swift */; };
+		B100000000000000000059 /* HomeHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F100000000000000000058 /* HomeHeaderView.swift */; };
+		B200000000000000000060 /* HomeHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F100000000000000000058 /* HomeHeaderView.swift */; };
+		B100000000000000000062 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F100000000000000000061 /* HomeView.swift */; };
+		B200000000000000000063 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F100000000000000000061 /* HomeView.swift */; };
+		B100000000000000000065 /* ModuleCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F100000000000000000064 /* ModuleCardView.swift */; };
+		B200000000000000000066 /* ModuleCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F100000000000000000064 /* ModuleCardView.swift */; };
+		B100000000000000000068 /* LaunchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F100000000000000000067 /* LaunchView.swift */; };
+		B200000000000000000069 /* LaunchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F100000000000000000067 /* LaunchView.swift */; };
+		B100000000000000000071 /* LocalizedStrings.swift in Sources */ = {isa = PBXBuildFile; fileRef = F100000000000000000070 /* LocalizedStrings.swift */; };
+		B200000000000000000072 /* LocalizedStrings.swift in Sources */ = {isa = PBXBuildFile; fileRef = F100000000000000000070 /* LocalizedStrings.swift */; };
+		B100000000000000000074 /* DocsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F100000000000000000073 /* DocsView.swift */; };
+		B200000000000000000075 /* DocsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F100000000000000000073 /* DocsView.swift */; };
+		B100000000000000000077 /* ExtractView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F100000000000000000076 /* ExtractView.swift */; };
+		B200000000000000000078 /* ExtractView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F100000000000000000076 /* ExtractView.swift */; };
+		B100000000000000000080 /* FilesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F100000000000000000079 /* FilesView.swift */; };
+		B200000000000000000081 /* FilesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F100000000000000000079 /* FilesView.swift */; };
+		B100000000000000000083 /* MailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F100000000000000000082 /* MailView.swift */; };
+		B200000000000000000084 /* MailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F100000000000000000082 /* MailView.swift */; };
+		B100000000000000000086 /* ModelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F100000000000000000085 /* ModelView.swift */; };
+		B200000000000000000087 /* ModelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F100000000000000000085 /* ModelView.swift */; };
+		B100000000000000000089 /* NotificationsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F100000000000000000088 /* NotificationsView.swift */; };
+		B200000000000000000090 /* NotificationsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F100000000000000000088 /* NotificationsView.swift */; };
+		B100000000000000000092 /* PageHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = F100000000000000000091 /* PageHeader.swift */; };
+		B200000000000000000093 /* PageHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = F100000000000000000091 /* PageHeader.swift */; };
+		B100000000000000000095 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F100000000000000000094 /* SettingsView.swift */; };
+		B200000000000000000096 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F100000000000000000094 /* SettingsView.swift */; };
+		B100000000000000000098 /* UserCenterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F100000000000000000097 /* UserCenterView.swift */; };
+		B200000000000000000099 /* UserCenterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F100000000000000000097 /* UserCenterView.swift */; };
+		B100000000000000000101 /* ModuleDestinationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F100000000000000000100 /* ModuleDestinationView.swift */; };
+		B200000000000000000102 /* ModuleDestinationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F100000000000000000100 /* ModuleDestinationView.swift */; };
+		B100000000000000000104 /* SidebarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F100000000000000000103 /* SidebarView.swift */; };
+		B200000000000000000105 /* SidebarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F100000000000000000103 /* SidebarView.swift */; };
+		B100000000000000000107 /* TabBarRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F100000000000000000106 /* TabBarRootView.swift */; };
+		B200000000000000000108 /* TabBarRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F100000000000000000106 /* TabBarRootView.swift */; };
+		B100000000000000000110 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F100000000000000000109 /* RootView.swift */; };
+		B200000000000000000111 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F100000000000000000109 /* RootView.swift */; };
+		B300000000000000000113 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F200000000000000000112 /* Assets.xcassets */; };
+		B400000000000000000114 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F200000000000000000112 /* Assets.xcassets */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		F100000000000000000001 /* ChemVaultApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App/ChemVaultApp.swift; sourceTree = "<group>"; };
+		F100000000000000000004 /* AppConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Core/AppConfig.swift; sourceTree = "<group>"; };
+		F100000000000000000007 /* AppLanguage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Core/AppLanguage.swift; sourceTree = "<group>"; };
+		F100000000000000000010 /* AppRegion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Core/AppRegion.swift; sourceTree = "<group>"; };
+		F100000000000000000013 /* ChemVaultModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models/ChemVaultModule.swift; sourceTree = "<group>"; };
+		F100000000000000000016 /* FeatureItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models/FeatureItem.swift; sourceTree = "<group>"; };
+		F100000000000000000019 /* NavigationItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models/NavigationItem.swift; sourceTree = "<group>"; };
+		F100000000000000000022 /* UserPermission.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models/UserPermission.swift; sourceTree = "<group>"; };
+		F100000000000000000025 /* APIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/APIClient.swift; sourceTree = "<group>"; };
+		F100000000000000000028 /* LanguageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/LanguageManager.swift; sourceTree = "<group>"; };
+		F100000000000000000031 /* RegionDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/RegionDetector.swift; sourceTree = "<group>"; };
+		F100000000000000000034 /* ChemVaultButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/Components/ChemVaultButton.swift; sourceTree = "<group>"; };
+		F100000000000000000037 /* ChemVaultCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/Components/ChemVaultCard.swift; sourceTree = "<group>"; };
+		F100000000000000000040 /* ChemVaultSearchBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/Components/ChemVaultSearchBar.swift; sourceTree = "<group>"; };
+		F100000000000000000043 /* ChemVaultTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/Components/ChemVaultTextField.swift; sourceTree = "<group>"; };
+		F100000000000000000046 /* EmptyStateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/Components/EmptyStateView.swift; sourceTree = "<group>"; };
+		F100000000000000000049 /* ErrorStateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/Components/ErrorStateView.swift; sourceTree = "<group>"; };
+		F100000000000000000052 /* LoadingStateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/Components/LoadingStateView.swift; sourceTree = "<group>"; };
+		F100000000000000000055 /* FeatureGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/Home/FeatureGridView.swift; sourceTree = "<group>"; };
+		F100000000000000000058 /* HomeHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/Home/HomeHeaderView.swift; sourceTree = "<group>"; };
+		F100000000000000000061 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/Home/HomeView.swift; sourceTree = "<group>"; };
+		F100000000000000000064 /* ModuleCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/Home/ModuleCardView.swift; sourceTree = "<group>"; };
+		F100000000000000000067 /* LaunchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/LaunchView.swift; sourceTree = "<group>"; };
+		F100000000000000000070 /* LocalizedStrings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/Localization/LocalizedStrings.swift; sourceTree = "<group>"; };
+		F100000000000000000073 /* DocsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/Modules/DocsView.swift; sourceTree = "<group>"; };
+		F100000000000000000076 /* ExtractView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/Modules/ExtractView.swift; sourceTree = "<group>"; };
+		F100000000000000000079 /* FilesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/Modules/FilesView.swift; sourceTree = "<group>"; };
+		F100000000000000000082 /* MailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/Modules/MailView.swift; sourceTree = "<group>"; };
+		F100000000000000000085 /* ModelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/Modules/ModelView.swift; sourceTree = "<group>"; };
+		F100000000000000000088 /* NotificationsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/Modules/NotificationsView.swift; sourceTree = "<group>"; };
+		F100000000000000000091 /* PageHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/Modules/PageHeader.swift; sourceTree = "<group>"; };
+		F100000000000000000094 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/Modules/SettingsView.swift; sourceTree = "<group>"; };
+		F100000000000000000097 /* UserCenterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/Modules/UserCenterView.swift; sourceTree = "<group>"; };
+		F100000000000000000100 /* ModuleDestinationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/Navigation/ModuleDestinationView.swift; sourceTree = "<group>"; };
+		F100000000000000000103 /* SidebarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/Navigation/SidebarView.swift; sourceTree = "<group>"; };
+		F100000000000000000106 /* TabBarRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/Navigation/TabBarRootView.swift; sourceTree = "<group>"; };
+		F100000000000000000109 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/RootView.swift; sourceTree = "<group>"; };
+		F200000000000000000112 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Resources/Assets.xcassets; sourceTree = "<group>"; };
+		F30000000000000000000001 /* ChemVault.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ChemVault.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		F30000000000000000000002 /* ChemVault macOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "ChemVault macOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		P10000000000000000000001 /* Frameworks */ = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+		P20000000000000000000001 /* Frameworks */ = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		G00000000000000000000001 = {isa = PBXGroup; children = (G00000000000000000000002 /* ChemVaultAppleApp */, G00000000000000000000003 /* Products */); sourceTree = "<group>"; };
+		G00000000000000000000002 /* ChemVaultAppleApp */ = {isa = PBXGroup; children = (
+				F100000000000000000001 /* ChemVaultApp.swift */,
+				F100000000000000000004 /* AppConfig.swift */,
+				F100000000000000000007 /* AppLanguage.swift */,
+				F100000000000000000010 /* AppRegion.swift */,
+				F100000000000000000013 /* ChemVaultModule.swift */,
+				F100000000000000000016 /* FeatureItem.swift */,
+				F100000000000000000019 /* NavigationItem.swift */,
+				F100000000000000000022 /* UserPermission.swift */,
+				F100000000000000000025 /* APIClient.swift */,
+				F100000000000000000028 /* LanguageManager.swift */,
+				F100000000000000000031 /* RegionDetector.swift */,
+				F100000000000000000034 /* ChemVaultButton.swift */,
+				F100000000000000000037 /* ChemVaultCard.swift */,
+				F100000000000000000040 /* ChemVaultSearchBar.swift */,
+				F100000000000000000043 /* ChemVaultTextField.swift */,
+				F100000000000000000046 /* EmptyStateView.swift */,
+				F100000000000000000049 /* ErrorStateView.swift */,
+				F100000000000000000052 /* LoadingStateView.swift */,
+				F100000000000000000055 /* FeatureGridView.swift */,
+				F100000000000000000058 /* HomeHeaderView.swift */,
+				F100000000000000000061 /* HomeView.swift */,
+				F100000000000000000064 /* ModuleCardView.swift */,
+				F100000000000000000067 /* LaunchView.swift */,
+				F100000000000000000070 /* LocalizedStrings.swift */,
+				F100000000000000000073 /* DocsView.swift */,
+				F100000000000000000076 /* ExtractView.swift */,
+				F100000000000000000079 /* FilesView.swift */,
+				F100000000000000000082 /* MailView.swift */,
+				F100000000000000000085 /* ModelView.swift */,
+				F100000000000000000088 /* NotificationsView.swift */,
+				F100000000000000000091 /* PageHeader.swift */,
+				F100000000000000000094 /* SettingsView.swift */,
+				F100000000000000000097 /* UserCenterView.swift */,
+				F100000000000000000100 /* ModuleDestinationView.swift */,
+				F100000000000000000103 /* SidebarView.swift */,
+				F100000000000000000106 /* TabBarRootView.swift */,
+				F100000000000000000109 /* RootView.swift */,
+				F200000000000000000112 /* Assets.xcassets */,
+			); path = ChemVaultAppleApp; sourceTree = "<group>"; };
+		G00000000000000000000003 /* Products */ = {isa = PBXGroup; children = (F30000000000000000000001 /* ChemVault.app */, F30000000000000000000002 /* ChemVault macOS.app */); name = Products; sourceTree = "<group>"; };
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		T10000000000000000000001 /* ChemVault iOS */ = {isa = PBXNativeTarget; buildConfigurationList = C10000000000000000000001 /* Build configuration list for PBXNativeTarget "ChemVault iOS" */; buildPhases = (S10000000000000000000001 /* Sources */, P10000000000000000000001 /* Frameworks */, R10000000000000000000001 /* Resources */); buildRules = (); dependencies = (); name = "ChemVault iOS"; productName = ChemVault; productReference = F30000000000000000000001 /* ChemVault.app */; productType = "com.apple.product-type.application"; };
+		T20000000000000000000001 /* ChemVault macOS */ = {isa = PBXNativeTarget; buildConfigurationList = C20000000000000000000001 /* Build configuration list for PBXNativeTarget "ChemVault macOS" */; buildPhases = (S20000000000000000000001 /* Sources */, P20000000000000000000001 /* Frameworks */, R20000000000000000000001 /* Resources */); buildRules = (); dependencies = (); name = "ChemVault macOS"; productName = "ChemVault macOS"; productReference = F30000000000000000000002 /* ChemVault macOS.app */; productType = "com.apple.product-type.application"; };
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		P00000000000000000000001 /* Project object */ = {isa = PBXProject; attributes = {BuildIndependentTargetsInParallel = 1; LastSwiftUpdateCheck = 1600; LastUpgradeCheck = 1600; TargetAttributes = {T10000000000000000000001 = {CreatedOnToolsVersion = 16.0;}; T20000000000000000000001 = {CreatedOnToolsVersion = 16.0;};};}; buildConfigurationList = C00000000000000000000001 /* Build configuration list for PBXProject "ChemVaultAppleApp" */; compatibilityVersion = "Xcode 14.0"; developmentRegion = en; hasScannedForEncodings = 0; knownRegions = (en, Base, zh_Hans); mainGroup = G00000000000000000000001; productRefGroup = G00000000000000000000003 /* Products */; projectDirPath = ""; projectRoot = ""; targets = (T10000000000000000000001 /* ChemVault iOS */, T20000000000000000000001 /* ChemVault macOS */); };
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		R10000000000000000000001 /* Resources */ = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (B300000000000000000113 /* Assets.xcassets in Resources */); runOnlyForDeploymentPostprocessing = 0; };
+		R20000000000000000000001 /* Resources */ = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (B400000000000000000114 /* Assets.xcassets in Resources */); runOnlyForDeploymentPostprocessing = 0; };
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		S10000000000000000000001 /* Sources */ = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (
+				B100000000000000000002 /* ChemVaultApp.swift in Sources */,
+				B100000000000000000005 /* AppConfig.swift in Sources */,
+				B100000000000000000008 /* AppLanguage.swift in Sources */,
+				B100000000000000000011 /* AppRegion.swift in Sources */,
+				B100000000000000000014 /* ChemVaultModule.swift in Sources */,
+				B100000000000000000017 /* FeatureItem.swift in Sources */,
+				B100000000000000000020 /* NavigationItem.swift in Sources */,
+				B100000000000000000023 /* UserPermission.swift in Sources */,
+				B100000000000000000026 /* APIClient.swift in Sources */,
+				B100000000000000000029 /* LanguageManager.swift in Sources */,
+				B100000000000000000032 /* RegionDetector.swift in Sources */,
+				B100000000000000000035 /* ChemVaultButton.swift in Sources */,
+				B100000000000000000038 /* ChemVaultCard.swift in Sources */,
+				B100000000000000000041 /* ChemVaultSearchBar.swift in Sources */,
+				B100000000000000000044 /* ChemVaultTextField.swift in Sources */,
+				B100000000000000000047 /* EmptyStateView.swift in Sources */,
+				B100000000000000000050 /* ErrorStateView.swift in Sources */,
+				B100000000000000000053 /* LoadingStateView.swift in Sources */,
+				B100000000000000000056 /* FeatureGridView.swift in Sources */,
+				B100000000000000000059 /* HomeHeaderView.swift in Sources */,
+				B100000000000000000062 /* HomeView.swift in Sources */,
+				B100000000000000000065 /* ModuleCardView.swift in Sources */,
+				B100000000000000000068 /* LaunchView.swift in Sources */,
+				B100000000000000000071 /* LocalizedStrings.swift in Sources */,
+				B100000000000000000074 /* DocsView.swift in Sources */,
+				B100000000000000000077 /* ExtractView.swift in Sources */,
+				B100000000000000000080 /* FilesView.swift in Sources */,
+				B100000000000000000083 /* MailView.swift in Sources */,
+				B100000000000000000086 /* ModelView.swift in Sources */,
+				B100000000000000000089 /* NotificationsView.swift in Sources */,
+				B100000000000000000092 /* PageHeader.swift in Sources */,
+				B100000000000000000095 /* SettingsView.swift in Sources */,
+				B100000000000000000098 /* UserCenterView.swift in Sources */,
+				B100000000000000000101 /* ModuleDestinationView.swift in Sources */,
+				B100000000000000000104 /* SidebarView.swift in Sources */,
+				B100000000000000000107 /* TabBarRootView.swift in Sources */,
+				B100000000000000000110 /* RootView.swift in Sources */,
+			); runOnlyForDeploymentPostprocessing = 0; };
+		S20000000000000000000001 /* Sources */ = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (
+				B200000000000000000003 /* ChemVaultApp.swift in Sources */,
+				B200000000000000000006 /* AppConfig.swift in Sources */,
+				B200000000000000000009 /* AppLanguage.swift in Sources */,
+				B200000000000000000012 /* AppRegion.swift in Sources */,
+				B200000000000000000015 /* ChemVaultModule.swift in Sources */,
+				B200000000000000000018 /* FeatureItem.swift in Sources */,
+				B200000000000000000021 /* NavigationItem.swift in Sources */,
+				B200000000000000000024 /* UserPermission.swift in Sources */,
+				B200000000000000000027 /* APIClient.swift in Sources */,
+				B200000000000000000030 /* LanguageManager.swift in Sources */,
+				B200000000000000000033 /* RegionDetector.swift in Sources */,
+				B200000000000000000036 /* ChemVaultButton.swift in Sources */,
+				B200000000000000000039 /* ChemVaultCard.swift in Sources */,
+				B200000000000000000042 /* ChemVaultSearchBar.swift in Sources */,
+				B200000000000000000045 /* ChemVaultTextField.swift in Sources */,
+				B200000000000000000048 /* EmptyStateView.swift in Sources */,
+				B200000000000000000051 /* ErrorStateView.swift in Sources */,
+				B200000000000000000054 /* LoadingStateView.swift in Sources */,
+				B200000000000000000057 /* FeatureGridView.swift in Sources */,
+				B200000000000000000060 /* HomeHeaderView.swift in Sources */,
+				B200000000000000000063 /* HomeView.swift in Sources */,
+				B200000000000000000066 /* ModuleCardView.swift in Sources */,
+				B200000000000000000069 /* LaunchView.swift in Sources */,
+				B200000000000000000072 /* LocalizedStrings.swift in Sources */,
+				B200000000000000000075 /* DocsView.swift in Sources */,
+				B200000000000000000078 /* ExtractView.swift in Sources */,
+				B200000000000000000081 /* FilesView.swift in Sources */,
+				B200000000000000000084 /* MailView.swift in Sources */,
+				B200000000000000000087 /* ModelView.swift in Sources */,
+				B200000000000000000090 /* NotificationsView.swift in Sources */,
+				B200000000000000000093 /* PageHeader.swift in Sources */,
+				B200000000000000000096 /* SettingsView.swift in Sources */,
+				B200000000000000000099 /* UserCenterView.swift in Sources */,
+				B200000000000000000102 /* ModuleDestinationView.swift in Sources */,
+				B200000000000000000105 /* SidebarView.swift in Sources */,
+				B200000000000000000108 /* TabBarRootView.swift in Sources */,
+				B200000000000000000111 /* RootView.swift in Sources */,
+			); runOnlyForDeploymentPostprocessing = 0; };
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		C00000000000000000000002 /* Debug */ = {isa = XCBuildConfiguration; buildSettings = {ALWAYS_SEARCH_USER_PATHS = NO; CLANG_ANALYZER_NONNULL = YES; CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE; CLANG_CXX_LANGUAGE_STANDARD = "gnu++20"; CLANG_ENABLE_MODULES = YES; CLANG_ENABLE_OBJC_ARC = YES; CLANG_ENABLE_OBJC_WEAK = YES; CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES; CLANG_WARN_BOOL_CONVERSION = YES; CLANG_WARN_COMMA = YES; CLANG_WARN_CONSTANT_CONVERSION = YES; CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES; CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR; CLANG_WARN_DOCUMENTATION_COMMENTS = YES; CLANG_WARN_EMPTY_BODY = YES; CLANG_WARN_ENUM_CONVERSION = YES; CLANG_WARN_INFINITE_RECURSION = YES; CLANG_WARN_INT_CONVERSION = YES; CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES; CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES; CLANG_WARN_OBJC_LITERAL_CONVERSION = YES; CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR; CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES; CLANG_WARN_RANGE_LOOP_ANALYSIS = YES; CLANG_WARN_STRICT_PROTOTYPES = YES; CLANG_WARN_SUSPICIOUS_MOVE = YES; CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE; CLANG_WARN_UNREACHABLE_CODE = YES; CLANG_WARN__DUPLICATE_METHOD_MATCH = YES; COPY_PHASE_STRIP = NO; DEBUG_INFORMATION_FORMAT = dwarf; ENABLE_STRICT_OBJC_MSGSEND = YES; ENABLE_TESTABILITY = YES; GCC_C_LANGUAGE_STANDARD = gnu17; GCC_DYNAMIC_NO_PIC = NO; GCC_NO_COMMON_BLOCKS = YES; GCC_OPTIMIZATION_LEVEL = 0; GCC_PREPROCESSOR_DEFINITIONS = ("DEBUG=1", "$(inherited)"); GCC_WARN_64_TO_32_BIT_CONVERSION = YES; GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR; GCC_WARN_UNDECLARED_SELECTOR = YES; GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE; GCC_WARN_UNUSED_FUNCTION = YES; GCC_WARN_UNUSED_VARIABLE = YES; ONLY_ACTIVE_ARCH = YES; SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG; SWIFT_OPTIMIZATION_LEVEL = "-Onone";}; name = Debug; };
+		C00000000000000000000003 /* Release */ = {isa = XCBuildConfiguration; buildSettings = {ALWAYS_SEARCH_USER_PATHS = NO; CLANG_ANALYZER_NONNULL = YES; CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE; CLANG_CXX_LANGUAGE_STANDARD = "gnu++20"; CLANG_ENABLE_MODULES = YES; CLANG_ENABLE_OBJC_ARC = YES; CLANG_ENABLE_OBJC_WEAK = YES; CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES; CLANG_WARN_BOOL_CONVERSION = YES; CLANG_WARN_COMMA = YES; CLANG_WARN_CONSTANT_CONVERSION = YES; CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES; CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR; CLANG_WARN_DOCUMENTATION_COMMENTS = YES; CLANG_WARN_EMPTY_BODY = YES; CLANG_WARN_ENUM_CONVERSION = YES; CLANG_WARN_INFINITE_RECURSION = YES; CLANG_WARN_INT_CONVERSION = YES; CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES; CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES; CLANG_WARN_OBJC_LITERAL_CONVERSION = YES; CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR; CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES; CLANG_WARN_RANGE_LOOP_ANALYSIS = YES; CLANG_WARN_STRICT_PROTOTYPES = YES; CLANG_WARN_SUSPICIOUS_MOVE = YES; CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE; CLANG_WARN_UNREACHABLE_CODE = YES; CLANG_WARN__DUPLICATE_METHOD_MATCH = YES; COPY_PHASE_STRIP = NO; DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym"; ENABLE_NS_ASSERTIONS = NO; ENABLE_STRICT_OBJC_MSGSEND = YES; GCC_C_LANGUAGE_STANDARD = gnu17; GCC_NO_COMMON_BLOCKS = YES; GCC_WARN_64_TO_32_BIT_CONVERSION = YES; GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR; GCC_WARN_UNDECLARED_SELECTOR = YES; GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE; GCC_WARN_UNUSED_FUNCTION = YES; GCC_WARN_UNUSED_VARIABLE = YES; SWIFT_COMPILATION_MODE = wholemodule; SWIFT_OPTIMIZATION_LEVEL = "-O";}; name = Release; };
+		C10000000000000000000002 /* Debug */ = {isa = XCBuildConfiguration; buildSettings = {ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor; CODE_SIGN_STYLE = Automatic; CURRENT_PROJECT_VERSION = 1; DEVELOPMENT_ASSET_PATHS = ""; ENABLE_PREVIEWS = YES; GENERATE_INFOPLIST_FILE = YES; INFOPLIST_KEY_CFBundleDisplayName = ChemVault; INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education"; INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2026 ChemVault"; INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES; INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES; INFOPLIST_KEY_UILaunchScreen_Generation = YES; INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight"; INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight"; IPHONEOS_DEPLOYMENT_TARGET = 16.0; MARKETING_VERSION = 1.0; PRODUCT_BUNDLE_IDENTIFIER = science.chemvault.app; PRODUCT_NAME = ChemVault; SDKROOT = iphoneos; SUPPORTED_PLATFORMS = "iphoneos iphonesimulator"; SWIFT_EMIT_LOC_STRINGS = YES; SWIFT_VERSION = 5.0; TARGETED_DEVICE_FAMILY = "1,2";}; name = Debug; };
+		C10000000000000000000003 /* Release */ = {isa = XCBuildConfiguration; buildSettings = {ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor; CODE_SIGN_STYLE = Automatic; CURRENT_PROJECT_VERSION = 1; DEVELOPMENT_ASSET_PATHS = ""; ENABLE_PREVIEWS = YES; GENERATE_INFOPLIST_FILE = YES; INFOPLIST_KEY_CFBundleDisplayName = ChemVault; INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education"; INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2026 ChemVault"; INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES; INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES; INFOPLIST_KEY_UILaunchScreen_Generation = YES; INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight"; INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight"; IPHONEOS_DEPLOYMENT_TARGET = 16.0; MARKETING_VERSION = 1.0; PRODUCT_BUNDLE_IDENTIFIER = science.chemvault.app; PRODUCT_NAME = ChemVault; SDKROOT = iphoneos; SUPPORTED_PLATFORMS = "iphoneos iphonesimulator"; SWIFT_EMIT_LOC_STRINGS = YES; SWIFT_VERSION = 5.0; TARGETED_DEVICE_FAMILY = "1,2";}; name = Release; };
+		C20000000000000000000002 /* Debug */ = {isa = XCBuildConfiguration; buildSettings = {ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor; CODE_SIGN_STYLE = Automatic; COMBINE_HIDPI_IMAGES = YES; CURRENT_PROJECT_VERSION = 1; ENABLE_PREVIEWS = YES; GENERATE_INFOPLIST_FILE = YES; INFOPLIST_KEY_CFBundleDisplayName = ChemVault; INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education"; INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2026 ChemVault"; MACOSX_DEPLOYMENT_TARGET = 13.0; MARKETING_VERSION = 1.0; PRODUCT_BUNDLE_IDENTIFIER = science.chemvault.app; PRODUCT_NAME = ChemVault; SDKROOT = macosx; SUPPORTED_PLATFORMS = macosx; SWIFT_EMIT_LOC_STRINGS = YES; SWIFT_VERSION = 5.0;}; name = Debug; };
+		C20000000000000000000003 /* Release */ = {isa = XCBuildConfiguration; buildSettings = {ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor; CODE_SIGN_STYLE = Automatic; COMBINE_HIDPI_IMAGES = YES; CURRENT_PROJECT_VERSION = 1; ENABLE_PREVIEWS = YES; GENERATE_INFOPLIST_FILE = YES; INFOPLIST_KEY_CFBundleDisplayName = ChemVault; INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education"; INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2026 ChemVault"; MACOSX_DEPLOYMENT_TARGET = 13.0; MARKETING_VERSION = 1.0; PRODUCT_BUNDLE_IDENTIFIER = science.chemvault.app; PRODUCT_NAME = ChemVault; SDKROOT = macosx; SUPPORTED_PLATFORMS = macosx; SWIFT_EMIT_LOC_STRINGS = YES; SWIFT_VERSION = 5.0;}; name = Release; };
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		C00000000000000000000001 /* Build configuration list for PBXProject "ChemVaultAppleApp" */ = {isa = XCConfigurationList; buildConfigurations = (C00000000000000000000002 /* Debug */, C00000000000000000000003 /* Release */); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+		C10000000000000000000001 /* Build configuration list for PBXNativeTarget "ChemVault iOS" */ = {isa = XCConfigurationList; buildConfigurations = (C10000000000000000000002 /* Debug */, C10000000000000000000003 /* Release */); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+		C20000000000000000000001 /* Build configuration list for PBXNativeTarget "ChemVault macOS" */ = {isa = XCConfigurationList; buildConfigurations = (C20000000000000000000002 /* Debug */, C20000000000000000000003 /* Release */); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+/* End XCConfigurationList section */
+	};
+	rootObject = P00000000000000000000001 /* Project object */;
+}
