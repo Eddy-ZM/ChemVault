@@ -2,6 +2,7 @@ import SwiftUI
 
 struct TabBarRootView: View {
     @EnvironmentObject private var languageManager: LanguageManager
+    @EnvironmentObject private var remoteConfigStore: RemoteConfigStore
     let permission: UserPermission
     @State private var selectedTab: ChemVaultModule = .home
     @State private var homePath: [ChemVaultModule] = []
@@ -19,21 +20,32 @@ struct TabBarRootView: View {
             .tabItem { Label(languageManager.text(ChemVaultModule.home.titleKey), systemImage: ChemVaultModule.home.symbolName) }
             .tag(ChemVaultModule.home)
 
-            NavigationStack { ModelView(permission: permission) }
-                .tabItem { Label(languageManager.text(ChemVaultModule.model.titleKey), systemImage: ChemVaultModule.model.symbolName) }
-                .tag(ChemVaultModule.model)
+            if remoteConfigStore.isModuleEnabled(.model) {
+                NavigationStack { ModelView(permission: permission) }
+                    .tabItem { Label(languageManager.text(ChemVaultModule.model.titleKey), systemImage: ChemVaultModule.model.symbolName) }
+                    .tag(ChemVaultModule.model)
+            }
 
-            NavigationStack { FilesView(permission: permission) }
-                .tabItem { Label(languageManager.text(ChemVaultModule.files.titleKey), systemImage: ChemVaultModule.files.symbolName) }
-                .tag(ChemVaultModule.files)
+            if remoteConfigStore.isModuleEnabled(.files) {
+                NavigationStack { FilesView(permission: permission) }
+                    .tabItem { Label(languageManager.text(ChemVaultModule.files.titleKey), systemImage: ChemVaultModule.files.symbolName) }
+                    .tag(ChemVaultModule.files)
+            }
 
-            NavigationStack { DocsView(permission: permission) }
-                .tabItem { Label(languageManager.text(ChemVaultModule.docs.titleKey), systemImage: ChemVaultModule.docs.symbolName) }
-                .tag(ChemVaultModule.docs)
+            if remoteConfigStore.isModuleEnabled(.docs) {
+                NavigationStack { DocsView(permission: permission) }
+                    .tabItem { Label(languageManager.text(ChemVaultModule.docs.titleKey), systemImage: ChemVaultModule.docs.symbolName) }
+                    .tag(ChemVaultModule.docs)
+            }
 
             NavigationStack { SettingsView() }
                 .tabItem { Label(languageManager.text(ChemVaultModule.settings.titleKey), systemImage: ChemVaultModule.settings.symbolName) }
                 .tag(ChemVaultModule.settings)
+        }
+        .onChange(of: remoteConfigStore.config.enabledModuleIDs) { _ in
+            if !remoteConfigStore.isModuleEnabled(selectedTab) {
+                selectedTab = .home
+            }
         }
     }
 }

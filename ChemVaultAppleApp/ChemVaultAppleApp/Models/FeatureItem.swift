@@ -8,8 +8,8 @@ struct FeatureItem: Identifiable, Hashable {
     let symbolName: String
     let status: ModuleStatus
 
-    static func homeItems(permission: UserPermission) -> [FeatureItem] {
-        ChemVaultModule.featureModules.map { module in
+    static func homeItems(permission: UserPermission, modules: [ChemVaultModule] = ChemVaultModule.featureModules) -> [FeatureItem] {
+        modules.map { module in
             FeatureItem(
                 module: module,
                 titleKey: module.titleKey,

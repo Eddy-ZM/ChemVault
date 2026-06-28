@@ -2,6 +2,7 @@ import SwiftUI
 
 struct SettingsView: View {
     @EnvironmentObject private var languageManager: LanguageManager
+    @EnvironmentObject private var remoteConfigStore: RemoteConfigStore
     @AppStorage("appearancePreference") private var appearanceRawValue = AppearancePreference.system.rawValue
     @AppStorage("apiBaseURL") private var apiBaseURL = AppConfig.defaultAPIBaseURL.absoluteString
 
@@ -43,6 +44,15 @@ struct SettingsView: View {
             Section(languageManager.text("settings.api")) {
                 TextField(languageManager.text("settings.api"), text: $apiBaseURL)
                     .textFieldStyle(.roundedBorder)
+            }
+
+            Section("Remote Config") {
+                LabeledContent("Resource bundle", value: remoteConfigStore.config.resourceBundleVersion)
+                LabeledContent("Minimum version", value: remoteConfigStore.config.minimumSupportedVersion)
+                LabeledContent("Enabled modules", value: remoteConfigStore.config.enabledModuleIDs.joined(separator: ", "))
+                Button("Refresh remote config") {
+                    Task { await remoteConfigStore.refresh() }
+                }
             }
 
             Section(languageManager.text("settings.about")) {

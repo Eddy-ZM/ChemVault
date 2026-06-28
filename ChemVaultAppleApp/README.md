@@ -18,7 +18,7 @@ This project intentionally does not use WebView, WKWebView, UIWebView, local HTM
 
 Open `ChemVaultAppleApp.xcodeproj` in Xcode.
 
-The requested final directory is `/Users/edwardmu/ChemVault_suite/ChemVaultAppleApp`. In this sandbox the generated project is under the writable repository path. You can move the whole `ChemVaultAppleApp` folder to `/Users/edwardmu/ChemVault_suite/ChemVaultAppleApp` after generation.
+Keep the whole `ChemVaultAppleApp` directory inside the Git repository so Xcode Cloud can check out the project, shared schemes and app resources from GitHub.
 
 ## Run iOS
 

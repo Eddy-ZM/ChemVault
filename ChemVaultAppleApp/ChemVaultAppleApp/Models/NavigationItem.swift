@@ -6,7 +6,11 @@ struct NavigationItem: Identifiable, Hashable {
     let titleKey: String
     let symbolName: String
 
-    static let primary = ChemVaultModule.sidebarModules.map {
-        NavigationItem(module: $0, titleKey: $0.titleKey, symbolName: $0.symbolName)
+    init(module: ChemVaultModule) {
+        self.module = module
+        self.titleKey = module.titleKey
+        self.symbolName = module.symbolName
     }
+
+    static let primary = ChemVaultModule.sidebarModules.map(NavigationItem.init)
 }

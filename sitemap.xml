@@ -37,6 +37,12 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://chemvault.science/team</loc>
+    <lastmod>2026-06-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://chemvault.science/pages/contact.html</loc>
     <lastmod>2026-06-22</lastmod>
     <changefreq>monthly</changefreq>

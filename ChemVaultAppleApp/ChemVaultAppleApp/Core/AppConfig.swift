@@ -6,6 +6,7 @@ public enum AppConfig {
     public static let appName = "ChemVault"
     public static let version = "1.0.0"
     public static let defaultAPIBaseURL = URL(string: "https://api.chemvault.science")!
+    public static let remoteConfigURL = URL(string: "https://api.chemvault.science/app-config.json")!
     public static let regionCacheTTL: TimeInterval = 24 * 60 * 60
     public static let networkTimeout: TimeInterval = 4
 }

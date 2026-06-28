@@ -2,13 +2,14 @@ import SwiftUI
 
 struct SidebarView: View {
     @EnvironmentObject private var languageManager: LanguageManager
+    @EnvironmentObject private var remoteConfigStore: RemoteConfigStore
     @Binding var selection: ChemVaultModule?
     let permission: UserPermission
 
     var body: some View {
         List(selection: $selection) {
             Section {
-                ForEach(NavigationItem.primary) { item in
+                ForEach(remoteConfigStore.visibleSidebarModules.map(NavigationItem.init)) { item in
                     Label(languageManager.text(item.titleKey), systemImage: item.symbolName)
                         .tag(Optional(item.module))
                 }
