@@ -1,134 +1,72 @@
 # ChemVault
 
-## License
-
-This repository is source-available but not open source. Public visibility is
-for review and reference only; no rights are granted to use, copy, modify,
-distribute, host, deploy, or create derivative works without prior written
-permission from Ziwen Mu or the repository owner.
-
-See [LICENSE](./LICENSE). All rights reserved.
-
-ChemVault is a Cloudflare Pages-ready chemistry portal with a local-first chemistry database, academic search enrichment and a D1-backed dynamic API route.
+ChemVault is a chemistry knowledge and research workflow product. The project currently includes a public website and a native Apple app for iOS, iPadOS and macOS.
 
 Current version: `v0.2.4`.
 
-The local database now builds to exactly `10000` searchable records for the D1 seed and browser-side search index. The record set combines curated chemistry content, safety-enriched compounds, systematic local catalog entries, materials records, mechanisms, methods, dossiers and source records.
+## License
 
-## Dynamic Backend Route
+This repository is source-available but not open source. Public visibility is for review and reference only. No rights are granted to use, copy, modify, distribute, host, deploy or create derivative works without prior written permission from Ziwen Mu or the repository owner.
 
-The API entrypoint is `functions/api/[[path]].js`.
+See [LICENSE](./LICENSE). All rights reserved.
 
-Available routes:
+## Website
 
-- `GET /api/health` reports whether the backend is using D1 or fallback data.
-- `GET /api/records?q=graphene&type=material&limit=24` lists searchable records.
-- `GET /api/records/:type/:id` returns one record.
-- `POST /api/enrich` checks local D1 first, then pulls PubChem/PubMed data only when no local record exists.
-- `GET /api/facets` returns type, domain and tag facets.
+The ChemVault website presents chemistry records, research context and project information through a public web interface.
 
-The Function is intentionally defensive:
+### Chemistry Search
 
-- If `env.DB` exists, records are queried from Cloudflare D1.
-- If `env.DB` is missing, the API returns local fallback examples.
-- If a D1 query fails, the API still returns fallback data with a warning in `meta.warning`.
-- Search results include `imageUrl`; PubChem imports use structure images and other records use generated ChemVault thumbnails.
-- Academic enrichment validates source host, identifier and title before adding accepted records to D1.
+- Search across compounds, reagents, reactions, mechanisms, materials, methods, dossiers and source records.
+- Filter and browse records by type, domain and topic.
+- Open record pages with structured summaries, linked context and research-oriented metadata.
+- Use public record pages for reference, discovery and navigation across the ChemVault knowledge base.
 
-The frontend helper is `scripts/api.js` and exposes `window.CHEMVAULT_API`:
+### Chemistry Workspaces
 
-```js
-const results = await window.CHEMVAULT_API.searchRecords({ q: "graphene oxide" });
-const imported = await window.CHEMVAULT_API.enrichRecords({ q: "unknown compound" });
-const record = await window.CHEMVAULT_API.getRecord("reagent", "nabh4");
-```
+- Compound and Academic Search: unified entry point for chemistry and academic record lookup.
+- Reagent Database: reagent records with scope, conditions, limitations and handling context.
+- Materials Atlas: materials-oriented records and related scientific context.
+- Spectroscopy Workbench: spectroscopy evidence pages for analytical review.
+- Mechanism Atlas: linked reaction-mechanism records and mechanism-oriented navigation.
+- Methods and Reproducibility: method records, workflow notes and reproducibility context.
+- Research Workbench: workspace-style access to research records and scientific tasks.
+- Academic Library: terminology, source references and academic context used across ChemVault.
+- Research Dossiers: grouped research dossiers and topic-focused summaries.
+- Public Data: public-facing access point for ChemVault record index information.
 
-If the site is opened without Cloudflare Functions, the helper falls back to the existing browser-side ChemVault records so pages do not break.
+### Project Information
 
-## D1 Setup
+- Research Directions: overview of ChemVault research areas and priorities.
+- Platform Capabilities: summary of major platform functions and user-facing capabilities.
+- ChemVault Ecosystem: project-level view of related ChemVault products and initiatives.
+- Publications and Notes: public notes, logs and written updates.
+- Team: executive profiles, advisors, operations and product contributors.
+- Contact: collaboration and inquiry entry point.
+- Sitemap: structured navigation across public website pages.
 
-Create the database, then replace the placeholder `database_id` in `wrangler.toml`:
+## Apple App
 
-```sh
-wrangler d1 create chemvault
-```
+The ChemVault Apple app is a native app experience for iOS, iPadOS and macOS. It provides a mobile and desktop workspace for ChemVault modules.
 
-Apply the schema and seed data:
+### Native Workspace
 
-```sh
-wrangler d1 execute chemvault --file=schema.sql
-npm run d1:seed
-```
+- Home: overview of available ChemVault modules and workspace status.
+- Molecular Modelling: molecule search, SMILES entry, structure preview and modelling workflow entry points.
+- Scientific File Storage: organization area for research files, instrument outputs and project materials.
+- Documentation: access to ChemVault documentation, workflow notes and reference materials.
+- AI Scientific Data Extraction: workspace for preparing papers, PDFs and instrument files for structured scientific extraction.
+- ChemVault Mail: project communication and research correspondence area.
+- Account and Permissions: account state, module access and permission visibility.
+- Notifications: status center for extraction jobs, deployments and file-processing events.
+- Settings: language, region detection, appearance and connection preferences.
 
-`npm run d1:seed` rebuilds `seed.sql` from the local ChemVault data files before importing it. The generated seed includes the full `10000` record local index, not just a sample subset. Each seeded record includes `image_url` so direct search results can render thumbnails immediately.
+### Platform Coverage
 
-The local 10000-record target is generated by `data/local-catalog-10000.js`. It fills the remaining database capacity with systematic chemistry catalog entries while preserving curated records first.
+- iPhone: compact tab-based workspace.
+- iPad: larger-screen workspace layout.
+- macOS: desktop-oriented navigation and workspace presentation.
+- Language support: English and Simplified Chinese, with automatic region-based selection and manual switching.
 
-If your D1 database was created before record images were added, run the image-column migration once:
+## Product Scope
 
-```sh
-npm run d1:migrate:images
-```
-
-The Function also attempts to add the `image_url` column automatically when D1 is available, so existing deployments do not break if the migration has not been run yet.
-
-For local Pages Functions development:
-
-```sh
-npm run dev
-```
-
-`npm run dev` builds the lightweight Pages bundle in `dist/` first. Use `npm run dev:source` only when you intentionally want Wrangler to serve the repository root, including generated development artifacts.
-
-## Deploy To Cloudflare Pages
-
-This project uses Cloudflare Pages Functions in the `functions/` directory, so deploy it as a Pages project.
-
-Use this command for direct deploys:
-
-```sh
-npm run deploy
-```
-
-The deploy command runs `npm run build` and uploads `dist/`, not the repository root. The build step preserves runtime assets, Pages Functions, redirects and headers, while excluding generated deployment-unfriendly files such as `seed.sql` and `data/chemvault-data.json`. The React framework page hydrates from the already-loaded runtime data scripts, so the large JSON export is no longer required in the Pages bundle.
-
-In the Cloudflare dashboard, use these settings:
-
-- Project type: Pages, not Workers.
-- Production branch: `main`.
-- Framework preset: None.
-- Build command: `npm run build`
-- Build output directory: `dist`
-
-Do not use `wrangler deploy` for this repo. That command deploys a Worker and expects Workers Static Assets configuration such as `[assets] directory = "./dist"`, which does not apply to Pages Functions.
-
-If the live site still shows the older dark/cyberpunk theme, check that Cloudflare is not deploying the `cloudflare/workers-autoconfig` branch. That branch was generated for Workers configuration; the Pages + D1 site is on `main`.
-
-Search result images are covered by `_headers`. PubChem structure images need `img-src` access to `pubchem.ncbi.nlm.nih.gov`; without that CSP rule, records such as `methanol` can have valid database `image_url` values but still show blank thumbnails in the browser.
-
-## Sitemap
-
-`sitemap.xml` is generated from the same local record index:
-
-```sh
-npm run sitemap
-```
-
-The generated sitemap contains canonical page URLs plus one escaped record-detail URL for every local record. The default origin is `https://chemvault.pages.dev`. For a custom Google Search Console property, regenerate it with:
-
-```sh
-CHEMVAULT_SITE_ORIGIN=https://your-domain.example npm run sitemap
-```
-
-Then upload the resulting `sitemap.xml` URL from the same verified domain in Google Search Console. Query-string URLs are XML-escaped, so `record.html?type=...&id=...` is emitted as valid sitemap XML.
-
-## Files Added For The Backend
-
-- `functions/api/[[path]].js` Cloudflare Pages Function API router.
-- `schema.sql` D1 `records` table and indexes.
-- `seed.sql` full 10000-record ChemVault seed.
-- `wrangler.toml` Pages and D1 binding configuration.
-- `scripts/api.js` frontend API client with browser fallback.
-- `scripts/build-pages.mjs` lightweight Cloudflare Pages bundle builder.
-- `scripts/generate-sitemap.mjs` sitemap generator for static pages and record-detail URLs.
-- `data/local-catalog-10000.js` systematic local catalog expander.
+ChemVault is intended for chemistry knowledge access, research organization and scientific workflow support. Website and app features are presented as product capabilities and public project information. This README intentionally focuses on the user-facing website and app experience, not implementation details.
