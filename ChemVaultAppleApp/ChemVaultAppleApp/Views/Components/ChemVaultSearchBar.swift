@@ -14,8 +14,8 @@ struct ChemVaultSearchBar: View {
                 .textInputAutocapitalization(.never)
                 #endif
         }
-        .padding(14)
-        .background(Color.primary.opacity(0.055), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
-        .overlay(RoundedRectangle(cornerRadius: 16, style: .continuous).stroke(Color.primary.opacity(0.09), lineWidth: 1))
+        .padding(10)
+        .background(Color.primary.opacity(0.055), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+        .overlay(RoundedRectangle(cornerRadius: 8, style: .continuous).stroke(Color.primary.opacity(0.09), lineWidth: 1))
     }
 }

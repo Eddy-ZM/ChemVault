@@ -15,7 +15,7 @@ struct ChemVaultButton: View {
         Button(action: action) {
             Label {
                 Text(title)
-                    .font(.headline)
+                    .font(.callout.weight(.semibold))
             } icon: {
                 if let systemImage {
                     Image(systemName: systemImage)
@@ -23,17 +23,17 @@ struct ChemVaultButton: View {
             }
             .labelStyle(.titleAndIcon)
             .frame(maxWidth: .infinity)
-            .padding(.vertical, 13)
-            .padding(.horizontal, 16)
+            .padding(.vertical, 10)
+            .padding(.horizontal, 12)
         }
         .buttonStyle(.plain)
         .foregroundStyle(style == .primary ? Color.black : Color.primary)
         .background(
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
+            RoundedRectangle(cornerRadius: 8, style: .continuous)
                 .fill(style == .primary ? Color.cyan : Color.primary.opacity(0.06))
         )
         .overlay(
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
+            RoundedRectangle(cornerRadius: 8, style: .continuous)
                 .strokeBorder(Color.primary.opacity(style == .primary ? 0 : 0.12), lineWidth: 1)
         )
     }

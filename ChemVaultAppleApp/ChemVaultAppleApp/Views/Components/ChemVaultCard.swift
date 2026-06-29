@@ -5,17 +5,17 @@ struct ChemVaultCard<Content: View>: View {
 
     var body: some View {
         content
-            .padding(18)
+            .padding(14)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(
-                RoundedRectangle(cornerRadius: 24, style: .continuous)
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
                     .fill(.thinMaterial)
             )
             .overlay(
-                RoundedRectangle(cornerRadius: 24, style: .continuous)
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
                     .strokeBorder(Color.primary.opacity(0.08), lineWidth: 1)
             )
-            .shadow(color: Color.black.opacity(0.08), radius: 20, x: 0, y: 12)
+            .shadow(color: Color.black.opacity(0.05), radius: 8, x: 0, y: 4)
     }
 }
 
@@ -24,14 +24,14 @@ struct ChemVaultLogoMark: View {
 
     var body: some View {
         ZStack {
-            RoundedRectangle(cornerRadius: size * 0.26, style: .continuous)
+            RoundedRectangle(cornerRadius: min(size * 0.2, 8), style: .continuous)
                 .fill(LinearGradient(colors: [.cyan.opacity(0.95), .blue.opacity(0.75)], startPoint: .topLeading, endPoint: .bottomTrailing))
             Image(systemName: "hexagon")
                 .font(.system(size: size * 0.48, weight: .semibold))
                 .foregroundStyle(.white)
         }
         .frame(width: size, height: size)
-        .shadow(color: .cyan.opacity(0.25), radius: 18, x: 0, y: 8)
+        .shadow(color: .cyan.opacity(0.18), radius: 8, x: 0, y: 4)
     }
 }
 

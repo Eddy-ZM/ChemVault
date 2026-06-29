@@ -7,12 +7,12 @@ struct ModelView: View {
     @StateObject private var searchModel = CompoundSearchViewModel()
 
     private let resultColumns = [
-        GridItem(.adaptive(minimum: 260), spacing: 14)
+        GridItem(.adaptive(minimum: 220), spacing: 10)
     ]
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 18) {
+            VStack(alignment: .leading, spacing: 14) {
                 header
                 searchPanel
                 statusPanel
@@ -20,8 +20,8 @@ struct ModelView: View {
                 selectedRecordSection
                 supportingModules
             }
-            .padding()
-            .frame(maxWidth: 1120)
+            .padding(14)
+            .frame(maxWidth: 1040)
             .frame(maxWidth: .infinity)
         }
         .background(ChemVaultSurface())
@@ -33,19 +33,20 @@ struct ModelView: View {
 
     private var header: some View {
         ChemVaultCard {
-            VStack(alignment: .leading, spacing: 14) {
-                HStack(alignment: .top, spacing: 14) {
+            VStack(alignment: .leading, spacing: 12) {
+                HStack(alignment: .top, spacing: 12) {
                     Image(systemName: "magnifyingglass.circle.fill")
-                        .font(.system(size: 42, weight: .semibold))
+                        .font(.system(size: 32, weight: .semibold))
                         .foregroundStyle(.cyan)
-                        .frame(width: 58, height: 58)
-                        .background(Color.cyan.opacity(0.12), in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+                        .frame(width: 46, height: 46)
+                        .background(Color.cyan.opacity(0.12), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
 
                     VStack(alignment: .leading, spacing: 6) {
                         Text(languageManager.text("compound.hero.title"))
-                            .font(.largeTitle.weight(.bold))
+                            .font(.title.weight(.bold))
                             .fixedSize(horizontal: false, vertical: true)
                         Text(languageManager.text("compound.hero.body"))
+                            .font(.subheadline)
                             .foregroundStyle(.secondary)
                             .lineSpacing(3)
                     }
@@ -55,8 +56,8 @@ struct ModelView: View {
                     StatusBadge(status: permission.status(for: .model), language: languageManager.activeLanguage)
                     Text(languageManager.text("compound.hero.badge"))
                         .font(.caption.weight(.semibold))
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 5)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
                         .foregroundStyle(.cyan)
                         .background(Color.cyan.opacity(0.12), in: Capsule())
                 }
@@ -68,7 +69,7 @@ struct ModelView: View {
         ChemVaultCard {
             VStack(alignment: .leading, spacing: 14) {
                 Text(languageManager.text("compound.search.title"))
-                    .font(.title2.weight(.bold))
+                    .font(.headline)
 
                 HStack(spacing: 10) {
                     Image(systemName: "magnifyingglass")
@@ -86,9 +87,9 @@ struct ModelView: View {
                             .controlSize(.small)
                     }
                 }
-                .padding(14)
-                .background(Color.primary.opacity(0.055), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
-                .overlay(RoundedRectangle(cornerRadius: 16, style: .continuous).stroke(Color.primary.opacity(0.09), lineWidth: 1))
+                .padding(10)
+                .background(Color.primary.opacity(0.055), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+                .overlay(RoundedRectangle(cornerRadius: 8, style: .continuous).stroke(Color.primary.opacity(0.09), lineWidth: 1))
 
                 ChemVaultTextField(
                     title: languageManager.text("model.smiles"),
@@ -130,9 +131,9 @@ struct ModelView: View {
 
     private var statusPanel: some View {
         HStack(spacing: 12) {
-            Label(languageManager.text(searchModel.statusKey), systemImage: searchModel.usesFallback ? "wifi.slash" : "checkmark.seal")
+            Label(languageManager.text(searchModel.statusKey), systemImage: searchModel.sourceState.systemImage)
                 .font(.callout.weight(.medium))
-                .foregroundStyle(searchModel.usesFallback ? Color.orange : Color.cyan)
+                .foregroundStyle(searchModel.sourceState.color)
             Spacer()
             Text("\(searchModel.records.count) \(languageManager.text("compound.results.count"))")
                 .font(.callout.weight(.semibold))
@@ -144,7 +145,7 @@ struct ModelView: View {
     private var resultsSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text(languageManager.text("compound.results.title"))
-                .font(.title2.weight(.bold))
+                .font(.headline)
 
             if let errorKey = searchModel.errorKey {
                 ChemVaultCard {
@@ -162,7 +163,7 @@ struct ModelView: View {
                     )
                 }
             } else {
-                LazyVGrid(columns: resultColumns, spacing: 14) {
+                LazyVGrid(columns: resultColumns, spacing: 10) {
                     ForEach(searchModel.records) { record in
                         CompoundResultCard(
                             record: record,
@@ -184,10 +185,10 @@ struct ModelView: View {
                     HStack(alignment: .top) {
                         VStack(alignment: .leading, spacing: 6) {
                             Text(languageManager.text("compound.detail.title"))
-                                .font(.headline)
+                                .font(.subheadline.weight(.semibold))
                                 .foregroundStyle(.secondary)
                             Text(record.title)
-                                .font(.title2.weight(.bold))
+                                .font(.title3.weight(.bold))
                             Text(record.subtitleText)
                                 .foregroundStyle(.secondary)
                         }
@@ -232,7 +233,7 @@ struct ModelView: View {
         ChemVaultCard {
             VStack(alignment: .leading, spacing: 12) {
                 Text(languageManager.text("compound.supporting.title"))
-                    .font(.title3.weight(.bold))
+                    .font(.headline)
                 Text(languageManager.text("compound.supporting.body"))
                     .foregroundStyle(.secondary)
 
@@ -282,7 +283,7 @@ private struct CompoundResultCard: View {
                 .frame(minHeight: 150, alignment: .topLeading)
             }
             .overlay(
-                RoundedRectangle(cornerRadius: 24, style: .continuous)
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
                     .strokeBorder(isSelected ? Color.cyan.opacity(0.5) : Color.clear, lineWidth: 2)
             )
         }
@@ -326,6 +327,34 @@ private struct SupportingModulePill: View {
     }
 }
 
+private enum CompoundSearchSourceState {
+    case live
+    case builtIn
+    case offline
+
+    var systemImage: String {
+        switch self {
+        case .live:
+            return "checkmark.seal"
+        case .builtIn:
+            return "externaldrive"
+        case .offline:
+            return "wifi.slash"
+        }
+    }
+
+    var color: Color {
+        switch self {
+        case .live:
+            return .cyan
+        case .builtIn:
+            return .green
+        case .offline:
+            return .orange
+        }
+    }
+}
+
 @MainActor
 private final class CompoundSearchViewModel: ObservableObject {
     @Published var query = "aspirin"
@@ -333,7 +362,7 @@ private final class CompoundSearchViewModel: ObservableObject {
     @Published private(set) var records = CompoundSearchRecord.featured
     @Published private(set) var selectedRecord: CompoundSearchRecord? = CompoundSearchRecord.featured.first
     @Published private(set) var isLoading = false
-    @Published private(set) var usesFallback = true
+    @Published private(set) var sourceState = CompoundSearchSourceState.builtIn
     @Published private(set) var statusKey = "compound.status.featured"
     @Published private(set) var errorKey: String?
 
@@ -363,7 +392,10 @@ private final class CompoundSearchViewModel: ObservableObject {
         }
 
         isLoading = true
+        defer { isLoading = false }
         errorKey = nil
+        let localRecords = CompoundSearchRecord.localMatches(for: term)
+        applyResults(localRecords, sourceState: .builtIn, statusKey: "compound.status.local")
 
         do {
             let response = try await apiClient.get(
@@ -376,22 +408,23 @@ private final class CompoundSearchViewModel: ObservableObject {
                 as: CompoundSearchEnvelope.self
             )
             let remoteRecords = response.records
-            records = remoteRecords.isEmpty ? CompoundSearchRecord.localMatches(for: term) : remoteRecords
-            selectedRecord = records.first
-            usesFallback = response.source != "d1" || remoteRecords.isEmpty
-            statusKey = usesFallback ? "compound.status.local" : "compound.status.live"
             if remoteRecords.isEmpty {
-                errorKey = "compound.error.localSuggestions"
+                applyResults(localRecords, sourceState: .builtIn, statusKey: "compound.status.local")
+            } else {
+                applyResults(
+                    mergedRecords(remoteRecords, with: localRecords),
+                    sourceState: .live,
+                    statusKey: "compound.status.live"
+                )
             }
         } catch {
-            records = CompoundSearchRecord.localMatches(for: term)
-            selectedRecord = records.first
-            usesFallback = true
-            statusKey = "compound.status.offline"
-            errorKey = "compound.error.offline"
+            if localRecords.isEmpty {
+                applyResults([], sourceState: .offline, statusKey: "compound.status.offline")
+                errorKey = "compound.error.offline"
+            } else {
+                applyResults(localRecords, sourceState: .builtIn, statusKey: "compound.status.local")
+            }
         }
-
-        isLoading = false
     }
 
     func resetToFeatured() {
@@ -399,13 +432,35 @@ private final class CompoundSearchViewModel: ObservableObject {
         smiles = ""
         records = CompoundSearchRecord.featured
         selectedRecord = records.first
-        usesFallback = true
+        sourceState = .builtIn
         statusKey = "compound.status.featured"
         errorKey = nil
     }
 
     func select(_ record: CompoundSearchRecord) {
         selectedRecord = record
+    }
+
+    private func applyResults(
+        _ nextRecords: [CompoundSearchRecord],
+        sourceState nextSourceState: CompoundSearchSourceState,
+        statusKey nextStatusKey: String
+    ) {
+        records = nextRecords
+        selectedRecord = nextRecords.first
+        sourceState = nextSourceState
+        statusKey = nextStatusKey
+    }
+
+    private func mergedRecords(
+        _ remoteRecords: [CompoundSearchRecord],
+        with localRecords: [CompoundSearchRecord]
+    ) -> [CompoundSearchRecord] {
+        var seenIDs = Set<String>()
+        let merged = (remoteRecords + localRecords).filter { record in
+            seenIDs.insert(record.id.lowercased()).inserted
+        }
+        return Array(merged.prefix(24))
     }
 }
 
@@ -524,7 +579,7 @@ private struct CompoundSearchRecord: Identifiable, Decodable, Hashable {
         href = decodedHref ?? decodedURL
     }
 
-    static let featured: [CompoundSearchRecord] = [
+    static let catalog: [CompoundSearchRecord] = [
         CompoundSearchRecord(
             id: "aspirin",
             title: "Aspirin",
@@ -608,13 +663,291 @@ private struct CompoundSearchRecord: Identifiable, Decodable, Hashable {
             formula: "C6H12O6",
             tags: ["sugar", "carbohydrate", "monosaccharide"],
             href: "/pages/record.html?type=compound&id=glucose"
+        ),
+        CompoundSearchRecord(
+            id: "ibuprofen",
+            title: "Ibuprofen",
+            subtitle: "2-(4-isobutylphenyl)propionic acid",
+            body: "Common non-steroidal anti-inflammatory reference compound for aromatic acid and pharmaceutical search examples.",
+            domain: "Pharmaceutical compound",
+            family: "Arylpropionic acid",
+            risk: "standard",
+            formula: "C13H18O2",
+            tags: ["pharmaceutical", "carboxylic acid", "aromatic"],
+            href: "/pages/record.html?type=compound&id=ibuprofen"
+        ),
+        CompoundSearchRecord(
+            id: "acetaminophen",
+            title: "Acetaminophen",
+            subtitle: "Paracetamol",
+            body: "Analgesic reference compound with phenol and amide groups for name, synonym and functional-group lookup.",
+            domain: "Pharmaceutical compound",
+            family: "Anilide",
+            risk: "standard",
+            formula: "C8H9NO2",
+            tags: ["paracetamol", "phenol", "amide"],
+            href: "/pages/record.html?type=compound&id=acetaminophen"
+        ),
+        CompoundSearchRecord(
+            id: "methanol",
+            title: "Methanol",
+            subtitle: "Methyl alcohol",
+            body: "Small polar alcohol used for solvent, toxicity and spectroscopy-oriented compound lookup.",
+            domain: "Alcohol",
+            family: "Solvent",
+            risk: "toxic",
+            formula: "CH4O",
+            tags: ["alcohol", "solvent", "polar"],
+            href: "/pages/record.html?type=compound&id=methanol"
+        ),
+        CompoundSearchRecord(
+            id: "acetic-acid",
+            title: "Acetic acid",
+            subtitle: "Ethanoic acid",
+            body: "Small carboxylic acid reference for acidity, solvent systems and organic reaction context.",
+            domain: "Organic acid",
+            family: "Carboxylic acid",
+            risk: "corrosive",
+            formula: "C2H4O2",
+            tags: ["acid", "carboxylic acid", "solvent"],
+            href: "/pages/record.html?type=compound&id=acetic-acid"
+        ),
+        CompoundSearchRecord(
+            id: "ammonia",
+            title: "Ammonia",
+            subtitle: "Azane",
+            body: "Nitrogen hydride reference compound for basicity, inorganic chemistry and safety lookup.",
+            domain: "Inorganic compound",
+            family: "Nitrogen hydride",
+            risk: "irritant",
+            formula: "NH3",
+            tags: ["base", "nitrogen", "inorganic"],
+            href: "/pages/record.html?type=compound&id=ammonia"
+        ),
+        CompoundSearchRecord(
+            id: "water",
+            title: "Water",
+            subtitle: "Oxidane",
+            body: "Universal solvent reference compound for formula lookup and physical-property context.",
+            domain: "Inorganic compound",
+            family: "Solvent",
+            risk: "standard",
+            formula: "H2O",
+            tags: ["solvent", "polar", "inorganic"],
+            href: "/pages/record.html?type=compound&id=water"
+        ),
+        CompoundSearchRecord(
+            id: "carbon-dioxide",
+            title: "Carbon dioxide",
+            subtitle: "CO2",
+            body: "Linear oxide reference for gas, carbonate system and environmental chemistry lookup.",
+            domain: "Inorganic compound",
+            family: "Oxide",
+            risk: "gas",
+            formula: "CO2",
+            tags: ["gas", "oxide", "carbon"],
+            href: "/pages/record.html?type=compound&id=carbon-dioxide"
+        ),
+        CompoundSearchRecord(
+            id: "methane",
+            title: "Methane",
+            subtitle: "Natural gas reference",
+            body: "Simple alkane used for hydrocarbon, combustion and molecular formula search examples.",
+            domain: "Hydrocarbon",
+            family: "Alkane",
+            risk: "flammable",
+            formula: "CH4",
+            tags: ["alkane", "gas", "hydrocarbon"],
+            href: "/pages/record.html?type=compound&id=methane"
+        ),
+        CompoundSearchRecord(
+            id: "toluene",
+            title: "Toluene",
+            subtitle: "Methylbenzene",
+            body: "Aromatic solvent reference compound for ring substitution, solvent and safety-oriented lookup.",
+            domain: "Aromatic hydrocarbon",
+            family: "Arene solvent",
+            risk: "flammable",
+            formula: "C7H8",
+            tags: ["aromatic", "solvent", "methylbenzene"],
+            href: "/pages/record.html?type=compound&id=toluene"
+        ),
+        CompoundSearchRecord(
+            id: "phenol",
+            title: "Phenol",
+            subtitle: "Hydroxybenzene",
+            body: "Aromatic alcohol reference for acidity, functional-group and safety lookup.",
+            domain: "Aromatic compound",
+            family: "Phenol",
+            risk: "corrosive",
+            formula: "C6H6O",
+            tags: ["aromatic", "phenol", "acidic"],
+            href: "/pages/record.html?type=compound&id=phenol"
+        ),
+        CompoundSearchRecord(
+            id: "aniline",
+            title: "Aniline",
+            subtitle: "Aminobenzene",
+            body: "Aromatic amine reference compound for dye, polymer and functional-group search examples.",
+            domain: "Aromatic amine",
+            family: "Aniline",
+            risk: "toxic",
+            formula: "C6H7N",
+            tags: ["amine", "aromatic", "aniline"],
+            href: "/pages/record.html?type=compound&id=aniline"
+        ),
+        CompoundSearchRecord(
+            id: "chloroform",
+            title: "Chloroform",
+            subtitle: "Trichloromethane",
+            body: "Halogenated solvent reference for safety, solvent and formula lookup.",
+            domain: "Halogenated compound",
+            family: "Solvent",
+            risk: "hazard",
+            formula: "CHCl3",
+            tags: ["halogenated", "solvent", "chlorinated"],
+            href: "/pages/record.html?type=compound&id=chloroform"
+        ),
+        CompoundSearchRecord(
+            id: "diethyl-ether",
+            title: "Diethyl ether",
+            subtitle: "Ethoxyethane",
+            body: "Volatile ether solvent used for solvent, flammability and functional-group lookup.",
+            domain: "Ether",
+            family: "Solvent",
+            risk: "flammable",
+            formula: "C4H10O",
+            tags: ["ether", "solvent", "volatile"],
+            href: "/pages/record.html?type=compound&id=diethyl-ether"
+        ),
+        CompoundSearchRecord(
+            id: "sodium-hydroxide",
+            title: "Sodium hydroxide",
+            subtitle: "Caustic soda",
+            body: "Strong inorganic base reference for pH, neutralization and safety lookup.",
+            domain: "Inorganic base",
+            family: "Hydroxide",
+            risk: "corrosive",
+            formula: "NaOH",
+            tags: ["base", "hydroxide", "inorganic"],
+            href: "/pages/record.html?type=compound&id=sodium-hydroxide"
+        ),
+        CompoundSearchRecord(
+            id: "hydrochloric-acid",
+            title: "Hydrochloric acid",
+            subtitle: "Hydrogen chloride solution",
+            body: "Strong acid reference for acid-base chemistry, aqueous systems and safety lookup.",
+            domain: "Inorganic acid",
+            family: "Hydrogen halide",
+            risk: "corrosive",
+            formula: "HCl",
+            tags: ["acid", "chloride", "aqueous"],
+            href: "/pages/record.html?type=compound&id=hydrochloric-acid"
+        ),
+        CompoundSearchRecord(
+            id: "sulfuric-acid",
+            title: "Sulfuric acid",
+            subtitle: "Oil of vitriol",
+            body: "Strong mineral acid reference for dehydration, acid-base workflows and safety lookup.",
+            domain: "Inorganic acid",
+            family: "Oxosulfur acid",
+            risk: "corrosive",
+            formula: "H2SO4",
+            tags: ["acid", "sulfate", "mineral acid"],
+            href: "/pages/record.html?type=compound&id=sulfuric-acid"
+        ),
+        CompoundSearchRecord(
+            id: "potassium-chloride",
+            title: "Potassium chloride",
+            subtitle: "Inorganic salt",
+            body: "Simple inorganic salt reference for electrolyte, materials and formula lookup.",
+            domain: "Inorganic salt",
+            family: "Salt",
+            risk: "standard",
+            formula: "KCl",
+            tags: ["salt", "ionic", "electrolyte"],
+            href: "/pages/record.html?type=compound&id=potassium-chloride"
+        ),
+        CompoundSearchRecord(
+            id: "urea",
+            title: "Urea",
+            subtitle: "Carbamide",
+            body: "Small carbonyl diamide reference for biochemistry, fertilizer and functional-group lookup.",
+            domain: "Organic compound",
+            family: "Amide",
+            risk: "standard",
+            formula: "CH4N2O",
+            tags: ["amide", "biochemistry", "fertilizer"],
+            href: "/pages/record.html?type=compound&id=urea"
+        ),
+        CompoundSearchRecord(
+            id: "glycine",
+            title: "Glycine",
+            subtitle: "Aminoacetic acid",
+            body: "Small amino acid reference for zwitterion, biochemistry and formula lookup.",
+            domain: "Amino acid",
+            family: "Biomolecule",
+            risk: "standard",
+            formula: "C2H5NO2",
+            tags: ["amino acid", "biomolecule", "zwitterion"],
+            href: "/pages/record.html?type=compound&id=glycine"
+        ),
+        CompoundSearchRecord(
+            id: "sucrose",
+            title: "Sucrose",
+            subtitle: "Table sugar",
+            body: "Disaccharide reference compound for carbohydrate and formula search examples.",
+            domain: "Carbohydrate",
+            family: "Disaccharide",
+            risk: "standard",
+            formula: "C12H22O11",
+            tags: ["sugar", "carbohydrate", "disaccharide"],
+            href: "/pages/record.html?type=compound&id=sucrose"
+        ),
+        CompoundSearchRecord(
+            id: "citric-acid",
+            title: "Citric acid",
+            subtitle: "2-hydroxypropane-1,2,3-tricarboxylic acid",
+            body: "Tricarboxylic acid reference for food chemistry, buffers and metabolic context.",
+            domain: "Organic acid",
+            family: "Carboxylic acid",
+            risk: "standard",
+            formula: "C6H8O7",
+            tags: ["acid", "carboxylic acid", "buffer"],
+            href: "/pages/record.html?type=compound&id=citric-acid"
+        ),
+        CompoundSearchRecord(
+            id: "dopamine",
+            title: "Dopamine",
+            subtitle: "Catecholamine",
+            body: "Biogenic amine reference for catechol, amine and neuroscience-adjacent compound lookup.",
+            domain: "Biomolecule",
+            family: "Catecholamine",
+            risk: "standard",
+            formula: "C8H11NO2",
+            tags: ["amine", "catechol", "biomolecule"],
+            href: "/pages/record.html?type=compound&id=dopamine"
+        ),
+        CompoundSearchRecord(
+            id: "cholesterol",
+            title: "Cholesterol",
+            subtitle: "Sterol lipid",
+            body: "Sterol reference compound for lipid, biomolecule and formula lookup.",
+            domain: "Lipid",
+            family: "Sterol",
+            risk: "standard",
+            formula: "C27H46O",
+            tags: ["lipid", "sterol", "biomolecule"],
+            href: "/pages/record.html?type=compound&id=cholesterol"
         )
     ]
+
+    static let featured: [CompoundSearchRecord] = Array(catalog.prefix(7))
 
     static func localMatches(for query: String) -> [CompoundSearchRecord] {
         let term = query.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
         guard !term.isEmpty else { return featured }
-        let matches = featured.filter { $0.searchText.contains(term) }
-        return matches.isEmpty ? [] : matches
+        let matches = catalog.filter { $0.searchText.contains(term) }
+        return Array(matches.prefix(24))
     }
 }

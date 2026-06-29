@@ -9,14 +9,15 @@ struct PageHeader: View {
         VStack(alignment: .leading, spacing: 10) {
             HStack(spacing: 12) {
                 Image(systemName: module.symbolName)
-                    .font(.system(size: 30, weight: .semibold))
+                    .font(.system(size: 24, weight: .semibold))
                     .foregroundStyle(.cyan)
-                    .frame(width: 52, height: 52)
-                    .background(Color.cyan.opacity(0.12), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+                    .frame(width: 42, height: 42)
+                    .background(Color.cyan.opacity(0.12), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
                 VStack(alignment: .leading, spacing: 4) {
                     Text(languageManager.text(module.titleKey))
-                        .font(.largeTitle.weight(.bold))
+                        .font(.title2.weight(.bold))
                     Text(languageManager.text(module.descriptionKey))
+                        .font(.subheadline)
                         .foregroundStyle(.secondary)
                 }
             }

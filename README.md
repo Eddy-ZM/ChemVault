@@ -46,12 +46,13 @@ The ChemVault website presents chemistry records, research context and project i
 
 ## Apple App
 
-The ChemVault Apple app is a native app experience for iOS, iPadOS and macOS. It provides a mobile and desktop workspace for ChemVault modules.
+The ChemVault Apple app is a native compound-search experience for iOS, iPadOS and macOS. It provides fast chemical lookup as the primary workflow, with compact supporting tools around it.
 
 ### Native Workspace
 
-- Home: overview of available ChemVault modules and workspace status.
-- Molecular Modelling: molecule search, SMILES entry, structure preview and modelling workflow entry points.
+- Home: compact overview of compound search and supporting ChemVault tools.
+- Compound Search: search compounds by name, synonym, formula, identifier or SMILES, then review formula, domain, type, summary, tags and record links.
+- Built-in Compound Index: reliable local search results when live API enrichment is unavailable.
 - Scientific File Storage: organization area for research files, instrument outputs and project materials.
 - Documentation: access to ChemVault documentation, workflow notes and reference materials.
 - AI Scientific Data Extraction: workspace for preparing papers, PDFs and instrument files for structured scientific extraction.

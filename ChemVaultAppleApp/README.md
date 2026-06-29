@@ -1,8 +1,8 @@
 # ChemVault Apple App
 
-ChemVault Apple App is a native SwiftUI implementation of the ChemVault product system for iOS, iPadOS and macOS.
+ChemVault Apple App is a native SwiftUI compound-search product for iOS, iPadOS and macOS.
 
-This project intentionally does not use WebView, WKWebView, UIWebView, local HTML bundles, iframes or chemvault.science as the primary interface. The website information architecture has been translated into native SwiftUI modules.
+This project intentionally does not use WebView, WKWebView, UIWebView, local HTML bundles, iframes or chemvault.science as the primary interface. Compound search is the main app workflow, with documentation, files and extraction presented as compact supporting tools.
 
 ## Project structure
 
@@ -88,21 +88,21 @@ Open `Settings > Language` and select:
 
 Manual selection overrides automatic IP detection and is persisted locally.
 
-## Current MVP placeholders
+## App features
 
-These modules are native SwiftUI pages, but production backends are not connected yet:
+- Compound search by common name, synonym, formula, identifier or SMILES.
+- Built-in compound catalog for reliable results when live API enrichment is unavailable.
+- Live ChemVault record lookup when the production API returns structured records.
+- Record detail panel with formula, domain, type, summary, tags and external record link.
+- Native iPhone/iPad tab navigation and macOS sidebar navigation.
+- Compact supporting areas for documentation, research files, scientific extraction, settings and account state.
+- Automatic language selection with manual language override.
 
-- Molecular modelling preview
-- Scientific file storage
-- Documentation sync
-- AI scientific data extraction jobs
-- ChemVault Mail
-- User center and permissions
-- Notifications
+## ChemVault API integration
 
-## Future ChemVault API integration
+The compound search screen calls `/api/records` for live enrichment and falls back to the built-in compound catalog if the endpoint returns no usable JSON, no matching records or a transient network failure.
 
-`APIClient.swift` already reserves these endpoints:
+The app also reserves these supporting endpoints for production modules:
 
 - `/api/user/me`
 - `/api/files`
@@ -112,7 +112,7 @@ These modules are native SwiftUI pages, but production backends are not connecte
 - `/api/notifications`
 - `/api/permissions`
 
-Replace demo data in module views with `APIClient` calls when the backend contracts are stable.
+Supporting modules should stay secondary to compound lookup unless their backend contracts are ready for production.
 
 ## Why this is not a web shell
 
@@ -132,10 +132,10 @@ The app defaults to English. Open Settings and select 中文 manually if needed.
 
 Open Settings, tap Refresh Region, or manually choose 中文. Some VPNs, private relays or institutional networks may report a non-CN country code.
 
-### API data does not appear
+### Live compound data does not appear
 
-The first MVP uses demo data. Production data requires connecting the reserved endpoints in `APIClient.swift`.
+The search screen still returns built-in compound results. Check Cloudflare/API rules, `/api/records` JSON shape and App Store network access if live enrichment is missing.
 
 ### App Store readiness
 
-Before submission, add final app icons, privacy details, support URL, marketing screenshots, production API endpoints and final signing settings.
+Before submission, confirm final app icons, privacy details, support URL, marketing screenshots, production API behavior and signing settings.

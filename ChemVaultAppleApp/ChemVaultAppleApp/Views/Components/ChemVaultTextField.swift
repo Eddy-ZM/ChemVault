@@ -12,9 +12,9 @@ struct ChemVaultTextField: View {
                 .foregroundStyle(.secondary)
             TextField(placeholder, text: $text)
                 .textFieldStyle(.plain)
-                .padding(14)
-                .background(Color.primary.opacity(0.055), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
-                .overlay(RoundedRectangle(cornerRadius: 16, style: .continuous).stroke(Color.primary.opacity(0.1), lineWidth: 1))
+                .padding(10)
+                .background(Color.primary.opacity(0.055), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+                .overlay(RoundedRectangle(cornerRadius: 8, style: .continuous).stroke(Color.primary.opacity(0.1), lineWidth: 1))
                 #if os(iOS)
                 .textInputAutocapitalization(.never)
                 #endif

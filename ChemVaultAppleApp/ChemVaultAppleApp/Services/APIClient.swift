@@ -29,6 +29,7 @@ final class APIClient {
     func get<Response: Decodable>(_ path: String, as type: Response.Type) async throws -> Response {
         var request = URLRequest(url: endpoint(path))
         request.httpMethod = "GET"
+        request.timeoutInterval = AppConfig.networkTimeout
         applyHeaders(to: &request)
         return try await perform(request, as: type)
     }
@@ -36,6 +37,7 @@ final class APIClient {
     func get<Response: Decodable>(_ path: String, queryItems: [URLQueryItem], as type: Response.Type) async throws -> Response {
         var request = URLRequest(url: endpoint(path, queryItems: queryItems))
         request.httpMethod = "GET"
+        request.timeoutInterval = AppConfig.networkTimeout
         applyHeaders(to: &request)
         return try await perform(request, as: type)
     }
@@ -43,6 +45,7 @@ final class APIClient {
     func post<Body: Encodable, Response: Decodable>(_ path: String, body: Body, as type: Response.Type) async throws -> Response {
         var request = URLRequest(url: endpoint(path))
         request.httpMethod = "POST"
+        request.timeoutInterval = AppConfig.networkTimeout
         request.httpBody = try JSONEncoder().encode(body)
         applyHeaders(to: &request)
         return try await perform(request, as: type)
@@ -68,6 +71,7 @@ final class APIClient {
     private func applyHeaders(to request: inout URLRequest) {
         request.setValue("application/json", forHTTPHeaderField: "Accept")
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue("ChemVaultAppleApp/\(AppConfig.version) (\(AppConfig.bundleIdentifier))", forHTTPHeaderField: "User-Agent")
         if let authToken, !authToken.isEmpty {
             request.setValue("Bearer \(authToken)", forHTTPHeaderField: "Authorization")
         }
