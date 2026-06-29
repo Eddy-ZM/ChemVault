@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Molecular Modeling | ChemVault</title>
+  <meta name="description" content="ChemVault Molecular Modeling preview with plan-aware controls for molecule viewing, advanced modeling, exports, and team projects." />
+  <meta name="theme-color" content="#f5f5f7" />
+  <script src="/scripts/boot.js?v=20260618c"></script>
+  <link rel="canonical" href="https://chemvault.science/pages/molecular-modeling.html" />
+  <link rel="icon" href="/favicon.ico?v=20260628a" sizes="any" />
+  <link rel="icon" href="/assets/chemvault-logo-mark.png?v=20260628a" type="image/png" sizes="512x512" />
+  <link rel="apple-touch-icon" href="/assets/chemvault-apple-touch-icon.png?v=20260628a" />
+  <link rel="manifest" href="/site.webmanifest" />
+  <link rel="stylesheet" href="../assets/styles.css?v=20260620a" />
+  <link rel="stylesheet" href="../assets/portal.css?v=20260619c" />
+  <link rel="stylesheet" href="../assets/commercial.css?v=20260629a" />
+  <script src="../data/chem-data.js?v=20260603a" defer></script>
+  <script src="../data/reagent-extension.js?v=20260603a" defer></script>
+  <script src="../data/research-data.js?v=20260603a" defer></script>
+  <script src="../data/dossier-data.js?v=20260603a" defer></script>
+  <script src="../data/method-data.js?v=20260603a" defer></script>
+  <script src="../data/spectroscopy-data.js?v=20260603a" defer></script>
+  <script src="../data/materials-data.js?v=20260603a" defer></script>
+  <script src="../data/database-expansion.js?v=20260603a" defer></script>
+  <script src="../data/reagent-megalibrary.js?v=20260603a" defer></script>
+  <script src="../data/knowledge-expansion.js?v=20260603a" defer></script>
+  <script src="../data/local-catalog-10000.js?v=20260603a" defer></script>
+  <script src="../data/external-sources.js?v=20260603a" defer></script>
+  <script src="../scripts/record-utils.js?v=20260603a" defer></script>
+  <script src="../scripts/search-intent.js?v=20260608a" defer></script>
+  <script src="../scripts/api.js?v=20260603a" defer></script>
+  <script src="../scripts/motion.js?v=20260618c" defer></script>
+  <script src="../scripts/site-shell.js?v=20260629a" defer></script>
+  <script src="../scripts/commercial-config.js?v=20260629a" defer></script>
+  <script src="../scripts/commercial-ui.js?v=20260629a" defer></script>
+</head>
+<body class="page-shell" data-boot-label="Molecular Modeling">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="container nav-shell">
+      <a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true"><img src="../assets/chemvault-logo-mark.png" alt="" /></span><span><strong>ChemVault</strong><small>molecular modeling</small></span></a>
+      <button class="icon-button menu-toggle" type="button" aria-label="Open navigation" aria-expanded="false"><span></span><span></span><span></span></button>
+      <nav class="site-nav" aria-label="Main navigation"><a href="../index.html">Home</a><a href="search.html">Compound Search</a><a href="pricing.html">Pricing</a></nav>
+      <div class="header-actions"><label class="search-shell" for="shellSearch"><span>Search</span><input id="shellSearch" type="search" placeholder="Search local records..." /></label><button class="theme-toggle" type="button" data-shell-action="theme" aria-label="Switch theme"><span class="theme-toggle__icon" aria-hidden="true"></span></button></div>
+    </div>
+    <div class="container shell-search-results" id="shellSearchResults" aria-live="polite"></div>
+  </header>
+  <main id="main">
+    <section class="cv-commercial-hero">
+      <div class="container page-hero-grid">
+        <div>
+          <p class="eyebrow">molecular modeling beta</p>
+          <h1>Visualize molecules and prepare modeling workflows.</h1>
+          <p>This page provides a safe molecule viewer preview and plan-aware modeling controls. Advanced calculations, exports, and batch jobs require a real modeling backend before production use.</p>
+          <div class="hero-actions">
+            <a class="academic-button primary" href="#viewer">Open viewer preview</a>
+            <a class="academic-button ghost-on-light" href="pricing.html">Upgrade modeling quota</a>
+          </div>
+        </div>
+        <aside class="cv-hero-metrics">
+          <div><span>Free</span><strong>Basic molecule viewer preview</strong></div>
+          <div><span>Pro</span><strong>Advanced modeling and export</strong></div>
+          <div><span>Team</span><strong>Team modeling projects</strong></div>
+          <div><span>Enterprise</span><strong>Custom quota and integrations</strong></div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="cv-section" id="viewer">
+      <div class="container cv-commercial-grid">
+        <div class="cv-feature-panel">
+          <span class="section-kicker">viewer preview</span>
+          <h2>Basic molecule viewer</h2>
+          <p>Use this space for an embedded MolStudio viewer or a validated molecule renderer. No scientific output is generated here until the modeling service is connected.</p>
+          <div class="cv-empty-list">
+            <p>No molecule loaded yet.</p>
+            <p>No modeling projects yet.</p>
+            <p>No computed properties are displayed without a verified backend.</p>
+          </div>
+          <a class="secondary-button" href="search.html">Find a compound first</a>
+        </div>
+        <div class="cv-feature-panel">
+          <span class="section-kicker">quota</span>
+          <h2>Modeling usage</h2>
+          <div data-render="usage-summary"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="cv-section cv-section--tint">
+      <div class="container">
+        <div class="cv-section-header">
+          <div>
+            <p class="eyebrow">premium modeling</p>
+            <h2>Advanced controls stay gated until the backend exists.</h2>
+          </div>
+          <p>These placeholders define the commercial surface without claiming unsupported computational chemistry results.</p>
+        </div>
+        <div class="cv-card-grid">
+          <article class="cv-feature-panel" data-feature-key="modeling.advanced" data-gate-title="Advanced modeling" data-gate-body="Pro unlocks advanced modeling controls after the modeling backend is connected.">
+            <h3>Advanced modeling</h3>
+            <p>Conformation setup, calculation presets, and validation workflow controls.</p>
+          </article>
+          <article class="cv-feature-panel" data-feature-key="modeling.export" data-gate-title="Modeling export" data-gate-body="Pro unlocks molecule and project export controls after storage is connected.">
+            <h3>Export models</h3>
+            <p>Export model files, reports, and project summaries.</p>
+          </article>
+          <article class="cv-feature-panel" data-feature-key="modeling.high_quota" data-gate-title="High modeling quota" data-gate-body="Team/Lab unlocks higher modeling quota and shared modeling projects.">
+            <h3>Team modeling projects</h3>
+            <p>Shared project state, team review, and lab-level usage quotas.</p>
+          </article>
+          <article class="cv-feature-panel" data-feature-key="enterprise.custom_onboarding" data-gate-title="Custom modeling integrations" data-gate-body="Enterprise unlocks custom modeling workflows and data integration planning.">
+            <h3>Custom integrations</h3>
+            <p>Institution-specific modeling stack and API planning placeholders.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+  </main>
+  <script src="/scripts/visual-effects.js" defer></script>
+</body>
+</html>

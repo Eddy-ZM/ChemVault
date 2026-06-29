@@ -22,6 +22,7 @@
   <link rel="stylesheet" href="assets/styles.css?v=20260622b" />
   <link rel="stylesheet" href="assets/portal.css?v=20260619c" />
   <link rel="stylesheet" href="assets/academic.css?v=20260623mobilefix" />
+  <link rel="stylesheet" href="assets/commercial.css?v=20260629a" />
   <script src="data/chem-data.js?v=20260603a" defer></script>
   <script src="data/reagent-extension.js?v=20260603a" defer></script>
   <script src="data/research-data.js?v=20260603a" defer></script>
@@ -39,6 +40,8 @@
   <script src="scripts/api.js?v=20260603a" defer></script>
   <script src="scripts/motion.js?v=20260618c" defer></script>
   <script src="scripts/home.js?v=20260624a" defer></script>
+  <script src="scripts/commercial-config.js?v=20260629a" defer></script>
+  <script src="scripts/commercial-ui.js?v=20260629a" defer></script>
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -79,14 +82,25 @@
       <button class="icon-button menu-toggle" type="button" aria-label="Open navigation" aria-expanded="false"><span></span><span></span><span></span></button>
       <nav class="site-nav" aria-label="Main navigation">
         <a href="index.html">Home</a>
-        <a href="pages/research.html">Research</a>
-        <a href="pages/platform.html">Platform</a>
-        <a href="pages/projects.html">Projects</a>
-        <a href="pages/notes.html">Notes</a>
-        <a href="pages/search.html">Compounds</a>
-        <a href="pages/about.html">About</a>
-        <a href="pages/team.html">Team</a>
-        <a href="pages/contact.html">Contact</a>
+        <a href="pages/search.html">Compound Search</a>
+        <a href="pages/file-library.html">File Library</a>
+        <a href="pages/molecular-modeling.html">Molecular Modeling</a>
+        <a href="pages/ai-paper-search.html">AI Paper Search</a>
+        <a href="pages/docs.html">Docs</a>
+        <a href="pages/pricing.html">Pricing</a>
+        <details class="nav-more">
+          <summary>More</summary>
+          <div class="nav-more-menu">
+            <a href="pages/dashboard.html">Dashboard</a>
+            <a href="pages/workbench.html">Research Workbench</a>
+            <a href="pages/mail.html">Mail</a>
+            <a href="pages/contact.html">Enterprise / Contact Sales</a>
+            <a href="pages/research.html">Research</a>
+            <a href="pages/platform.html">Platform</a>
+            <a href="pages/projects.html">Projects</a>
+            <a href="pages/about.html">About</a>
+          </div>
+        </details>
       </nav>
       <div class="header-actions">
         <label class="search-shell" for="shellSearch"><span>Search</span><input id="shellSearch" type="search" placeholder="Search compounds..." /></label>
@@ -110,8 +124,9 @@
           </div>
           <div class="hero-actions" aria-label="Primary actions">
             <a class="academic-button primary" href="pages/search.html">Explore Compounds</a>
+            <a class="academic-button ghost" href="pages/pricing.html">View Pricing</a>
+            <a class="academic-button ghost" href="pages/dashboard.html">Open Workbench</a>
             <a class="academic-button ghost" href="pages/research.html">View Research</a>
-            <a class="academic-button ghost" href="https://github.com/Eddy-ZM" target="_blank" rel="noopener noreferrer">GitHub</a>
           </div>
         </div>
 
@@ -231,6 +246,19 @@
           <p>ChemVault does not treat scientific information as static content. It treats papers, lab reports, spectra, methods and project notes as inputs for an evolving knowledge layer where compounds, reactions, methods and results can be linked, reviewed and reused.</p>
           <p>The long-term goal is to build tools that support scientific understanding, data extraction and research intelligence while remaining transparent, deployable and grounded in primary sources.</p>
         </div>
+      </div>
+    </section>
+
+    <section class="cv-section">
+      <div class="container">
+        <div class="cv-section-header">
+          <div>
+            <p class="eyebrow">integrated platform</p>
+            <h2>A unified professional research workbench.</h2>
+          </div>
+          <p>ChemVault is being commercialized as one platform for compound search, file management, molecular modeling, documentation, mail workflows, and AI paper organization.</p>
+        </div>
+        <div class="cv-module-grid" data-render="app-modules"></div>
       </div>
     </section>
 
@@ -368,6 +396,36 @@
             <a class="academic-button ghost" href="pages/contact.html">Collaborate</a>
             <a class="academic-button ghost" href="https://github.com/Eddy-ZM" target="_blank" rel="noopener noreferrer">Contribute on GitHub</a>
           </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="cv-section">
+      <div class="container cv-commercial-grid">
+        <div class="cv-lead-panel">
+          <span class="section-kicker">newsletter</span>
+          <h2>Follow ChemVault commercial and research workflow updates.</h2>
+          <p>Get updates on compound search, molecular modeling, file library, AI paper search, and team plans.</p>
+          <form data-lead-form data-lead-type="newsletter" class="cv-lead-form">
+            <div class="cv-form-grid">
+              <label>Email <input name="email" type="email" autocomplete="email" required /></label>
+              <label>Role <select name="role"><option>Researcher</option><option>Student</option><option>Lab manager</option><option>Developer</option><option>Institution buyer</option></select></label>
+            </div>
+            <label>Interest area <select name="interestArea"><option>Compound search</option><option>Molecular modeling</option><option>AI paper search</option><option>File library</option><option>Team plan</option></select></label>
+            <label class="cv-check-row"><input type="checkbox" name="consent" required /> Send me ChemVault platform updates.</label>
+            <div class="cv-form-actions"><button class="academic-button primary" type="submit">Subscribe</button><span class="cv-form-status" data-form-status aria-live="polite"></span></div>
+          </form>
+        </div>
+        <div class="cv-lead-panel">
+          <span class="section-kicker">AI beta</span>
+          <h2>Request early access to AI Paper Search.</h2>
+          <p>The AI paper module is in development. Early access requests help prioritize summaries, tags, collections, exports, and team paper libraries.</p>
+          <form data-lead-form data-lead-type="ai_beta" class="cv-lead-form">
+            <label>Email <input name="email" type="email" autocomplete="email" required /></label>
+            <label>Interest area <select name="interestArea"><option>AI paper search</option><option>AI summaries</option><option>Paper collections</option><option>Team notes</option></select></label>
+            <label class="cv-check-row"><input type="checkbox" name="consent" required /> Send me beta access updates.</label>
+            <div class="cv-form-actions"><button class="academic-button dark" type="submit">Join beta list</button><span class="cv-form-status" data-form-status aria-live="polite"></span></div>
+          </form>
         </div>
       </div>
     </section>

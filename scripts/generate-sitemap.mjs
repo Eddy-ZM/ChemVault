@@ -2,7 +2,7 @@ import fs from "node:fs";
 import vm from "node:vm";
 
 const SITE_ORIGIN = process.env.CHEMVAULT_SITE_ORIGIN || "https://chemvault.science";
-const LASTMOD = "2026-06-22";
+const LASTMOD = "2026-06-29";
 
 const dataFiles = [
   "data/chem-data.js",
@@ -30,6 +30,13 @@ const staticUrls = [
   { path: "/team", priority: "0.7", changefreq: "monthly" },
   { path: "/pages/contact.html", priority: "0.7", changefreq: "monthly" },
   { path: "/pages/app.html", priority: "0.9", changefreq: "weekly" },
+  { path: "/pages/dashboard.html", priority: "0.9", changefreq: "weekly" },
+  { path: "/pages/pricing.html", priority: "0.9", changefreq: "weekly" },
+  { path: "/pages/file-library.html", priority: "0.8", changefreq: "weekly" },
+  { path: "/pages/docs.html", priority: "0.8", changefreq: "monthly" },
+  { path: "/pages/molecular-modeling.html", priority: "0.8", changefreq: "weekly" },
+  { path: "/pages/mail.html", priority: "0.7", changefreq: "monthly" },
+  { path: "/pages/ai-paper-search.html", priority: "0.8", changefreq: "weekly" },
   { path: "/pages/workbench.html", priority: "0.9", changefreq: "weekly" },
   { path: "/pages/search.html", priority: "0.9", changefreq: "weekly" },
   { path: "/compounds", priority: "0.9", changefreq: "weekly" },

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Research File Library | ChemVault</title>
+  <meta name="description" content="ChemVault Research File Library for organizing research files, papers, reports, and project assets with plan-aware quotas." />
+  <meta name="theme-color" content="#f5f5f7" />
+  <script src="/scripts/boot.js?v=20260618c"></script>
+  <link rel="canonical" href="https://chemvault.science/pages/file-library.html" />
+  <link rel="icon" href="/favicon.ico?v=20260628a" sizes="any" />
+  <link rel="icon" href="/assets/chemvault-logo-mark.png?v=20260628a" type="image/png" sizes="512x512" />
+  <link rel="apple-touch-icon" href="/assets/chemvault-apple-touch-icon.png?v=20260628a" />
+  <link rel="manifest" href="/site.webmanifest" />
+  <link rel="stylesheet" href="../assets/styles.css?v=20260620a" />
+  <link rel="stylesheet" href="../assets/portal.css?v=20260619c" />
+  <link rel="stylesheet" href="../assets/commercial.css?v=20260629a" />
+  <script src="../data/chem-data.js?v=20260603a" defer></script>
+  <script src="../data/reagent-extension.js?v=20260603a" defer></script>
+  <script src="../data/research-data.js?v=20260603a" defer></script>
+  <script src="../data/dossier-data.js?v=20260603a" defer></script>
+  <script src="../data/method-data.js?v=20260603a" defer></script>
+  <script src="../data/spectroscopy-data.js?v=20260603a" defer></script>
+  <script src="../data/materials-data.js?v=20260603a" defer></script>
+  <script src="../data/database-expansion.js?v=20260603a" defer></script>
+  <script src="../data/reagent-megalibrary.js?v=20260603a" defer></script>
+  <script src="../data/knowledge-expansion.js?v=20260603a" defer></script>
+  <script src="../data/local-catalog-10000.js?v=20260603a" defer></script>
+  <script src="../data/external-sources.js?v=20260603a" defer></script>
+  <script src="../scripts/record-utils.js?v=20260603a" defer></script>
+  <script src="../scripts/search-intent.js?v=20260608a" defer></script>
+  <script src="../scripts/api.js?v=20260603a" defer></script>
+  <script src="../scripts/motion.js?v=20260618c" defer></script>
+  <script src="../scripts/site-shell.js?v=20260629a" defer></script>
+  <script src="../scripts/commercial-config.js?v=20260629a" defer></script>
+  <script src="../scripts/commercial-ui.js?v=20260629a" defer></script>
+</head>
+<body class="page-shell" data-boot-label="File Library">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="container nav-shell">
+      <a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true"><img src="../assets/chemvault-logo-mark.png" alt="" /></span><span><strong>ChemVault</strong><small>file library</small></span></a>
+      <button class="icon-button menu-toggle" type="button" aria-label="Open navigation" aria-expanded="false"><span></span><span></span><span></span></button>
+      <nav class="site-nav" aria-label="Main navigation"><a href="../index.html">Home</a><a href="search.html">Compound Search</a><a href="pricing.html">Pricing</a></nav>
+      <div class="header-actions"><label class="search-shell" for="shellSearch"><span>Search</span><input id="shellSearch" type="search" placeholder="Search local records..." /></label><button class="theme-toggle" type="button" data-shell-action="theme" aria-label="Switch theme"><span class="theme-toggle__icon" aria-hidden="true"></span></button></div>
+    </div>
+    <div class="container shell-search-results" id="shellSearchResults" aria-live="polite"></div>
+  </header>
+  <main id="main">
+    <section class="cv-commercial-hero">
+      <div class="container page-hero-grid">
+        <div>
+          <p class="eyebrow">research file library</p>
+          <h1>Organize papers, reports, instrument files, and project assets.</h1>
+          <p>The first web MVP provides plan-aware library structure, quota UI, and safe empty states. Real uploads should connect to the existing ChemVault Files service before production use.</p>
+          <div class="hero-actions">
+            <a class="academic-button primary" href="#library">Open library view</a>
+            <a class="academic-button ghost-on-light" href="pricing.html">Upgrade storage</a>
+          </div>
+        </div>
+        <aside class="cv-hero-metrics">
+          <div><span>Current plan</span><strong data-render="plan-badge"></strong></div>
+          <div><span>Storage quota</span><strong>Plan-aware quota UI</strong></div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="cv-section" id="library">
+      <div class="container cv-commercial-grid">
+        <div class="cv-feature-panel">
+          <span class="section-kicker">Free library</span>
+          <h2>Basic file list placeholder</h2>
+          <p>No files have been uploaded yet. This placeholder keeps the public site safe while the dedicated file service remains the source of truth for storage.</p>
+          <div class="cv-empty-list">
+            <p>No files uploaded yet.</p>
+            <p>No folders created yet.</p>
+            <p>Storage usage is tracked through the plan quota helper.</p>
+          </div>
+        </div>
+        <div class="cv-feature-panel">
+          <span class="section-kicker">Quota</span>
+          <h2>Plan-aware storage</h2>
+          <div data-render="usage-summary"></div>
+          <p>Upgrade to Pro for larger storage and advanced organization. Team/Lab unlocks a shared file workspace.</p>
+          <a class="academic-button primary" href="pricing.html">Upgrade storage</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="cv-section cv-section--tint">
+      <div class="container">
+        <div class="cv-section-header">
+          <div>
+            <p class="eyebrow">premium file workflows</p>
+            <h2>Advanced organization and shared lab libraries.</h2>
+          </div>
+          <p>These controls are gated because they need authenticated storage, subscription state, and team workspace data.</p>
+        </div>
+        <div class="cv-card-grid">
+          <article class="cv-feature-panel" data-feature-key="file_library.advanced" data-gate-title="Advanced file organization" data-gate-body="Pro unlocks tags, advanced sorting, AI-assisted organization, and export placeholders after storage is connected.">
+            <h3>Advanced organization</h3>
+            <p>Tags, saved views, AI-assisted organization, and export controls.</p>
+          </article>
+          <article class="cv-feature-panel" data-feature-key="file_library.team_workspace" data-gate-title="Shared file workspace" data-gate-body="Team/Lab unlocks shared libraries, project folders, and basic role permissions after organization auth is connected.">
+            <h3>Team file workspace</h3>
+            <p>Shared project library, team roles, and lab-level storage quotas.</p>
+          </article>
+          <article class="cv-feature-panel" data-feature-key="papers.collections" data-gate-title="Paper collections" data-gate-body="Pro unlocks saved paper collections and cross-links with AI Paper Search.">
+            <h3>Paper collections</h3>
+            <p>Connect uploaded papers to AI search, tags, and reading queues.</p>
+          </article>
+          <article class="cv-feature-panel" data-feature-key="enterprise.custom_onboarding" data-gate-title="Institution file onboarding" data-gate-body="Enterprise unlocks custom data migration, procurement support, and institution policy review.">
+            <h3>Institution onboarding</h3>
+            <p>Custom storage policy, migration planning, and procurement workflow.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+  </main>
+  <script src="/scripts/visual-effects.js" defer></script>
+</body>
+</html>

@@ -25,3 +25,88 @@ CREATE UNIQUE INDEX IF NOT EXISTS records_type_id_idx ON records (type, id);
 CREATE INDEX IF NOT EXISTS records_type_idx ON records (type);
 CREATE INDEX IF NOT EXISTS records_title_idx ON records (title);
 CREATE INDEX IF NOT EXISTS records_search_idx ON records (search_text);
+
+CREATE TABLE IF NOT EXISTS leads (
+  id TEXT PRIMARY KEY,
+  type TEXT NOT NULL,
+  email TEXT NOT NULL,
+  name TEXT,
+  organization TEXT,
+  role TEXT,
+  team_size TEXT,
+  interests_json TEXT NOT NULL DEFAULT '[]',
+  message TEXT,
+  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS organizations (
+  id TEXT PRIMARY KEY,
+  name TEXT NOT NULL,
+  plan TEXT NOT NULL DEFAULT 'free',
+  owner_user_id TEXT,
+  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS memberships (
+  id TEXT PRIMARY KEY,
+  user_id TEXT NOT NULL,
+  organization_id TEXT NOT NULL,
+  role TEXT NOT NULL DEFAULT 'member',
+  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS subscriptions (
+  id TEXT PRIMARY KEY,
+  user_id TEXT,
+  organization_id TEXT,
+  provider TEXT,
+  provider_customer_id TEXT,
+  provider_subscription_id TEXT,
+  plan TEXT NOT NULL,
+  status TEXT NOT NULL,
+  current_period_end TEXT,
+  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS feature_entitlements (
+  id TEXT PRIMARY KEY,
+  plan TEXT NOT NULL,
+  feature_key TEXT NOT NULL,
+  usage_limit INTEGER,
+  enabled INTEGER NOT NULL DEFAULT 1
+);
+
+CREATE TABLE IF NOT EXISTS usage_records (
+  id TEXT PRIMARY KEY,
+  user_id TEXT,
+  organization_id TEXT,
+  feature_key TEXT NOT NULL,
+  amount INTEGER NOT NULL DEFAULT 1,
+  period_start TEXT,
+  period_end TEXT,
+  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS resources (
+  id TEXT PRIMARY KEY,
+  title TEXT NOT NULL,
+  slug TEXT NOT NULL,
+  description TEXT,
+  module TEXT NOT NULL,
+  type TEXT NOT NULL,
+  access_level TEXT NOT NULL DEFAULT 'free',
+  preview TEXT,
+  content_url TEXT,
+  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS leads_type_idx ON leads (type);
+CREATE INDEX IF NOT EXISTS leads_email_idx ON leads (email);
+CREATE INDEX IF NOT EXISTS organizations_plan_idx ON organizations (plan);
+CREATE INDEX IF NOT EXISTS memberships_user_idx ON memberships (user_id);
+CREATE INDEX IF NOT EXISTS subscriptions_plan_idx ON subscriptions (plan);
+CREATE INDEX IF NOT EXISTS feature_entitlements_plan_idx ON feature_entitlements (plan);
+CREATE INDEX IF NOT EXISTS usage_records_feature_idx ON usage_records (feature_key);
+CREATE UNIQUE INDEX IF NOT EXISTS resources_slug_idx ON resources (slug);

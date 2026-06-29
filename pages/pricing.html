@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pricing | ChemVault Research Workbench</title>
+  <meta name="description" content="ChemVault pricing for Free, Pro, Team/Lab, and Enterprise/Institution research workflows." />
+  <meta name="theme-color" content="#f5f5f7" />
+  <script src="/scripts/boot.js?v=20260618c"></script>
+  <link rel="canonical" href="https://chemvault.science/pages/pricing.html" />
+  <link rel="icon" href="/favicon.ico?v=20260628a" sizes="any" />
+  <link rel="icon" href="/assets/chemvault-logo-mark.png?v=20260628a" type="image/png" sizes="512x512" />
+  <link rel="apple-touch-icon" href="/assets/chemvault-apple-touch-icon.png?v=20260628a" />
+  <link rel="manifest" href="/site.webmanifest" />
+  <link rel="stylesheet" href="../assets/styles.css?v=20260620a" />
+  <link rel="stylesheet" href="../assets/portal.css?v=20260619c" />
+  <link rel="stylesheet" href="../assets/commercial.css?v=20260629a" />
+  <script src="../data/chem-data.js?v=20260603a" defer></script>
+  <script src="../data/reagent-extension.js?v=20260603a" defer></script>
+  <script src="../data/research-data.js?v=20260603a" defer></script>
+  <script src="../data/dossier-data.js?v=20260603a" defer></script>
+  <script src="../data/method-data.js?v=20260603a" defer></script>
+  <script src="../data/spectroscopy-data.js?v=20260603a" defer></script>
+  <script src="../data/materials-data.js?v=20260603a" defer></script>
+  <script src="../data/database-expansion.js?v=20260603a" defer></script>
+  <script src="../data/reagent-megalibrary.js?v=20260603a" defer></script>
+  <script src="../data/knowledge-expansion.js?v=20260603a" defer></script>
+  <script src="../data/local-catalog-10000.js?v=20260603a" defer></script>
+  <script src="../data/external-sources.js?v=20260603a" defer></script>
+  <script src="../scripts/record-utils.js?v=20260603a" defer></script>
+  <script src="../scripts/search-intent.js?v=20260608a" defer></script>
+  <script src="../scripts/api.js?v=20260603a" defer></script>
+  <script src="../scripts/motion.js?v=20260618c" defer></script>
+  <script src="../scripts/site-shell.js?v=20260629a" defer></script>
+  <script src="../scripts/commercial-config.js?v=20260629a" defer></script>
+  <script src="../scripts/commercial-ui.js?v=20260629a" defer></script>
+</head>
+<body class="page-shell" data-boot-label="Pricing">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="container nav-shell">
+      <a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true"><img src="../assets/chemvault-logo-mark.png" alt="" /></span><span><strong>ChemVault</strong><small>research workbench</small></span></a>
+      <button class="icon-button menu-toggle" type="button" aria-label="Open navigation" aria-expanded="false"><span></span><span></span><span></span></button>
+      <nav class="site-nav" aria-label="Main navigation">
+        <a href="../index.html">Home</a>
+        <a href="search.html">Compound Search</a>
+        <a href="file-library.html">File Library</a>
+        <a href="molecular-modeling.html">Molecular Modeling</a>
+        <a href="ai-paper-search.html">AI Paper Search</a>
+        <a href="docs.html">Docs</a>
+        <a href="pricing.html">Pricing</a>
+        <details class="nav-more">
+          <summary>More</summary>
+          <div class="nav-more-menu">
+            <a href="dashboard.html">Workbench</a>
+            <a href="workbench.html">Research Workbench</a>
+            <a href="mail.html">Mail</a>
+            <a href="contact.html">Enterprise / Contact Sales</a>
+            <a href="reagents.html">Reagents</a>
+            <a href="materials.html">Materials</a>
+            <a href="methods.html">Methods</a>
+            <a href="library.html">Library</a>
+          </div>
+        </details>
+      </nav>
+      <div class="header-actions"><label class="search-shell" for="shellSearch"><span>Search</span><input id="shellSearch" type="search" placeholder="Search local records..." /></label><button class="theme-toggle" type="button" data-shell-action="theme" aria-label="Switch theme"><span class="theme-toggle__icon" aria-hidden="true"></span></button></div>
+    </div>
+    <div class="container shell-search-results" id="shellSearchResults" aria-live="polite"></div>
+  </header>
+
+  <main id="main">
+    <section class="cv-commercial-hero">
+      <div class="container page-hero-grid">
+        <div>
+          <p class="eyebrow">pricing for a unified chemistry research workbench</p>
+          <h1>Build your professional chemistry research workbench.</h1>
+          <p>Search compounds, manage files, model molecules, organize papers, and collaborate from one platform. Start free, upgrade when your research workflow needs more power.</p>
+          <div class="hero-actions">
+            <a class="academic-button primary" href="#plans">Compare plans</a>
+            <a class="academic-button ghost-on-light" href="#enterprise-lead">Contact Sales</a>
+          </div>
+        </div>
+        <aside class="cv-hero-metrics" aria-label="ChemVault commercial positioning">
+          <div><span>Users</span><strong>Individuals, labs, teams, institutions</strong></div>
+          <div><span>Core workflow</span><strong>Compounds, files, modeling, papers</strong></div>
+          <div><span>Current plan</span><strong data-render="plan-badge"></strong></div>
+          <div><span>Payment</span><strong>Provider placeholder</strong></div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="cv-section" id="plans">
+      <div class="container">
+        <div class="cv-section-header">
+          <div>
+            <p class="eyebrow">plans</p>
+            <h2>For individuals, labs, teams, and institutions.</h2>
+          </div>
+          <p>Pro and Team checkout buttons call a placeholder API route. No payment secret or price ID is hardcoded in the client.</p>
+        </div>
+        <div class="cv-pricing-grid" data-render="pricing-cards" data-billing-interval="monthly"></div>
+        <p class="cv-form-status" data-checkout-status aria-live="polite"></p>
+      </div>
+    </section>
+
+    <section class="cv-section cv-section--tint" id="compare">
+      <div class="container">
+        <div class="cv-section-header">
+          <div>
+            <p class="eyebrow">feature comparison</p>
+            <h2>Plan-aware access across research workflows.</h2>
+          </div>
+          <p>Feature access is represented in shared config and mirrored in server-side API placeholders for sensitive actions such as export.</p>
+        </div>
+        <div data-render="feature-comparison"></div>
+      </div>
+    </section>
+
+    <section class="cv-section">
+      <div class="container">
+        <div class="cv-section-header">
+          <div>
+            <p class="eyebrow">module access</p>
+            <h2>One platform, multiple research modules.</h2>
+          </div>
+          <p>Each product module has a shared route, status, access level, and CTA label. Future sub-sites can consume the same contract.</p>
+        </div>
+        <div data-render="module-access"></div>
+      </div>
+    </section>
+
+    <section class="cv-section cv-section--tint">
+      <div class="container cv-commercial-grid">
+        <div class="cv-lead-panel" id="enterprise-lead">
+          <span class="section-kicker">Enterprise / institution</span>
+          <h2>Talk to us about lab, company, or institution workflows.</h2>
+          <p>Use this form for Team/Lab procurement, custom onboarding, API access placeholders, SSO/SAML planning, or institution-wide access.</p>
+          <form data-lead-form data-lead-type="enterprise" class="cv-lead-form">
+            <div class="cv-form-grid">
+              <label>Name <input name="name" autocomplete="name" required /></label>
+              <label>Work email <input name="email" type="email" autocomplete="email" required /></label>
+            </div>
+            <div class="cv-form-grid">
+              <label>Organization <input name="organization" autocomplete="organization" required /></label>
+              <label>Role <input name="role" autocomplete="organization-title" /></label>
+              <label>Team size <select name="teamSize"><option>1-5</option><option>6-20</option><option>21-100</option><option>100+</option></select></label>
+            </div>
+            <fieldset class="cv-interest-grid">
+              <legend class="eyebrow">Interested modules</legend>
+              <label><input type="checkbox" name="interests" value="compound_search" /> Compound search</label>
+              <label><input type="checkbox" name="interests" value="molecular_modeling" /> Molecular modeling</label>
+              <label><input type="checkbox" name="interests" value="ai_paper_search" /> AI paper search</label>
+              <label><input type="checkbox" name="interests" value="file_library" /> File library</label>
+              <label><input type="checkbox" name="interests" value="team_plan" /> Team plan</label>
+              <label><input type="checkbox" name="interests" value="enterprise_api" /> API access</label>
+            </fieldset>
+            <label>Use case or message <textarea name="message" placeholder="Tell us what your lab, course, company, or institution needs."></textarea></label>
+            <label class="cv-check-row"><input type="checkbox" name="consent" required /> I agree to be contacted about ChemVault commercial workflows.</label>
+            <div class="cv-form-actions"><button class="academic-button dark" type="submit">Contact Sales</button><span class="cv-form-status" data-form-status aria-live="polite"></span></div>
+          </form>
+        </div>
+        <div class="cv-lead-panel">
+          <span class="section-kicker">Newsletter / AI beta</span>
+          <h2>Get early access to AI paper organization.</h2>
+          <p>Join the list for research workflow updates, compound search releases, and the AI Paper Search beta.</p>
+          <form data-lead-form data-lead-type="ai_beta" class="cv-lead-form">
+            <label>Email <input name="email" type="email" autocomplete="email" required /></label>
+            <label>Role <select name="role"><option>Researcher</option><option>Student</option><option>Lab manager</option><option>Developer</option><option>Institution buyer</option></select></label>
+            <label>Interest area <select name="interestArea"><option>AI paper search</option><option>Compound search</option><option>Molecular modeling</option><option>File library</option><option>Team plan</option></select></label>
+            <label class="cv-check-row"><input type="checkbox" name="consent" required /> Send me ChemVault updates and beta access emails.</label>
+            <div class="cv-form-actions"><button class="academic-button primary" type="submit">Join early access</button><span class="cv-form-status" data-form-status aria-live="polite"></span></div>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <section class="cv-section">
+      <div class="container">
+        <div class="cv-section-header">
+          <div>
+            <p class="eyebrow">FAQ</p>
+            <h2>Commercial MVP notes.</h2>
+          </div>
+          <p>The first version is intentionally conservative: it creates the commercial contract and UI without pretending that unavailable scientific backends already exist.</p>
+        </div>
+        <div class="cv-card-grid">
+          <article class="cv-feature-panel"><h3>Is payment live?</h3><p>No. Checkout routes are placeholders until a provider such as Stripe is configured through environment variables and SDK code.</p></article>
+          <article class="cv-feature-panel"><h3>Is AI Paper Search live?</h3><p>It is a beta surface with early access collection and plan-aware placeholders. It does not fabricate paper data.</p></article>
+          <article class="cv-feature-panel"><h3>Can teams use shared workspaces?</h3><p>The Team/Lab plan contract exists. Shared workspace storage needs authenticated organization data before real collaboration is enabled.</p></article>
+          <article class="cv-feature-panel"><h3>How are permissions enforced?</h3><p>Client gates are mirrored by server API helpers for protected actions. Real auth and subscription state should replace the placeholder plan resolver.</p></article>
+        </div>
+      </div>
+    </section>
+  </main>
+  <script src="/scripts/visual-effects.js" defer></script>
+</body>
+</html>

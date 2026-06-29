@@ -1,4 +1,4 @@
-const API_VERSION = "0.2.0";
+const API_VERSION = "0.3.0";
 let schemaReady = false;
 
 const fallbackRecords = [
@@ -118,6 +118,50 @@ const jsonHeaders = {
   "content-type": "application/json; charset=utf-8"
 };
 
+const serverPlanOrder = {
+  anonymous: 0,
+  free: 1,
+  pro: 2,
+  team: 3,
+  enterprise: 4,
+  admin: 5
+};
+
+const serverFeatureEntitlements = {
+  "compound.search.basic": "anonymous",
+  "compound.search.advanced": "pro",
+  "compound.search.saved": "pro",
+  "compound.search.export": "pro",
+  "compound.search.batch": "pro",
+  "file_library.basic": "free",
+  "file_library.advanced": "pro",
+  "file_library.storage.pro": "pro",
+  "file_library.team_workspace": "team",
+  "docs.public": "anonymous",
+  "docs.premium": "pro",
+  "modeling.viewer": "free",
+  "modeling.advanced": "pro",
+  "modeling.export": "pro",
+  "modeling.high_quota": "team",
+  "mail.basic": "free",
+  "mail.templates": "pro",
+  "mail.automation": "team",
+  "papers.search.preview": "free",
+  "papers.search.full": "pro",
+  "papers.ai_summary": "pro",
+  "papers.collections": "pro",
+  "papers.export": "pro",
+  "team.members": "team",
+  "team.shared_workspace": "team",
+  "enterprise.api": "enterprise",
+  "enterprise.sso": "enterprise",
+  "enterprise.custom_onboarding": "enterprise"
+};
+
+const leadTypes = new Set(["newsletter", "enterprise", "ai_beta"]);
+const commercialModes = new Set(["mock", "staging", "production"]);
+const deploymentEnvironments = new Set(["development", "staging", "production"]);
+
 export async function onRequest(context) {
   const { request, env } = context;
 
@@ -132,6 +176,7 @@ export async function onRequest(context) {
   const url = new URL(request.url);
   const segments = getPathSegments(context.params?.path);
   const hasDb = Boolean(env?.DB?.prepare);
+  const runtime = commercialRuntime(env);
 
   try {
     if (!segments.length || segments[0] === "health") {
@@ -144,8 +189,76 @@ export async function onRequest(context) {
         features: {
           d1: hasDb,
           fallbackLocalData: true,
-          academicEnrichment: true
+          academicEnrichment: true,
+          commercialMvp: true,
+          leadStorage: hasDb,
+          paymentPlaceholder: true
+        },
+        commercial: {
+          environment: runtime.environment,
+          mode: runtime.commercialMode,
+          mockBillingEnabled: runtime.mockBillingEnabled,
+          mockAuthEnabled: runtime.mockAuthEnabled,
+          paymentProviderConfigured: isPaymentProviderConfigured(env)
         }
+      });
+    }
+
+    if (segments[0] === "entitlements") {
+      if (request.method !== "GET") return json({ error: "Method not allowed" }, 405);
+      const plan = resolveServerPlan(request, env);
+      return json({
+        source: "server",
+        plan,
+        features: Object.fromEntries(Object.keys(serverFeatureEntitlements).map((featureKey) => [
+          featureKey,
+          {
+            enabled: hasServerFeatureAccess(plan, featureKey),
+            requiredPlan: serverFeatureEntitlements[featureKey]
+          }
+        ])),
+        meta: {
+          version: API_VERSION,
+          environment: runtime.environment,
+          commercialMode: runtime.commercialMode,
+          authMode: runtime.mockAuthEnabled ? "placeholder" : "disabled",
+          message: runtime.mockAuthEnabled
+            ? "Development/staging placeholder auth is enabled. Replace with real auth/subscription before production."
+            : "Placeholder auth is disabled; server-side entitlements default to Free."
+        }
+      });
+    }
+
+    if (segments[0] === "leads") {
+      if (request.method !== "POST") return json({ error: "Method not allowed" }, 405);
+      const result = await createLead(env, await readJSONBody(request), hasDb);
+      return json(result, result.ok ? 201 : 400);
+    }
+
+    if (segments[0] === "billing") {
+      if (request.method !== "POST") return json({ error: "Method not allowed" }, 405);
+      if (segments[1] === "checkout") {
+        const result = await createCheckoutPlaceholder(env, await readJSONBody(request));
+        return json(stripHttpStatus(result), result.httpStatus || (result.ok ? 200 : 400));
+      }
+      if (segments[1] === "portal") {
+        const result = await createBillingPortalPlaceholder(env, await readJSONBody(request));
+        return json(stripHttpStatus(result), result.httpStatus || (result.ok ? 200 : 400));
+      }
+      return json({ error: "Not found", routes: ["/api/billing/checkout", "/api/billing/portal"] }, 404);
+    }
+
+    if (segments[0] === "export") {
+      if (request.method !== "POST") return json({ error: "Method not allowed" }, 405);
+      const plan = resolveServerPlan(request, env);
+      const access = requireServerFeatureAccess(plan, "compound.search.export");
+      if (!access.ok) return json(access, 402);
+      return json({
+        ok: true,
+        mode: "placeholder",
+        message: "Compound export will be generated here after subscription and export storage are connected.",
+        featureKey: "compound.search.export",
+        meta: { version: API_VERSION }
       });
     }
 
@@ -166,7 +279,7 @@ export async function onRequest(context) {
       return json(await getFacets(env, hasDb));
     }
 
-    return json({ error: "Not found", routes: ["/api/health", "/api/records", "/api/records/:type/:id", "/api/enrich", "/api/facets"] }, 404);
+    return json({ error: "Not found", routes: ["/api/health", "/api/entitlements", "/api/leads", "/api/billing/checkout", "/api/export/compound", "/api/records", "/api/records/:type/:id", "/api/enrich", "/api/facets"] }, 404);
   } catch (error) {
     return json(fallbackEnvelope({
       warning: `D1 query failed; returned fallback records. ${error.message || error}`
@@ -226,6 +339,201 @@ async function listRecords(env, params, hasDb) {
       type,
       version: API_VERSION
     }
+  };
+}
+
+async function createLead(env, body, hasDb) {
+  const type = leadTypes.has(clean(body.type)) ? clean(body.type) : "newsletter";
+  const email = clean(body.email).toLowerCase();
+  if (!isEmail(email)) {
+    return { ok: false, error: "A valid email address is required." };
+  }
+
+  const lead = {
+    id: randomId("lead"),
+    type,
+    email,
+    name: clean(body.name),
+    organization: clean(body.organization),
+    role: clean(body.role),
+    teamSize: clean(body.teamSize),
+    interests: normalizeInterests(body.interests || body.interestArea || body.modules),
+    message: clean(body.message || body.useCase),
+    createdAt: new Date().toISOString()
+  };
+
+  if (hasDb) {
+    await ensureCommercialSchema(env.DB);
+    await env.DB.prepare(`
+      INSERT INTO leads (
+        id, type, email, name, organization, role, team_size, interests_json, message, created_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `).bind(
+      lead.id,
+      lead.type,
+      lead.email,
+      lead.name,
+      lead.organization,
+      lead.role,
+      lead.teamSize,
+      JSON.stringify(lead.interests),
+      lead.message,
+      lead.createdAt
+    ).run();
+  }
+
+  return {
+    ok: true,
+    stored: hasDb,
+    mode: hasDb ? "d1" : "mock",
+    message: hasDb
+      ? "Thanks. Your request has been recorded."
+      : "Thanks. This prototype accepted the lead request, but no database binding is configured yet.",
+    lead: {
+      id: lead.id,
+      type: lead.type,
+      email: lead.email,
+      createdAt: lead.createdAt
+    },
+    meta: { version: API_VERSION }
+  };
+}
+
+async function createCheckoutPlaceholder(env, body) {
+  // TODO: Wire the selected payment provider SDK here and create a real checkout session.
+  const runtime = commercialRuntime(env);
+  const planId = clean(body.planId);
+  const billingInterval = clean(body.billingInterval || "monthly");
+  if (!["pro", "team"].includes(planId)) {
+    return {
+      ok: false,
+      code: "unsupported_checkout_plan",
+      error: "Only Pro and Team/Lab checkout placeholders are supported. Use Contact Sales for Enterprise."
+    };
+  }
+
+  const provider = paymentProvider(env);
+  const priceEnvName = checkoutPriceEnvName(planId, billingInterval);
+  const providerConfigured = isPaymentProviderConfigured(env);
+  const priceConfigured = Boolean(priceEnvName && env[priceEnvName]);
+  const requiredEnv = checkoutRequiredEnv();
+
+  if (runtime.production) {
+    const readyForFutureProvider = providerConfigured && priceConfigured;
+    return {
+      ok: false,
+      code: readyForFutureProvider ? "payment_provider_not_implemented" : "payment_not_configured",
+      mode: "not_configured",
+      environment: runtime.environment,
+      commercialMode: runtime.commercialMode,
+      provider,
+      planId,
+      billingInterval,
+      providerConfigured,
+      priceConfigured,
+      message: readyForFutureProvider
+        ? "Payment environment variables are present, but live checkout is not implemented yet."
+        : "Checkout is not configured for production.",
+      requiredEnv,
+      meta: { version: API_VERSION },
+      httpStatus: readyForFutureProvider ? 501 : 503
+    };
+  }
+
+  if (!runtime.mockBillingEnabled) {
+    return {
+      ok: false,
+      code: "payment_not_configured",
+      mode: "not_configured",
+      environment: runtime.environment,
+      commercialMode: runtime.commercialMode,
+      provider,
+      planId,
+      billingInterval,
+      providerConfigured,
+      priceConfigured,
+      message: "Mock billing is disabled and no live checkout provider is implemented.",
+      requiredEnv,
+      meta: { version: API_VERSION },
+      httpStatus: 503
+    };
+  }
+
+  return {
+    ok: true,
+    code: "placeholder_checkout",
+    mode: "placeholder",
+    environment: runtime.environment,
+    commercialMode: runtime.commercialMode,
+    provider,
+    planId,
+    billingInterval,
+    providerConfigured,
+    priceConfigured,
+    checkoutUrl: "/pages/pricing.html?checkout=placeholder",
+    message: runtime.staging
+      ? "Staging placeholder checkout only. No payment will be processed."
+      : "Placeholder checkout only. No payment will be processed.",
+    url: null,
+    requiredEnv,
+    meta: { version: API_VERSION }
+  };
+}
+
+async function createBillingPortalPlaceholder(env, body) {
+  // TODO: Resolve the authenticated billing customer before creating a real portal session.
+  const runtime = commercialRuntime(env);
+  const provider = paymentProvider(env);
+  const providerConfigured = isPaymentProviderConfigured(env);
+
+  if (runtime.production) {
+    return {
+      ok: false,
+      code: providerConfigured ? "billing_portal_not_implemented" : "payment_not_configured",
+      mode: "not_configured",
+      environment: runtime.environment,
+      commercialMode: runtime.commercialMode,
+      provider,
+      providerConfigured,
+      message: providerConfigured
+        ? "Payment environment variables are present, but the live billing portal is not implemented yet."
+        : "Billing portal is not configured for production.",
+      requiredEnv: ["PAYMENT_PROVIDER", "STRIPE_SECRET_KEY", "PUBLIC_APP_URL"],
+      meta: { version: API_VERSION },
+      httpStatus: providerConfigured ? 501 : 503
+    };
+  }
+
+  if (!runtime.mockBillingEnabled) {
+    return {
+      ok: false,
+      code: "payment_not_configured",
+      mode: "not_configured",
+      environment: runtime.environment,
+      commercialMode: runtime.commercialMode,
+      provider,
+      providerConfigured,
+      message: "Mock billing is disabled and no live billing portal is implemented.",
+      requiredEnv: ["PAYMENT_PROVIDER", "STRIPE_SECRET_KEY", "PUBLIC_APP_URL"],
+      meta: { version: API_VERSION },
+      httpStatus: 503
+    };
+  }
+
+  return {
+    ok: true,
+    code: "placeholder_portal",
+    mode: "placeholder",
+    environment: runtime.environment,
+    commercialMode: runtime.commercialMode,
+    provider,
+    providerConfigured,
+    userId: clean(body.userId),
+    message: runtime.staging
+      ? "Staging billing portal placeholder only. No payment data will be changed."
+      : "Billing portal placeholder only. No payment data will be changed.",
+    url: null,
+    meta: { version: API_VERSION }
   };
 }
 
@@ -923,6 +1231,185 @@ function imageFormula(subtitle) {
   const value = String(subtitle || "").split("·")[0].trim();
   if (!value || value.length > 28) return "";
   return /[A-Z][A-Za-z0-9()[\].+\-/ ]/.test(value) ? value : "";
+}
+
+async function ensureCommercialSchema(db) {
+  await db.prepare(`
+    CREATE TABLE IF NOT EXISTS leads (
+      id TEXT PRIMARY KEY,
+      type TEXT NOT NULL,
+      email TEXT NOT NULL,
+      name TEXT,
+      organization TEXT,
+      role TEXT,
+      team_size TEXT,
+      interests_json TEXT NOT NULL DEFAULT '[]',
+      message TEXT,
+      created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+    )
+  `).run();
+  await db.prepare(`
+    CREATE TABLE IF NOT EXISTS subscriptions (
+      id TEXT PRIMARY KEY,
+      user_id TEXT,
+      organization_id TEXT,
+      provider TEXT,
+      provider_customer_id TEXT,
+      provider_subscription_id TEXT,
+      plan TEXT NOT NULL,
+      status TEXT NOT NULL,
+      current_period_end TEXT,
+      created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+    )
+  `).run();
+  await db.prepare(`
+    CREATE TABLE IF NOT EXISTS feature_entitlements (
+      id TEXT PRIMARY KEY,
+      plan TEXT NOT NULL,
+      feature_key TEXT NOT NULL,
+      usage_limit INTEGER,
+      enabled INTEGER NOT NULL DEFAULT 1
+    )
+  `).run();
+  await db.prepare(`
+    CREATE TABLE IF NOT EXISTS usage_records (
+      id TEXT PRIMARY KEY,
+      user_id TEXT,
+      organization_id TEXT,
+      feature_key TEXT NOT NULL,
+      amount INTEGER NOT NULL DEFAULT 1,
+      period_start TEXT,
+      period_end TEXT,
+      created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+    )
+  `).run();
+  await Promise.all([
+    db.prepare("CREATE INDEX IF NOT EXISTS leads_type_idx ON leads (type)").run(),
+    db.prepare("CREATE INDEX IF NOT EXISTS leads_email_idx ON leads (email)").run(),
+    db.prepare("CREATE INDEX IF NOT EXISTS subscriptions_plan_idx ON subscriptions (plan)").run(),
+    db.prepare("CREATE INDEX IF NOT EXISTS usage_records_feature_idx ON usage_records (feature_key)").run()
+  ]);
+}
+
+function resolveServerPlan(request, env) {
+  // TODO: Replace this placeholder with ChemVault User session lookup and subscription state.
+  const runtime = commercialRuntime(env);
+  if (!runtime.mockAuthEnabled) return "free";
+
+  const auth = request.headers.get("authorization") || "";
+  const token = clean(env.CHEMVAULT_ADMIN_TOKEN);
+  if (token && auth === `Bearer ${token}`) return "admin";
+  return normaliseServerPlan(env.DEFAULT_USER_PLAN || "free");
+}
+
+function normaliseServerPlan(value) {
+  const plan = clean(value).toLowerCase();
+  return Object.prototype.hasOwnProperty.call(serverPlanOrder, plan) ? plan : "free";
+}
+
+function hasServerFeatureAccess(plan, featureKey) {
+  const required = serverFeatureEntitlements[featureKey];
+  if (!required) return false;
+  return serverPlanOrder[normaliseServerPlan(plan)] >= serverPlanOrder[required];
+}
+
+function requireServerFeatureAccess(plan, featureKey) {
+  if (hasServerFeatureAccess(plan, featureKey)) return { ok: true };
+  return {
+    ok: false,
+    error: "Feature access denied.",
+    featureKey,
+    requiredPlan: serverFeatureEntitlements[featureKey] || "pro",
+    currentPlan: normaliseServerPlan(plan),
+    message: "Server-side entitlement checks default to Free until real authentication/subscription state is connected."
+  };
+}
+
+function commercialRuntime(env = {}) {
+  const environment = normaliseEnvironment(env.ENVIRONMENT);
+  const explicitMode = clean(env.COMMERCIAL_MODE).toLowerCase();
+  const commercialMode = commercialModes.has(explicitMode)
+    ? explicitMode
+    : environment === "production"
+      ? "production"
+      : environment === "staging"
+        ? "staging"
+        : "mock";
+  const production = environment === "production" || commercialMode === "production";
+  const staging = environment === "staging" || commercialMode === "staging";
+  return {
+    environment,
+    commercialMode,
+    production,
+    staging,
+    mockBillingEnabled: production ? false : parseBoolean(env.ENABLE_MOCK_BILLING, true),
+    mockAuthEnabled: production ? false : parseBoolean(env.ENABLE_MOCK_AUTH, true)
+  };
+}
+
+function normaliseEnvironment(value) {
+  const environment = clean(value).toLowerCase();
+  return deploymentEnvironments.has(environment) ? environment : "development";
+}
+
+function parseBoolean(value, fallback) {
+  const text = clean(value).toLowerCase();
+  if (!text) return fallback;
+  if (["1", "true", "yes", "on"].includes(text)) return true;
+  if (["0", "false", "no", "off"].includes(text)) return false;
+  return fallback;
+}
+
+function paymentProvider(env = {}) {
+  return clean(env.PAYMENT_PROVIDER || "placeholder").toLowerCase() || "placeholder";
+}
+
+function isPaymentProviderConfigured(env = {}) {
+  const provider = paymentProvider(env);
+  return provider !== "placeholder" && provider !== "mock" && Boolean(env.STRIPE_SECRET_KEY);
+}
+
+function checkoutRequiredEnv() {
+  return [
+    "PAYMENT_PROVIDER",
+    "PUBLIC_APP_URL",
+    "STRIPE_SECRET_KEY",
+    "STRIPE_PRO_MONTHLY_PRICE_ID",
+    "STRIPE_PRO_YEARLY_PRICE_ID",
+    "STRIPE_TEAM_MONTHLY_PRICE_ID",
+    "STRIPE_TEAM_YEARLY_PRICE_ID"
+  ];
+}
+
+function stripHttpStatus(payload) {
+  const { httpStatus, ...publicPayload } = payload || {};
+  return publicPayload;
+}
+
+function checkoutPriceEnvName(planId, billingInterval) {
+  const interval = billingInterval === "yearly" || billingInterval === "annual" ? "YEARLY" : "MONTHLY";
+  const plan = planId === "team" ? "TEAM" : planId === "pro" ? "PRO" : "";
+  return plan ? `STRIPE_${plan}_${interval}_PRICE_ID` : "";
+}
+
+function normalizeInterests(value) {
+  if (Array.isArray(value)) return value.map(clean).filter(Boolean).slice(0, 12);
+  return String(value || "")
+    .split(/[,|]/)
+    .map(clean)
+    .filter(Boolean)
+    .slice(0, 12);
+}
+
+function isEmail(value) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(value || "").trim());
+}
+
+function randomId(prefix) {
+  const uuid = globalThis.crypto?.randomUUID?.();
+  if (uuid) return `${prefix}_${uuid}`;
+  return `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2)}`;
 }
 
 function svgEsc(value) {

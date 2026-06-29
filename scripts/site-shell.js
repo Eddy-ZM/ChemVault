@@ -7,10 +7,12 @@
   let shellSearchFrame = 0;
 
   document.addEventListener("DOMContentLoaded", () => {
+    ensureCommercialStyles();
     wireShellNav();
     wireShellTheme();
     wireShellSearch();
     upgradeAcademicNavigation();
+    injectProductSwitcher();
     markActivePage();
     adaptShellLayout();
     ensureDeveloperFooter();
@@ -190,22 +192,109 @@
   function upgradeAcademicNavigation() {
     const nav = document.querySelector(".site-nav");
     if (!nav) return;
-    nav.innerHTML = [
-      ["Home", "/index.html"],
-      ["Research", "/pages/research.html"],
-      ["Platform", "/pages/platform.html"],
-      ["Projects", "/pages/projects.html"],
-      ["Notes", "/pages/notes.html"],
-      ["Compounds", "/pages/search.html"],
-      ["About", "/pages/about.html"],
-      ["Team", "/pages/team.html"],
-      ["Contact", "/pages/contact.html"]
-    ].map(([label, href]) => `<a href="${href}">${label}</a>`).join("");
+    nav.innerHTML = `
+      <a href="/index.html">Home</a>
+      <a href="/pages/search.html">Compound Search</a>
+      <a href="/pages/file-library.html">File Library</a>
+      <a href="/pages/molecular-modeling.html">Molecular Modeling</a>
+      <a href="/pages/ai-paper-search.html">AI Paper Search</a>
+      <a href="/pages/docs.html">Docs</a>
+      <a href="/pages/pricing.html">Pricing</a>
+      <details class="nav-more">
+        <summary>More</summary>
+        <div class="nav-more-menu">
+          <a href="/pages/dashboard.html">Dashboard</a>
+          <a href="/pages/workbench.html">Research Workbench</a>
+          <a href="/pages/mail.html">Mail</a>
+          <a href="/pages/contact.html">Enterprise / Contact Sales</a>
+          <a href="/pages/reagents.html">Reagents</a>
+          <a href="/pages/materials.html">Materials</a>
+          <a href="/pages/methods.html">Methods</a>
+          <a href="/pages/library.html">Library</a>
+          <a href="/pages/about.html">About</a>
+          <a href="/pages/team.html">Team</a>
+        </div>
+      </details>
+    `;
 
     const brand = document.querySelector(".brand");
     const brandSmall = brand?.querySelector("small");
     if (brand) brand.setAttribute("href", "/index.html");
-    if (brandSmall) brandSmall.textContent = "scientific infrastructure";
+    if (brandSmall) brandSmall.textContent = "research workbench";
+  }
+
+  function ensureCommercialStyles() {
+    if (document.querySelector("link[href*='commercial.css']")) return;
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = "/assets/commercial.css?v=20260629a";
+    document.head.appendChild(link);
+  }
+
+  function injectProductSwitcher() {
+    if (document.querySelector(".cv-app-switcher")) return;
+    const actions = document.querySelector(".site-header .header-actions");
+    if (!actions) return;
+    const details = document.createElement("details");
+    details.className = "cv-app-switcher";
+    details.innerHTML = `
+      <summary aria-label="Open product switcher">Apps</summary>
+      <div class="cv-app-switcher__menu">
+        ${productModules().map((module) => `
+          <a href="${escapeHTML(module.route)}">
+            <span class="cv-app-switcher__icon">${escapeHTML(module.initials)}</span>
+            <span><strong>${escapeHTML(module.name)}</strong><small>${escapeHTML(module.status)} | ${escapeHTML(module.access)}</small></span>
+          </a>
+        `).join("")}
+      </div>
+    `;
+    actions.prepend(details);
+  }
+
+  function productModules() {
+    const configured = window.CHEMVAULT_COMMERCIAL?.modules;
+    if (Array.isArray(configured) && configured.length) {
+      return configured.map((module) => ({
+        name: module.name,
+        route: module.route,
+        status: statusText(module.status),
+        access: planText(module.accessLevel),
+        initials: moduleInitials(module.name)
+      }));
+    }
+    return [
+      ["Home", "/index.html", "Active", "Free", "CV"],
+      ["Compound Search", "/pages/search.html", "Active", "Free", "CS"],
+      ["Research File Library", "/pages/file-library.html", "Beta", "Free", "FL"],
+      ["Professional Documentation", "/pages/docs.html", "Active", "Free", "DG"],
+      ["Molecular Modeling", "/pages/molecular-modeling.html", "Beta", "Free", "MM"],
+      ["Mail", "/pages/mail.html", "Beta", "Free", "ML"],
+      ["AI Paper Search", "/pages/ai-paper-search.html", "Beta", "Free", "AI"]
+    ].map(([name, route, status, access, initials]) => ({ name, route, status, access, initials }));
+  }
+
+  function statusText(value) {
+    return {
+      active: "Active",
+      beta: "Beta",
+      coming_soon: "Coming soon"
+    }[value] || value;
+  }
+
+  function planText(value) {
+    return {
+      anonymous: "Anonymous",
+      free: "Free",
+      pro: "Pro",
+      team: "Team/Lab",
+      enterprise: "Enterprise",
+      admin: "Admin"
+    }[value] || value;
+  }
+
+  function moduleInitials(value) {
+    const words = String(value || "CV").split(/\s+/).filter(Boolean);
+    return words.slice(0, 2).map((word) => word[0]).join("").toUpperCase() || "CV";
   }
 
   function applyTheme(theme, options = {}) {

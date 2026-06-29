@@ -14,6 +14,20 @@ See [LICENSE](./LICENSE). All rights reserved.
 
 The ChemVault website presents chemistry records, research context and project information through a public web interface.
 
+### Commercial MVP Foundation
+
+The website now includes the first commercial platform layer for turning ChemVault into a unified professional research workbench.
+
+- Unified product navigation and app switcher.
+- Pricing page for Free, Pro, Team/Lab and Enterprise/Institution plans.
+- Shared product module config and feature entitlement helpers.
+- Reusable premium gates, upgrade CTA components, plan badges, pricing cards and comparison tables.
+- Dashboard/workbench commercial entry page with safe empty states and quota placeholders.
+- Newsletter, AI Paper Search beta and Enterprise lead collection forms.
+- Payment provider placeholder routes for future Stripe or equivalent checkout integration.
+
+Commercial implementation details are documented in [docs/commercial-mvp.md](./docs/commercial-mvp.md). Deployment and staging safety checks are documented in [docs/deployment-checklist.md](./docs/deployment-checklist.md).
+
 ### Chemistry Search
 
 - Search across compounds, reagents, reactions, mechanisms, materials, methods, dossiers and source records.
@@ -71,3 +85,24 @@ The ChemVault Apple app is a native compound-search experience for iOS, iPadOS a
 ## Product Scope
 
 ChemVault is intended for chemistry knowledge access, research organization and scientific workflow support. Website and app features are presented as product capabilities and public project information. This README intentionally focuses on the user-facing website and app experience, not implementation details.
+
+## Local Development
+
+```bash
+npm run build
+npm run dev
+```
+
+The repository does not currently define an `npm test` script. Existing Node tests can be run manually:
+
+```bash
+node --test tests/*.test.mjs
+```
+
+## Commercial MVP Limitations
+
+- Browser-side plan preview is for local MVP testing only.
+- Server-side entitlement checks default to Free until real authentication and subscription state are connected.
+- Checkout and billing portal routes are placeholders.
+- Production mode disables mock billing and `DEFAULT_USER_PLAN` entitlement elevation.
+- AI Paper Search, Molecular Modeling, Mail automation and Team workspace collaboration expose safe UI placeholders only where backends are not yet connected.

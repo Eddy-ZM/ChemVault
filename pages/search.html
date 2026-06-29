@@ -19,6 +19,7 @@
   <link rel="manifest" href="/site.webmanifest" />
   <link rel="stylesheet" href="../assets/styles.css?v=20260620a" />
   <link rel="stylesheet" href="../assets/portal.css?v=20260619c" />
+  <link rel="stylesheet" href="../assets/commercial.css?v=20260629a" />
   <script src="../data/chem-data.js?v=20260603a" defer></script>
   <script src="../data/reagent-extension.js?v=20260603a" defer></script>
   <script src="../data/research-data.js?v=20260603a" defer></script>
@@ -37,6 +38,8 @@
   <script src="../scripts/motion.js?v=20260618c" defer></script>
   <script src="../scripts/site-shell.js?v=20260623teamnav" defer></script>
   <script src="../scripts/search-page.js?v=20260619b" defer></script>
+  <script src="../scripts/commercial-config.js?v=20260629a" defer></script>
+  <script src="../scripts/commercial-ui.js?v=20260629a" defer></script>
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -212,6 +215,16 @@
             <span class="eyebrow">external policy</span>
             <p>No external API key is required. ChemVault builds transparent outbound queries, so the public static site remains fast and deployable on Cloudflare Pages.</p>
           </div>
+          <section class="cv-feature-panel" data-feature-key="compound.search.export" data-gate-title="Saved searches and compound export" data-gate-body="Pro unlocks saved searches, CSV/PDF export placeholders, batch search, and higher search usage. Basic compound search remains free.">
+            <span class="section-kicker">Pro compound workflow</span>
+            <h3>Saved searches, export, and batch search</h3>
+            <p>Use these controls after subscription state and export storage are connected.</p>
+            <div class="source-action-row">
+              <button class="secondary-button" type="button" data-track="compound_export_clicked" data-protected-api="/api/export/compound" data-action-status="#compoundProStatus">Export results</button>
+              <button class="secondary-button" type="button" data-track="compound_search_saved">Save search</button>
+            </div>
+            <p class="cv-form-status" id="compoundProStatus" aria-live="polite"></p>
+          </section>
         </aside>
 
         <div class="search-output-grid">

@@ -10,9 +10,17 @@ ChemVault/
 *.env.*
 !.env.example
 !*.env.example
+.dev.vars
+.dev.vars.*
 dist/
 build/
 .cache/
+dev-server.log
+*.sqlite
+*.sqlite3
+*.db
+*.db-shm
+*.db-wal
 DerivedData/
 .build/
 *.xcuserstate

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Workbench Dashboard | ChemVault</title>
+  <meta name="description" content="ChemVault workbench dashboard with plan status, product modules, usage placeholders, and research workflow empty states." />
+  <meta name="theme-color" content="#f5f5f7" />
+  <script src="/scripts/boot.js?v=20260618c"></script>
+  <link rel="canonical" href="https://chemvault.science/pages/dashboard.html" />
+  <link rel="icon" href="/favicon.ico?v=20260628a" sizes="any" />
+  <link rel="icon" href="/assets/chemvault-logo-mark.png?v=20260628a" type="image/png" sizes="512x512" />
+  <link rel="apple-touch-icon" href="/assets/chemvault-apple-touch-icon.png?v=20260628a" />
+  <link rel="manifest" href="/site.webmanifest" />
+  <link rel="stylesheet" href="../assets/styles.css?v=20260620a" />
+  <link rel="stylesheet" href="../assets/portal.css?v=20260619c" />
+  <link rel="stylesheet" href="../assets/commercial.css?v=20260629a" />
+  <script src="../data/chem-data.js?v=20260603a" defer></script>
+  <script src="../data/reagent-extension.js?v=20260603a" defer></script>
+  <script src="../data/research-data.js?v=20260603a" defer></script>
+  <script src="../data/dossier-data.js?v=20260603a" defer></script>
+  <script src="../data/method-data.js?v=20260603a" defer></script>
+  <script src="../data/spectroscopy-data.js?v=20260603a" defer></script>
+  <script src="../data/materials-data.js?v=20260603a" defer></script>
+  <script src="../data/database-expansion.js?v=20260603a" defer></script>
+  <script src="../data/reagent-megalibrary.js?v=20260603a" defer></script>
+  <script src="../data/knowledge-expansion.js?v=20260603a" defer></script>
+  <script src="../data/local-catalog-10000.js?v=20260603a" defer></script>
+  <script src="../data/external-sources.js?v=20260603a" defer></script>
+  <script src="../scripts/record-utils.js?v=20260603a" defer></script>
+  <script src="../scripts/search-intent.js?v=20260608a" defer></script>
+  <script src="../scripts/api.js?v=20260603a" defer></script>
+  <script src="../scripts/motion.js?v=20260618c" defer></script>
+  <script src="../scripts/site-shell.js?v=20260629a" defer></script>
+  <script src="../scripts/commercial-config.js?v=20260629a" defer></script>
+  <script src="../scripts/commercial-ui.js?v=20260629a" defer></script>
+</head>
+<body class="page-shell" data-boot-label="Dashboard">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="container nav-shell">
+      <a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true"><img src="../assets/chemvault-logo-mark.png" alt="" /></span><span><strong>ChemVault</strong><small>research workbench</small></span></a>
+      <button class="icon-button menu-toggle" type="button" aria-label="Open navigation" aria-expanded="false"><span></span><span></span><span></span></button>
+      <nav class="site-nav" aria-label="Main navigation">
+        <a href="../index.html">Home</a><a href="search.html">Compound Search</a><a href="file-library.html">File Library</a><a href="molecular-modeling.html">Molecular Modeling</a><a href="ai-paper-search.html">AI Paper Search</a><a href="docs.html">Docs</a><a href="pricing.html">Pricing</a>
+      </nav>
+      <div class="header-actions"><label class="search-shell" for="shellSearch"><span>Search</span><input id="shellSearch" type="search" placeholder="Search local records..." /></label><button class="theme-toggle" type="button" data-shell-action="theme" aria-label="Switch theme"><span class="theme-toggle__icon" aria-hidden="true"></span></button></div>
+    </div>
+    <div class="container shell-search-results" id="shellSearchResults" aria-live="polite"></div>
+  </header>
+  <main id="main">
+    <section class="cv-commercial-hero">
+      <div class="container page-hero-grid">
+        <div>
+          <p class="eyebrow">unified professional platform</p>
+          <h1>ChemVault Workbench Dashboard</h1>
+          <p>A plan-aware home for compound search, file management, molecular modeling, documentation, mail workflows, and AI paper organization.</p>
+          <div class="hero-actions">
+            <a class="academic-button primary" href="search.html">Search compounds</a>
+            <a class="academic-button ghost-on-light" href="pricing.html">Upgrade plan</a>
+          </div>
+        </div>
+        <aside class="cv-hero-metrics">
+          <div><span>Current plan</span><strong data-render="plan-badge"></strong></div>
+          <div><span>Saved compounds</span><strong>No saved compounds yet</strong></div>
+          <div><span>File library</span><strong>No files uploaded yet</strong></div>
+          <div><span>AI Paper Search</span><strong>Beta</strong></div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="cv-section">
+      <div class="container">
+        <div data-render="dashboard"></div>
+      </div>
+    </section>
+
+    <section class="cv-section cv-section--tint">
+      <div class="container">
+        <div class="cv-section-header">
+          <div>
+            <p class="eyebrow">app switcher</p>
+            <h2>Research modules available from one workbench.</h2>
+          </div>
+          <p>Each module is represented by shared configuration so future sub-sites can adopt the same plan and entitlement model.</p>
+        </div>
+        <div class="cv-module-grid" data-render="app-modules"></div>
+      </div>
+    </section>
+  </main>
+  <script src="/scripts/visual-effects.js" defer></script>
+</body>
+</html>

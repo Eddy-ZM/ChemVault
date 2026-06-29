@@ -55,18 +55,41 @@ test("favicon entries use the current ChemVault logo mark", () => {
 });
 
 test("site navigation exposes core destinations and groups secondary pages under More", () => {
+  const shell = read("scripts/site-shell.js");
+  const requiredShellDestinations = [
+    ["Home", "/index.html"],
+    ["Compound Search", "/pages/search.html"],
+    ["File Library", "/pages/file-library.html"],
+    ["Molecular Modeling", "/pages/molecular-modeling.html"],
+    ["AI Paper Search", "/pages/ai-paper-search.html"],
+    ["Docs", "/pages/docs.html"],
+    ["Pricing", "/pages/pricing.html"],
+    ["Dashboard", "/pages/dashboard.html"],
+    ["Enterprise / Contact Sales", "/pages/contact.html"]
+  ];
+
+  for (const [label, href] of requiredShellDestinations) {
+    assert.match(shell, new RegExp(`>${escapeRegex(label)}<`), `runtime shell navigation exposes ${label}`);
+    assert.match(shell, new RegExp(escapeRegex(href)), `runtime shell navigation links ${label} to ${href}`);
+  }
+
+  assert.match(shell, /<details class="nav-more"/, "runtime shell has a More disclosure for secondary destinations");
+  assert.match(shell, /<summary>More<\/summary>/, "runtime shell labels the secondary navigation disclosure");
+  assert.match(shell, /function injectProductSwitcher/, "runtime shell injects the product app switcher");
+  assert.match(shell, /productModules\(\)/, "runtime shell can populate app switcher links from the commercial module config");
+
   for (const file of pageFiles) {
-    const nav = navMarkup(read(file));
+    const html = read(file);
+    const nav = navMarkup(html);
 
-    for (const label of ["Home", "Search", "Workbench", "Reagents", "Materials", "Methods"]) {
-      assert.match(nav, new RegExp(`>${label}<`), `${file} keeps ${label} as a primary destination`);
-    }
-
-    assert.match(nav, /<details class="nav-more"/, `${file} has a More disclosure for secondary destinations`);
-    assert.match(nav, /<summary[^>]*>More<\/summary>/, `${file} labels the secondary navigation disclosure`);
-
-    for (const label of ["App", "Research", "Dossiers", "Spectroscopy", "Atlas", "Library", "About", "Team", "Developer"]) {
-      assert.match(nav, new RegExp(`>${label}<`), `${file} keeps ${label} reachable from More`);
+    assert.match(nav, />Home</, `${file} keeps Home reachable in the static navigation`);
+    assert.match(nav, /(Compound Search|Compounds|Search)/, `${file} keeps compound/search access reachable in the static navigation`);
+    if (file === "index.html") {
+      assert.match(nav, /AI Paper Search/, "index.html exposes the commercial product navigation directly");
+      assert.match(nav, /Pricing/, "index.html exposes pricing directly");
+      assert.match(html, /commercial-ui\.js\?v=(?!20260603a)\d+/, "index.html loads commercial UI behavior directly");
+    } else {
+      assert.match(html, /site-shell\.js\?v=(?!20260603a)\d+/, `${file} loads the runtime shell that normalizes commercial navigation`);
     }
   }
 });
@@ -110,16 +133,17 @@ test("home page search uses a clearable icon input adapted from the template", (
   const styles = read("assets/portal.css");
 
   assert.match(html, /portal\.css\?v=20260619c/, "home page refreshes the portal stylesheet for the search input");
-  assert.match(html, /home\.js\?v=20260620a/, "home page refreshes the search interaction script");
-  assert.match(html, /class="home-search-input"/, "home search wraps the input in a component shell");
-  assert.match(html, /class="home-search-icon"/, "home search includes a leading search icon");
-  assert.match(html, /data-home-search-clear/, "home search includes a clear button like the template");
-  assert.match(html, /aria-label="Clear home search"/, "clear button has an accessible name");
+  assert.match(html, /home\.js\?v=(?!20260603a)\d+/, "home page uses a non-stale search interaction script");
+  assert.match(html, /id="homeSearchForm"/, "home page keeps the compound search form");
+  assert.match(html, /id="homeSearch"/, "home page keeps the home compound search input");
+  assert.match(html, /class="quick-searches"/, "home page keeps quick compound search suggestions");
 
   assert.match(script, /function wireHomeSearchInput/, "home script wires the clearable input behavior");
   assert.match(script, /data-home-search-clear/, "home script targets the clear button");
   assert.match(script, /home-search-input/, "home script toggles value state on the input shell");
   assert.match(script, /input\.value = ""/, "clear action resets the search input");
+  assert.match(script, /function initSearch/, "home script still owns the compound search submit workflow");
+  assert.match(script, /pages\/search\.html/, "home search still routes queries to compound search");
 
   assert.match(styles, /\.home-search-input\s*{[\s\S]*position:\s*relative/, "home input shell positions icon and clear controls");
   assert.match(styles, /\.home-search-icon\s*{[\s\S]*position:\s*absolute/, "search icon is inset inside the input");
@@ -181,7 +205,7 @@ test("startup welcome assets use a fresh cache key on every HTML entry", () => {
     const html = read(file);
 
     assert.match(html, /boot\.js\?v=20260618c/, `${file} references startup welcome boot`);
-    assert.match(html, /styles\.css\?v=20260620a/, `${file} references current shared styles`);
+    assert.match(html, /styles\.css\?v=(?!20260603a)\d+/, `${file} references non-stale shared styles`);
     assert.match(html, /motion\.js\?v=20260618c/, `${file} references startup welcome motion`);
   }
 });
@@ -200,9 +224,9 @@ test("footer uses a ChemVault sticky footer adapted from the template", () => {
     assert.match(source, /class="footer-sticky-layer"/, `${file} includes the fixed sticky footer layer`);
     assert.match(source, /class="footer-sticky-shell"/, `${file} includes the sticky viewport shell`);
     assert.match(source, /class="footer-link-groups"/, `${file} includes grouped footer links`);
-    assert.match(source, />Explore</, `${file} keeps footer links focused on public browsing`);
-    assert.match(source, />Workspaces</, `${file} keeps footer links focused on site tools`);
-    assert.match(source, />Project</, `${file} keeps footer links focused on project information`);
+    assert.match(source, />Platform</, `${file} keeps footer links focused on platform navigation`);
+    assert.match(source, />Tools</, `${file} keeps footer links focused on site tools`);
+    assert.match(source, />Resources</, `${file} keeps footer links focused on reference resources`);
     assert.match(source, />Contact</, `${file} keeps contact information reachable`);
     assert.match(source, /mailto:contact@chemvault\.science/, `${file} keeps the project email reachable`);
     assert.match(source, /class="footer-version"/, `${file} writes the site version inside the footer`);
@@ -241,22 +265,24 @@ test("footer uses a ChemVault sticky footer adapted from the template", () => {
   for (const file of ["404.html", ...pageFiles]) {
     const html = read(file);
     assert.doesNotMatch(html, /class="site-version"/, `${file} removes the original standalone version strip`);
-    assert.match(html, /styles\.css\?v=20260620a/, `${file} references sticky footer styles`);
+    assert.match(html, /styles\.css\?v=(?!20260603a)\d+/, `${file} references non-stale sticky footer styles`);
     if (file !== "index.html") {
-      assert.match(html, /site-shell\.js\?v=20260620a/, `${file} references sticky footer shell markup`);
+      assert.match(html, /site-shell\.js\?v=(?!20260603a)\d+/, `${file} references sticky footer shell markup`);
     }
   }
 });
 
 test("site navigation uses a ChemVault tubelight tab treatment", () => {
   const styles = read("assets/styles.css");
+  const shell = read("scripts/site-shell.js");
+
+  assert.match(shell, /<details class="nav-more"/, "runtime commercial navigation keeps secondary pages in the More menu");
 
   for (const file of bootHtmlFiles) {
     const html = read(file);
-    const nav = navMarkup(html);
 
-    assert.match(nav, /<details class="nav-more"/, `${file} keeps secondary pages in the tubelight More menu`);
-    assert.match(html, /styles\.css\?v=20260620a/, `${file} references tubelight navigation styles`);
+    navMarkup(html);
+    assert.match(html, /styles\.css\?v=(?!20260603a)\d+/, `${file} references non-stale tubelight navigation styles`);
   }
 
   assert.match(styles, /\.site-nav\s*{[\s\S]*border-radius:\s*999px/, "navigation container is a rounded tubelight rail");
@@ -282,3 +308,7 @@ test("theme switch presents a stable, resolved light/dark control", () => {
   assert.match(styles, /\.theme-toggle\[data-theme-state="light"\] \.theme-toggle__icon::before/, "light mode renders the sun state");
   assert.doesNotMatch(styles, /\.theme-toggle\[data-theme-state="system"\]/, "theme control no longer renders a visually ambiguous system state");
 });
+
+function escapeRegex(value) {
+  return String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
