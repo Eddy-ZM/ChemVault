@@ -4,11 +4,17 @@ struct TabBarRootView: View {
     @EnvironmentObject private var languageManager: LanguageManager
     @EnvironmentObject private var remoteConfigStore: RemoteConfigStore
     let permission: UserPermission
-    @State private var selectedTab: ChemVaultModule = .home
+    @State private var selectedTab: ChemVaultModule = .model
     @State private var homePath: [ChemVaultModule] = []
 
     var body: some View {
         TabView(selection: $selectedTab) {
+            if remoteConfigStore.isModuleEnabled(.model) {
+                NavigationStack { ModelView(permission: permission) }
+                    .tabItem { Label(languageManager.text(ChemVaultModule.model.titleKey), systemImage: ChemVaultModule.model.symbolName) }
+                    .tag(ChemVaultModule.model)
+            }
+
             NavigationStack(path: $homePath) {
                 HomeView(permission: permission) { module in
                     homePath.append(module)
@@ -19,18 +25,6 @@ struct TabBarRootView: View {
             }
             .tabItem { Label(languageManager.text(ChemVaultModule.home.titleKey), systemImage: ChemVaultModule.home.symbolName) }
             .tag(ChemVaultModule.home)
-
-            if remoteConfigStore.isModuleEnabled(.model) {
-                NavigationStack { ModelView(permission: permission) }
-                    .tabItem { Label(languageManager.text(ChemVaultModule.model.titleKey), systemImage: ChemVaultModule.model.symbolName) }
-                    .tag(ChemVaultModule.model)
-            }
-
-            if remoteConfigStore.isModuleEnabled(.files) {
-                NavigationStack { FilesView(permission: permission) }
-                    .tabItem { Label(languageManager.text(ChemVaultModule.files.titleKey), systemImage: ChemVaultModule.files.symbolName) }
-                    .tag(ChemVaultModule.files)
-            }
 
             if remoteConfigStore.isModuleEnabled(.docs) {
                 NavigationStack { DocsView(permission: permission) }
@@ -44,7 +38,7 @@ struct TabBarRootView: View {
         }
         .onChange(of: remoteConfigStore.config.enabledModuleIDs) { _ in
             if !remoteConfigStore.isModuleEnabled(selectedTab) {
-                selectedTab = .home
+                selectedTab = remoteConfigStore.isModuleEnabled(.model) ? .model : .home
             }
         }
     }

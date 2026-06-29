@@ -33,6 +33,13 @@ final class APIClient {
         return try await perform(request, as: type)
     }
 
+    func get<Response: Decodable>(_ path: String, queryItems: [URLQueryItem], as type: Response.Type) async throws -> Response {
+        var request = URLRequest(url: endpoint(path, queryItems: queryItems))
+        request.httpMethod = "GET"
+        applyHeaders(to: &request)
+        return try await perform(request, as: type)
+    }
+
     func post<Body: Encodable, Response: Decodable>(_ path: String, body: Body, as type: Response.Type) async throws -> Response {
         var request = URLRequest(url: endpoint(path))
         request.httpMethod = "POST"
@@ -41,8 +48,21 @@ final class APIClient {
         return try await perform(request, as: type)
     }
 
-    private func endpoint(_ path: String) -> URL {
-        baseURL.appendingPathComponent(path.trimmingCharacters(in: CharacterSet(charactersIn: "/")))
+    private func endpoint(_ path: String, queryItems: [URLQueryItem] = []) -> URL {
+        let components = path
+            .trimmingCharacters(in: CharacterSet(charactersIn: "/"))
+            .split(separator: "/")
+            .map(String.init)
+        let url = components.reduce(baseURL) { partialURL, component in
+            partialURL.appendingPathComponent(component)
+        }
+
+        guard !queryItems.isEmpty,
+              var urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) else {
+            return url
+        }
+        urlComponents.queryItems = queryItems
+        return urlComponents.url ?? url
     }
 
     private func applyHeaders(to request: inout URLRequest) {

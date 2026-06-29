@@ -19,7 +19,7 @@ struct SidebarView: View {
                     VStack(alignment: .leading, spacing: 2) {
                         Text("ChemVault")
                             .font(.headline)
-                        Text(languageManager.activeLanguage == .simplifiedChinese ? "原生科研工作台" : "Native research workspace")
+                        Text(languageManager.activeLanguage == .simplifiedChinese ? "化合物检索工作台" : "Compound search workspace")
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }

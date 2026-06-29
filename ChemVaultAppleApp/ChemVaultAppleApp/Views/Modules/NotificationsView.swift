@@ -5,9 +5,9 @@ struct NotificationsView: View {
     let permission: UserPermission
 
     private let notifications = [
-        ("Extraction job prepared", "Paper-to-database placeholder task is ready.", true),
-        ("Files service reserved", "Secure file infrastructure API can be connected later.", false),
-        ("Documentation sync planned", "Native docs can sync Markdown records in a future build.", false)
+        ("Compound search ready", "Name, formula, identifier and SMILES lookup are available.", true),
+        ("Local results enabled", "Featured compounds remain available when live search is unavailable.", false),
+        ("Supporting tools compacted", "Docs, files and extraction are kept as secondary workspaces.", false)
     ]
 
     var body: some View {

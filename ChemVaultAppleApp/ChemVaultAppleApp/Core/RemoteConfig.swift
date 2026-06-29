@@ -10,7 +10,7 @@ struct RemoteAppConfig: Codable, Equatable {
 
     static let fallback = RemoteAppConfig(
         maintenanceMode: false,
-        enabledModules: [.model, .docs, .files, .mail],
+        enabledModules: [.model, .docs, .files, .extract],
         minimumSupportedVersion: "1.0.0",
         resourceBundleVersion: "2026.06.28",
         announcementMessage: ""
@@ -22,7 +22,7 @@ struct RemoteAppConfig: Codable, Equatable {
 
     func isModuleEnabled(_ module: ChemVaultModule) -> Bool {
         switch module {
-        case .home, .settings:
+        case .home, .model, .settings:
             return true
         default:
             return enabledModules.contains(module)

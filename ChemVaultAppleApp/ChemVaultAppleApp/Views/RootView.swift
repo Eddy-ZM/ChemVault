@@ -4,7 +4,7 @@ struct RootView: View {
     @EnvironmentObject private var languageManager: LanguageManager
     @EnvironmentObject private var remoteConfigStore: RemoteConfigStore
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
-    @State private var selectedModule: ChemVaultModule? = .home
+    @State private var selectedModule: ChemVaultModule? = .model
 
     private let permission = UserPermission.demo
 
@@ -32,7 +32,7 @@ struct RootView: View {
         }
         .onChange(of: remoteConfigStore.config.enabledModuleIDs) { _ in
             guard let selectedModule = selectedModule, !remoteConfigStore.isModuleEnabled(selectedModule) else { return }
-            self.selectedModule = .home
+            self.selectedModule = remoteConfigStore.isModuleEnabled(.model) ? .model : .home
         }
     }
 

@@ -74,7 +74,7 @@ enum ChemVaultModule: String, CaseIterable, Identifiable, Hashable {
     var symbolName: String {
         switch self {
         case .home: return "hexagon"
-        case .model: return "atom"
+        case .model: return "magnifyingglass.circle"
         case .files: return "folder"
         case .docs: return "doc.text"
         case .extract: return "sparkles.rectangle.stack"
@@ -85,6 +85,6 @@ enum ChemVaultModule: String, CaseIterable, Identifiable, Hashable {
         }
     }
 
-    static let sidebarModules: [ChemVaultModule] = [.home, .model, .files, .docs, .extract, .mail, .userCenter, .notifications, .settings]
-    static let featureModules: [ChemVaultModule] = [.model, .files, .docs, .extract, .mail, .userCenter, .notifications, .settings]
+    static let sidebarModules: [ChemVaultModule] = [.model, .home, .docs, .files, .extract, .settings]
+    static let featureModules: [ChemVaultModule] = [.docs, .files, .extract, .settings]
 }

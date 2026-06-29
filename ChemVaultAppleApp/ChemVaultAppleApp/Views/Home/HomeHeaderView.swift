@@ -24,7 +24,7 @@ struct HomeHeaderView: View {
                     .fixedSize(horizontal: false, vertical: true)
 
                 HStack(spacing: 8) {
-                    ForEach(["Compound Search", "Molecular Data", "AI Extraction"], id: \.self) { label in
+                    ForEach(headerTags, id: \.self) { label in
                         Text(label)
                             .font(.caption.weight(.semibold))
                             .padding(.horizontal, 10)
@@ -34,5 +34,11 @@ struct HomeHeaderView: View {
                 }
             }
         }
+    }
+
+    private var headerTags: [String] {
+        languageManager.activeLanguage == .simplifiedChinese
+            ? ["化合物检索", "记录详情", "辅助工具"]
+            : ["Compound Search", "Record Detail", "Supporting Tools"]
     }
 }

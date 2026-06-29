@@ -46,11 +46,11 @@ struct SettingsView: View {
                     .textFieldStyle(.roundedBorder)
             }
 
-            Section("Remote Config") {
-                LabeledContent("Resource bundle", value: remoteConfigStore.config.resourceBundleVersion)
-                LabeledContent("Minimum version", value: remoteConfigStore.config.minimumSupportedVersion)
-                LabeledContent("Enabled modules", value: remoteConfigStore.config.enabledModuleIDs.joined(separator: ", "))
-                Button("Refresh remote config") {
+            Section("App services") {
+                LabeledContent("Content bundle", value: remoteConfigStore.config.resourceBundleVersion)
+                LabeledContent("Minimum app version", value: remoteConfigStore.config.minimumSupportedVersion)
+                LabeledContent("Available areas", value: remoteConfigStore.config.enabledModuleIDs.joined(separator: ", "))
+                Button("Refresh app services") {
                     Task { await remoteConfigStore.refresh() }
                 }
             }

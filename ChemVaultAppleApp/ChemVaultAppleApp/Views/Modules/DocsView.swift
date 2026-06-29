@@ -8,9 +8,9 @@ struct DocsView: View {
     private let docs = [
         "Getting started with ChemVault",
         "Compound search workflow",
-        "Scientific data extraction pipeline",
-        "File infrastructure and access",
-        "Developer API roadmap"
+        "Reading compound records",
+        "Evidence notes",
+        "Search tips"
     ]
 
     var filteredDocs: [String] {
