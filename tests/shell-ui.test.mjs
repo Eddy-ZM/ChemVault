@@ -54,7 +54,7 @@ test("favicon entries use the current ChemVault logo mark", () => {
   assert.equal(sha1("assets/favicon-512.png"), sha1("assets/chemvault-logo-mark.png"), "512px favicon asset is generated from the site logo mark");
 });
 
-test("site navigation exposes core destinations and groups secondary pages under More", () => {
+test("site navigation exposes core destinations through categorized disclosure groups", () => {
   const shell = read("scripts/site-shell.js");
   const requiredShellDestinations = [
     ["Home", "/index.html"],
@@ -73,8 +73,10 @@ test("site navigation exposes core destinations and groups secondary pages under
     assert.match(shell, new RegExp(escapeRegex(href)), `runtime shell navigation links ${label} to ${href}`);
   }
 
-  assert.match(shell, /<details class="nav-more"/, "runtime shell has a More disclosure for secondary destinations");
-  assert.match(shell, /<summary>More<\/summary>/, "runtime shell labels the secondary navigation disclosure");
+  assert.match(shell, /<details class="nav-more"/, "runtime shell has disclosure groups for categorized destinations");
+  for (const label of ["Workflows", "Knowledge", "Plans"]) {
+    assert.match(shell, new RegExp(`<summary>${label}<\\/summary>`), `runtime shell labels the ${label} navigation group`);
+  }
   assert.match(shell, /function injectProductSwitcher/, "runtime shell injects the product app switcher");
   assert.match(shell, /productModules\(\)/, "runtime shell can populate app switcher links from the commercial module config");
 
@@ -276,7 +278,9 @@ test("site navigation uses a ChemVault tubelight tab treatment", () => {
   const styles = read("assets/styles.css");
   const shell = read("scripts/site-shell.js");
 
-  assert.match(shell, /<details class="nav-more"/, "runtime commercial navigation keeps secondary pages in the More menu");
+  assert.match(shell, /<summary>Workflows<\/summary>/, "runtime commercial navigation groups workflow pages");
+  assert.match(shell, /<summary>Knowledge<\/summary>/, "runtime commercial navigation groups knowledge pages");
+  assert.match(shell, /<summary>Plans<\/summary>/, "runtime commercial navigation groups plan and team pages");
 
   for (const file of bootHtmlFiles) {
     const html = read(file);

@@ -46,9 +46,11 @@ test("commercial config exposes the expected plans, modules and feature keys", (
     "public pricing plans are exposed in display order"
   );
 
-  for (const moduleId of ["main", "compound_search", "file_library", "documentation", "molecular_modeling", "mail", "ai_paper_search"]) {
+  for (const moduleId of ["main", "compound_search", "file_library", "documentation", "molecular_modeling", "mail", "ai_paper_search", "team_workspace"]) {
     assert(config.modules.some((module) => module.id === moduleId), `module config includes ${moduleId}`);
   }
+
+  assert.equal(config.modules.find((module) => module.id === "team_workspace")?.category, "team", "Team/Lab Workspace is grouped under team");
 
   for (const featureKey of [
     "compound.search.basic",

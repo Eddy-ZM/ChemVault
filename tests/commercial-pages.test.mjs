@@ -96,6 +96,20 @@ test("commercial forms and client logic provide validation and clear states", ()
   assert.doesNotMatch(ui, /STRIPE_SECRET_KEY|STRIPE_WEBHOOK_SECRET|sk_live|sk_test/, "client UI does not embed payment secrets");
 });
 
+test("home modules are categorized and Team workspace is visible", () => {
+  const home = read("index.html");
+  const config = read("scripts/commercial-config.js");
+  const ui = read("scripts/commercial-ui.js");
+
+  assert.match(home, /data-render="app-modules" data-module-layout="categorized"/, "home asks the shared UI to render categorized modules");
+  assert.match(home, /pages\/team\.html/, "home links back to the Team surface");
+  assert.match(config, /id:\s*"team_workspace"/, "commercial config exposes the Team/Lab Workspace module");
+  assert.match(config, /category:\s*"team"/, "Team module is assigned to the team category");
+  assert.match(ui, /function moduleCategoryMarkup/, "commercial UI renders module category disclosures");
+  assert.match(ui, /data-module-categories/, "categorized module markup exposes an interactive accordion root");
+  assert.match(ui, /function teamWorkspaceMarkup/, "dashboard restores a visible Teams workspace panel");
+});
+
 test("commercial schema, env docs and implementation remain aligned", () => {
   const schema = read("schema.sql");
   const envExample = read(".env.example");

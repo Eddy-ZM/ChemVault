@@ -11,6 +11,7 @@
     wireShellNav();
     wireShellTheme();
     wireShellSearch();
+    wireNavigationDisclosures();
     upgradeAcademicNavigation();
     injectProductSwitcher();
     markActivePage();
@@ -24,6 +25,25 @@
     toggle?.addEventListener("click", () => {
       const open = header.classList.toggle("nav-open");
       toggle.setAttribute("aria-expanded", String(open));
+    });
+  }
+
+  function wireNavigationDisclosures() {
+    const nav = document.querySelector(".site-nav");
+    if (!nav || nav.dataset.disclosureWired) return;
+    nav.dataset.disclosureWired = "true";
+    nav.addEventListener("toggle", (event) => {
+      const current = event.target;
+      if (!current.matches?.(".nav-more") || !current.open) return;
+      nav.querySelectorAll(".nav-more").forEach((item) => {
+        if (item !== current) item.open = false;
+      });
+    }, true);
+    document.addEventListener("click", (event) => {
+      if (event.target.closest(".site-nav")) return;
+      nav.querySelectorAll(".nav-more").forEach((item) => {
+        item.open = false;
+      });
     });
   }
 
@@ -194,28 +214,42 @@
     if (!nav) return;
     nav.innerHTML = `
       <a href="/index.html">Home</a>
-      <a href="/pages/search.html">Compound Search</a>
-      <a href="/pages/file-library.html">File Library</a>
-      <a href="/pages/molecular-modeling.html">Molecular Modeling</a>
-      <a href="/pages/ai-paper-search.html">AI Paper Search</a>
-      <a href="/pages/docs.html">Docs</a>
-      <a href="/pages/pricing.html">Pricing</a>
       <details class="nav-more">
-        <summary>More</summary>
+        <summary>Workflows</summary>
         <div class="nav-more-menu">
+          <a href="/pages/search.html">Compound Search</a>
+          <a href="/pages/file-library.html">File Library</a>
+          <a href="/pages/molecular-modeling.html">Molecular Modeling</a>
+          <a href="/pages/ai-paper-search.html">AI Paper Search</a>
           <a href="/pages/dashboard.html">Dashboard</a>
           <a href="/pages/workbench.html">Research Workbench</a>
           <a href="/pages/mail.html">Mail</a>
-          <a href="/pages/contact.html">Enterprise / Contact Sales</a>
+        </div>
+      </details>
+      <details class="nav-more">
+        <summary>Knowledge</summary>
+        <div class="nav-more-menu">
+          <a href="/pages/docs.html">Docs</a>
+          <a href="/pages/research.html">Research</a>
+          <a href="/pages/platform.html">Platform</a>
+          <a href="/pages/projects.html">Projects</a>
           <a href="/pages/reagents.html">Reagents</a>
           <a href="/pages/materials.html">Materials</a>
           <a href="/pages/methods.html">Methods</a>
           <a href="/pages/library.html">Library</a>
           <a href="/pages/about.html">About</a>
+        </div>
+      </details>
+      <details class="nav-more">
+        <summary>Plans</summary>
+        <div class="nav-more-menu">
+          <a href="/pages/pricing.html">Pricing</a>
           <a href="/pages/team.html">Team</a>
+          <a href="/pages/contact.html">Enterprise / Contact Sales</a>
         </div>
       </details>
     `;
+    wireNavigationDisclosures();
 
     const brand = document.querySelector(".brand");
     const brandSmall = brand?.querySelector("small");
@@ -269,7 +303,8 @@
       ["Professional Documentation", "/pages/docs.html", "Active", "Free", "DG"],
       ["Molecular Modeling", "/pages/molecular-modeling.html", "Beta", "Free", "MM"],
       ["Mail", "/pages/mail.html", "Beta", "Free", "ML"],
-      ["AI Paper Search", "/pages/ai-paper-search.html", "Beta", "Free", "AI"]
+      ["AI Paper Search", "/pages/ai-paper-search.html", "Beta", "Free", "AI"],
+      ["Team/Lab Workspace", "/pages/team.html", "Active", "Free", "TM"]
     ].map(([name, route, status, access, initials]) => ({ name, route, status, access, initials }));
   }
 
@@ -440,7 +475,7 @@
               <nav class="footer-mobile-links" aria-label="Footer navigation">
                 <a href="/pages/search.html">Compounds</a>
                 <a href="/pages/platform.html">Platform</a>
-                <a href="/pages/projects.html">Projects</a>
+                <a href="/pages/team.html">Team</a>
                 <a href="/pages/contact.html">Contact</a>
               </nav>
             </div>

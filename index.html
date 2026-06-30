@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ChemVault — Chemistry Knowledge Infrastructure for the AI Era</title>
+  <title>ChemVault - Chemistry Knowledge Infrastructure for the AI Era</title>
   <meta name="description" content="ChemVault is an academic technology initiative for compound search, chemistry data, scientific document understanding, and AI-assisted research workflows." />
   <meta name="keywords" content="ChemVault, chemistry, compound search, chemical data, AI for Science, scientific data extraction, research intelligence, chemical knowledge infrastructure, academic technology" />
   <meta name="theme-color" content="#07111f" />
   <script src="/scripts/boot.js?v=20260618c"></script>
-  <meta property="og:title" content="ChemVault — Chemistry Knowledge Infrastructure for the AI Era" />
+  <meta property="og:title" content="ChemVault - Chemistry Knowledge Infrastructure for the AI Era" />
   <meta property="og:description" content="Academic technology infrastructure for compound search, molecular data, scientific document understanding and AI-assisted research workflows." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://chemvault.science/" />
@@ -19,10 +19,10 @@
   <link rel="icon" href="/assets/chemvault-logo-mark.png?v=20260628a" type="image/png" sizes="512x512" />
   <link rel="apple-touch-icon" href="/assets/chemvault-apple-touch-icon.png?v=20260628a" />
   <link rel="manifest" href="/site.webmanifest" />
-  <link rel="stylesheet" href="assets/styles.css?v=20260622b" />
+  <link rel="stylesheet" href="assets/styles.css?v=20260630a" />
   <link rel="stylesheet" href="assets/portal.css?v=20260619c" />
-  <link rel="stylesheet" href="assets/academic.css?v=20260623mobilefix" />
-  <link rel="stylesheet" href="assets/commercial.css?v=20260629a" />
+  <link rel="stylesheet" href="assets/academic.css?v=20260630a" />
+  <link rel="stylesheet" href="assets/commercial.css?v=20260630a" />
   <script src="data/chem-data.js?v=20260603a" defer></script>
   <script src="data/reagent-extension.js?v=20260603a" defer></script>
   <script src="data/research-data.js?v=20260603a" defer></script>
@@ -40,8 +40,8 @@
   <script src="scripts/api.js?v=20260603a" defer></script>
   <script src="scripts/motion.js?v=20260618c" defer></script>
   <script src="scripts/home.js?v=20260624a" defer></script>
-  <script src="scripts/commercial-config.js?v=20260629a" defer></script>
-  <script src="scripts/commercial-ui.js?v=20260629a" defer></script>
+  <script src="scripts/commercial-config.js?v=20260630a" defer></script>
+  <script src="scripts/commercial-ui.js?v=20260630a" defer></script>
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -81,24 +81,35 @@
       </a>
       <button class="icon-button menu-toggle" type="button" aria-label="Open navigation" aria-expanded="false"><span></span><span></span><span></span></button>
       <nav class="site-nav" aria-label="Main navigation">
-        <a href="index.html">Home</a>
-        <a href="pages/search.html">Compound Search</a>
-        <a href="pages/file-library.html">File Library</a>
-        <a href="pages/molecular-modeling.html">Molecular Modeling</a>
-        <a href="pages/ai-paper-search.html">AI Paper Search</a>
-        <a href="pages/docs.html">Docs</a>
-        <a href="pages/pricing.html">Pricing</a>
+        <a href="index.html" aria-current="page">Home</a>
         <details class="nav-more">
-          <summary>More</summary>
+          <summary>Workflows</summary>
           <div class="nav-more-menu">
+            <a href="pages/search.html">Compound Search</a>
+            <a href="pages/file-library.html">File Library</a>
+            <a href="pages/molecular-modeling.html">Molecular Modeling</a>
+            <a href="pages/ai-paper-search.html">AI Paper Search</a>
             <a href="pages/dashboard.html">Dashboard</a>
             <a href="pages/workbench.html">Research Workbench</a>
             <a href="pages/mail.html">Mail</a>
-            <a href="pages/contact.html">Enterprise / Contact Sales</a>
+          </div>
+        </details>
+        <details class="nav-more">
+          <summary>Knowledge</summary>
+          <div class="nav-more-menu">
+            <a href="pages/docs.html">Docs</a>
             <a href="pages/research.html">Research</a>
             <a href="pages/platform.html">Platform</a>
             <a href="pages/projects.html">Projects</a>
             <a href="pages/about.html">About</a>
+          </div>
+        </details>
+        <details class="nav-more">
+          <summary>Plans</summary>
+          <div class="nav-more-menu">
+            <a href="pages/pricing.html">Pricing</a>
+            <a href="pages/team.html">Team</a>
+            <a href="pages/contact.html">Enterprise / Contact Sales</a>
           </div>
         </details>
       </nav>
@@ -258,7 +269,18 @@
           </div>
           <p>ChemVault is being commercialized as one platform for compound search, file management, molecular modeling, documentation, mail workflows, and AI paper organization.</p>
         </div>
-        <div class="cv-module-grid" data-render="app-modules"></div>
+        <div class="cv-module-grid" data-render="app-modules" data-module-layout="categorized"></div>
+        <div class="cv-team-home-panel" aria-label="ChemVault Teams workspace preview">
+          <div>
+            <span class="section-kicker">Teams</span>
+            <h3>Team/Lab workspace is back in the product surface.</h3>
+            <p>Open the public team page, preview shared lab spaces, and keep Team/Lab plan controls close to the research tools.</p>
+          </div>
+          <div class="cv-team-home-actions">
+            <a class="academic-button primary" href="pages/team.html">Open Team</a>
+            <a class="academic-button ghost-on-light" href="pages/dashboard.html">Preview Workspace</a>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -470,6 +492,7 @@
                 <a href="/pages/projects.html">Projects</a>
                 <a href="/pages/notes.html">Notes</a>
                 <a href="/pages/about.html">About</a>
+                <a href="/pages/team.html">Team</a>
               </div>
               <div class="footer-column footer-reveal" style="--footer-delay: 180ms">
                 <span class="footer-heading">Tools</span>
@@ -510,7 +533,7 @@
             <nav class="footer-mobile-links" aria-label="Footer navigation">
               <a href="/pages/search.html">Compounds</a>
               <a href="/pages/platform.html">Platform</a>
-              <a href="/pages/projects.html">Projects</a>
+              <a href="/pages/team.html">Team</a>
               <a href="/pages/contact.html">Contact</a>
             </nav>
           </div>

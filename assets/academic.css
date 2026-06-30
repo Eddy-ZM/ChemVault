@@ -6078,3 +6078,42 @@ html.dark-mode .team-directory-page .apple-board-photo span {
     gap: 24px !important;
   }
 }
+
+/* Mobile footer simplification: keep only the compact footer surface. */
+@media (max-width: 900px) {
+  .site-footer .footer-grid,
+  .site-footer .developer-footer-grid,
+  .site-footer .footer-link-groups {
+    display: none !important;
+  }
+
+  .site-footer .footer-mobile-compact {
+    position: relative !important;
+    z-index: 1 !important;
+    display: grid !important;
+    gap: 16px !important;
+  }
+
+  .site-footer .footer-mobile-links {
+    display: grid !important;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+  }
+
+  .site-footer .footer-mobile-links a {
+    flex: initial !important;
+    min-width: 0 !important;
+    justify-content: center !important;
+    text-align: center !important;
+  }
+}
+
+@media (max-width: 620px) {
+  .site-footer .footer-mobile-identity p {
+    display: none !important;
+  }
+
+  .site-footer .footer-mobile-links {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}

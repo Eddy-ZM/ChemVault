@@ -17,6 +17,7 @@
       status: "active",
       accessLevel: "free",
       icon: "home",
+      category: "overview",
       ctaLabel: "Open home"
     },
     {
@@ -27,6 +28,7 @@
       status: "active",
       accessLevel: "free",
       icon: "search",
+      category: "research",
       ctaLabel: "Search compounds"
     },
     {
@@ -37,6 +39,7 @@
       status: "beta",
       accessLevel: "free",
       icon: "folder",
+      category: "operations",
       ctaLabel: "Open library"
     },
     {
@@ -47,6 +50,7 @@
       status: "active",
       accessLevel: "free",
       icon: "book",
+      category: "operations",
       ctaLabel: "Read docs"
     },
     {
@@ -57,6 +61,7 @@
       status: "beta",
       accessLevel: "free",
       icon: "molecule",
+      category: "research",
       ctaLabel: "Open modeling"
     },
     {
@@ -67,6 +72,7 @@
       status: "beta",
       accessLevel: "free",
       icon: "mail",
+      category: "operations",
       ctaLabel: "Open mail"
     },
     {
@@ -77,7 +83,19 @@
       status: "beta",
       accessLevel: "free",
       icon: "spark",
+      category: "research",
       ctaLabel: "Join beta"
+    },
+    {
+      id: "team_workspace",
+      name: "Team/Lab Workspace",
+      description: "Open the ChemVault team surface and preview shared lab workspace controls.",
+      route: "/pages/team.html",
+      status: "active",
+      accessLevel: "free",
+      icon: "team",
+      category: "team",
+      ctaLabel: "Open team"
     }
   ];
 

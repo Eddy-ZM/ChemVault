@@ -10,6 +10,7 @@
     renderPricingBlocks();
     renderDashboardBlocks();
     applyFeatureGates();
+    wireNavigationDisclosures();
     wirePlanPreview();
     wireCheckoutButtons();
     wireLeadForms();
@@ -48,8 +49,11 @@
   function renderModuleBlocks() {
     $$("[data-render='app-modules']").forEach((node) => {
       const modules = commercial().modules;
-      node.innerHTML = modules.map(moduleCard).join("");
+      node.innerHTML = node.dataset.moduleLayout === "categorized"
+        ? moduleCategoryMarkup(modules)
+        : modules.map(moduleCard).join("");
     });
+    wireModuleAccordions();
     $$("[data-render='module-access']").forEach((node) => {
       node.innerHTML = moduleAccessTable();
     });
@@ -220,6 +224,97 @@
     actions.prepend(details);
   }
 
+  function wireNavigationDisclosures() {
+    const nav = $(".site-nav");
+    if (!nav || nav.dataset.disclosureWired) return;
+    nav.dataset.disclosureWired = "true";
+    nav.addEventListener("toggle", (event) => {
+      const current = event.target;
+      if (!current.matches?.(".nav-more") || !current.open) return;
+      $$(".nav-more", nav).forEach((item) => {
+        if (item !== current) item.open = false;
+      });
+    }, true);
+    document.addEventListener("click", (event) => {
+      if (event.target.closest(".site-nav")) return;
+      $$(".nav-more", nav).forEach((item) => {
+        item.open = false;
+      });
+    });
+  }
+
+  function wireModuleAccordions() {
+    $$("[data-module-categories]").forEach((container) => {
+      if (container.dataset.moduleCategoriesWired) return;
+      container.dataset.moduleCategoriesWired = "true";
+      container.addEventListener("toggle", (event) => {
+        const current = event.target;
+        if (!current.matches?.(".cv-module-category") || !current.open) return;
+        $$(".cv-module-category", container).forEach((item) => {
+          if (item !== current) item.open = false;
+        });
+      }, true);
+    });
+  }
+
+  function moduleCategoryMarkup(modules) {
+    const groups = moduleGroups(modules);
+    return `
+      <div class="cv-module-categories" data-module-categories>
+        ${groups.map((group, index) => `
+          <details class="cv-module-category" ${index === 0 ? "open" : ""}>
+            <summary>
+              <span>
+                <strong>${esc(group.label)}</strong>
+                <small>${esc(group.description)}</small>
+              </span>
+              <em>${group.modules.length} ${group.modules.length === 1 ? "module" : "modules"}</em>
+            </summary>
+            <div class="cv-module-category__body">
+              ${group.modules.map(moduleCard).join("")}
+            </div>
+          </details>
+        `).join("")}
+      </div>
+    `;
+  }
+
+  function moduleGroups(modules) {
+    const categoryCopy = {
+      overview: {
+        label: "Overview",
+        description: "Start from the home surface and platform orientation."
+      },
+      research: {
+        label: "Research Tools",
+        description: "Search compounds, model molecules, and organize AI-assisted paper work."
+      },
+      operations: {
+        label: "Knowledge Operations",
+        description: "Files, documentation, mail, and repeatable research workflow surfaces."
+      },
+      team: {
+        label: "Team Workspace",
+        description: "Team profiles, lab collaboration, shared collections, and plan controls."
+      }
+    };
+    const order = ["overview", "research", "operations", "team"];
+    const map = new Map(order.map((id) => [id, { id, ...categoryCopy[id], modules: [] }]));
+    modules.forEach((module) => {
+      const id = module.category || "operations";
+      if (!map.has(id)) {
+        map.set(id, {
+          id,
+          label: id.replace(/[_-]+/g, " ").replace(/\b\w/g, (char) => char.toUpperCase()),
+          description: "Additional ChemVault work surfaces.",
+          modules: []
+        });
+      }
+      map.get(id).modules.push(module);
+    });
+    return [...map.values()].filter((group) => group.modules.length);
+  }
+
   function moduleCard(module) {
     const locked = !commercial().hasPlan(null, module.accessLevel);
     return `
@@ -320,12 +415,39 @@
             <p>AI Paper Search is in beta.</p>
           </div>
         </section>
-        <section class="cv-dashboard-panel ${teamVisible ? "" : "is-muted"}">
-          <span class="section-kicker">Team workspace</span>
-          <h3>${teamVisible ? "Team/Lab workspace enabled" : "Team workspace requires Team/Lab plan"}</h3>
-          <p>${teamVisible ? "Shared file library, saved compounds, modeling projects, and paper collections are ready for future backend connection." : "Upgrade to Team/Lab to unlock shared workspace placeholders."}</p>
-        </section>
+        ${teamWorkspaceMarkup(teamVisible)}
       </div>
+    `;
+  }
+
+  function teamWorkspaceMarkup(enabled) {
+    const lanes = [
+      ["Seats", enabled ? "6 active" : "Preview", "Invite researchers and reviewers into a shared lab space."],
+      ["Shared files", enabled ? "Connected" : "Team/Lab", "Group papers, spectra, reports, and project assets."],
+      ["Collections", enabled ? "Ready" : "Team/Lab", "Coordinate compounds, modeling projects, and AI paper lists."]
+    ];
+    return `
+      <section class="cv-dashboard-panel cv-team-workspace-panel ${enabled ? "" : "is-muted"}">
+        <div class="cv-team-workspace-head">
+          <span class="section-kicker">Team workspace</span>
+          <span class="cv-plan-badge cv-plan-badge--team">${enabled ? "Enabled" : "Team/Lab"}</span>
+        </div>
+        <h3>${enabled ? "Shared ChemVault workspace enabled" : "Teams interface preview"}</h3>
+        <p>${enabled ? "Shared file library, saved compounds, modeling projects, and paper collections are ready for future backend connection." : "The Teams surface is back as a visible workspace preview. Upgrade preview state to Team/Lab to unlock shared controls."}</p>
+        <div class="cv-team-workspace-grid">
+          ${lanes.map(([label, value, body]) => `
+            <article>
+              <span>${esc(label)}</span>
+              <strong>${esc(value)}</strong>
+              <p>${esc(body)}</p>
+            </article>
+          `).join("")}
+        </div>
+        <div class="cv-team-workspace-actions">
+          <a class="secondary-button" href="/pages/team.html">Open Team</a>
+          <button class="secondary-button" type="button" data-plan-preview="team">Preview Team/Lab</button>
+        </div>
+      </section>
     `;
   }
 
@@ -373,7 +495,8 @@
       book: "DG",
       molecule: "MM",
       mail: "ML",
-      spark: "AI"
+      spark: "AI",
+      team: "TM"
     };
     return icons[icon] || "CV";
   }

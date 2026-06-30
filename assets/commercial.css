@@ -134,6 +134,88 @@
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
+.cv-module-grid[data-module-layout="categorized"] {
+  display: block;
+}
+
+.cv-module-categories {
+  display: grid;
+  gap: 12px;
+}
+
+.cv-module-category {
+  border: 1px solid var(--cv-commercial-line);
+  border-radius: var(--cv-commercial-radius);
+  background: color-mix(in srgb, var(--cv-commercial-surface) 84%, transparent);
+  overflow: hidden;
+}
+
+.cv-module-category > summary {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: 18px;
+  align-items: center;
+  min-height: 76px;
+  padding: 16px 18px;
+  color: var(--cv-commercial-ink);
+  cursor: pointer;
+  list-style: none;
+}
+
+.cv-module-category > summary::-webkit-details-marker {
+  display: none;
+}
+
+.cv-module-category > summary::after {
+  content: "+";
+  display: grid;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  border: 1px solid var(--cv-commercial-line);
+  border-radius: 999px;
+  color: var(--cv-commercial-blue);
+  font-weight: 850;
+}
+
+.cv-module-category[open] > summary::after {
+  content: "-";
+}
+
+.cv-module-category > summary strong,
+.cv-module-category > summary small,
+.cv-module-category > summary em {
+  display: block;
+}
+
+.cv-module-category > summary strong {
+  font-size: 17px;
+  line-height: 1.2;
+}
+
+.cv-module-category > summary small {
+  margin-top: 4px;
+  color: var(--cv-commercial-muted);
+  line-height: 1.45;
+}
+
+.cv-module-category > summary em {
+  justify-self: end;
+  color: var(--cv-commercial-muted);
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.cv-module-category__body {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  border-top: 1px solid var(--cv-commercial-line);
+  padding: 14px;
+}
+
 .cv-module-card,
 .cv-pricing-card,
 .cv-dashboard-panel,
@@ -375,6 +457,96 @@
   background: linear-gradient(180deg, #fff, #f7f8fb);
 }
 
+.cv-team-workspace-panel {
+  grid-column: span 2;
+}
+
+.cv-team-workspace-head,
+.cv-team-workspace-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cv-team-workspace-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.cv-team-workspace-grid article {
+  min-width: 0;
+  border: 1px solid var(--cv-commercial-line);
+  border-radius: var(--cv-commercial-radius);
+  background: var(--cv-commercial-soft);
+  padding: 12px;
+}
+
+.cv-team-workspace-grid span,
+.cv-team-workspace-grid strong {
+  display: block;
+}
+
+.cv-team-workspace-grid span {
+  color: var(--cv-commercial-muted);
+  font-size: 12px;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.cv-team-workspace-grid strong {
+  margin-top: 4px;
+  color: var(--cv-commercial-ink);
+}
+
+.cv-team-workspace-grid p {
+  margin: 8px 0 0;
+  font-size: 13px;
+}
+
+.cv-team-workspace-actions {
+  justify-content: flex-start;
+  margin-top: 16px;
+}
+
+.cv-team-home-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 18px;
+  align-items: center;
+  margin-top: 18px;
+  border: 1px solid var(--cv-commercial-line);
+  border-radius: var(--cv-commercial-radius);
+  background:
+    linear-gradient(135deg, rgba(31, 111, 235, 0.09), transparent 54%),
+    var(--cv-commercial-surface);
+  padding: 20px;
+  box-shadow: 0 14px 38px rgba(17, 24, 39, 0.07);
+}
+
+.cv-team-home-panel h3 {
+  margin: 6px 0 8px;
+  color: var(--cv-commercial-ink);
+  font-size: clamp(22px, 2.5vw, 30px);
+  line-height: 1.15;
+}
+
+.cv-team-home-panel p {
+  margin: 0;
+  max-width: 720px;
+  color: var(--cv-commercial-muted);
+}
+
+.cv-team-home-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
 .cv-feature-locked {
   position: relative;
 }
@@ -523,12 +695,14 @@
 }
 
 html.dark-mode .cv-app-switcher__menu,
+html.dark-mode .cv-module-category,
 html.dark-mode .cv-module-card,
 html.dark-mode .cv-pricing-card,
 html.dark-mode .cv-dashboard-panel,
 html.dark-mode .cv-locked-card,
 html.dark-mode .cv-lead-panel,
 html.dark-mode .cv-feature-panel,
+html.dark-mode .cv-team-home-panel,
 html.dark-mode .cv-table-wrap {
   background: rgba(19, 33, 52, 0.96);
   color: #f5f7fb;
@@ -541,12 +715,15 @@ html.dark-mode .cv-section--tint {
 
 html.dark-mode .cv-commercial-hero h1,
 html.dark-mode .cv-section-header h2,
+html.dark-mode .cv-module-category > summary,
 html.dark-mode .cv-module-card h3,
 html.dark-mode .cv-pricing-card h3,
 html.dark-mode .cv-dashboard-panel h3,
 html.dark-mode .cv-locked-card h3,
 html.dark-mode .cv-lead-panel h3,
 html.dark-mode .cv-feature-panel h3,
+html.dark-mode .cv-team-home-panel h3,
+html.dark-mode .cv-team-workspace-grid strong,
 html.dark-mode .cv-app-switcher__menu a,
 html.dark-mode .cv-hero-metrics strong,
 html.dark-mode .cv-usage-row strong {
@@ -555,17 +732,26 @@ html.dark-mode .cv-usage-row strong {
 
 html.dark-mode .cv-commercial-hero p,
 html.dark-mode .cv-section-header p,
+html.dark-mode .cv-module-category > summary small,
+html.dark-mode .cv-module-category > summary em,
 html.dark-mode .cv-module-card p,
 html.dark-mode .cv-pricing-card p,
 html.dark-mode .cv-dashboard-panel p,
 html.dark-mode .cv-locked-card p,
 html.dark-mode .cv-lead-panel p,
 html.dark-mode .cv-feature-panel p,
+html.dark-mode .cv-team-home-panel p,
+html.dark-mode .cv-team-workspace-grid span,
 html.dark-mode .cv-pricing-card li,
 html.dark-mode .cv-comparison-table td,
 html.dark-mode .cv-app-switcher__menu small,
 html.dark-mode .cv-empty-list p {
   color: #b8c3d4;
+}
+
+html.dark-mode .cv-team-workspace-grid article,
+html.dark-mode .cv-empty-list p {
+  background: rgba(8, 16, 30, 0.62);
 }
 
 html.dark-mode .cv-lead-panel input,
@@ -582,13 +768,16 @@ html.dark-mode .cv-lead-form textarea {
 @media (max-width: 1120px) {
   .cv-pricing-grid,
   .cv-module-grid,
+  .cv-module-category__body,
   .cv-card-grid,
   .cv-dashboard-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .cv-dashboard-panel--primary {
+  .cv-dashboard-panel--primary,
+  .cv-team-workspace-panel {
     grid-row: auto;
+    grid-column: span 2;
   }
 }
 
@@ -598,10 +787,29 @@ html.dark-mode .cv-lead-form textarea {
   .cv-section-header,
   .cv-pricing-grid,
   .cv-module-grid,
+  .cv-module-category__body,
   .cv-card-grid,
   .cv-dashboard-grid,
+  .cv-team-workspace-grid,
+  .cv-team-home-panel,
   .cv-interest-grid {
     grid-template-columns: 1fr;
+  }
+
+  .cv-team-workspace-panel {
+    grid-column: span 1;
+  }
+
+  .cv-module-category > summary {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .cv-module-category > summary em {
+    justify-self: start;
+  }
+
+  .cv-team-home-actions {
+    justify-content: flex-start;
   }
 
   .cv-commercial-hero {
