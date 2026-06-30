@@ -18,8 +18,12 @@
   root.classList.toggle('cv-compact-mode', compactViewport);
   let pointerFrame = 0;
   let pointerEvent = null;
-  let scrollRailFrame = 0;
-  let scrollProgressFrame = 0;
+  let scrollEffectsFrame = 0;
+  let scrollEffectsBound = false;
+  let scrollRailReady = false;
+  let parallaxReady = false;
+  let lastScrollProgress = '';
+  let lastParallaxOffset = '';
 
   const setPointer = (event) => {
     root.style.setProperty('--cursor-x', `${event.clientX}px`);
@@ -275,54 +279,57 @@
     });
   };
 
-  const ensureScrollRail = () => {
-    if (document.querySelector('.cv-scroll-rail')) return;
-    const rail = document.createElement('div');
-    rail.className = 'cv-scroll-rail';
-    body.appendChild(rail);
-
-    const updateProgress = () => {
+  const applyScrollEffects = () => {
+    scrollEffectsFrame = 0;
+    if (scrollRailReady) {
       const max = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
       const progress = window.scrollY / max;
-      root.style.setProperty('--cv-scroll-progress', `${progress}`);
-    };
+      const nextProgress = `${progress}`;
+      if (nextProgress !== lastScrollProgress) {
+        lastScrollProgress = nextProgress;
+        root.style.setProperty('--cv-scroll-progress', nextProgress);
+      }
+    }
 
-    const scheduleUpdate = () => {
-      if (scrollRailFrame) return;
-      scrollRailFrame = requestAnimationFrame(() => {
-        scrollRailFrame = 0;
-        updateProgress();
-      });
-    };
+    if (parallaxReady) {
+      const scrollScale = shouldThrottleSections ? 0.08 : 0.12;
+      const scaledOffset = Math.min(120, window.scrollY * scrollScale);
+      const nextOffset = `${-scaledOffset.toFixed(2)}px`;
+      if (nextOffset !== lastParallaxOffset) {
+        lastParallaxOffset = nextOffset;
+        root.style.setProperty('--cv-parallax-offset', nextOffset);
+      }
+    }
+  };
 
-    updateProgress();
-    window.addEventListener('scroll', scheduleUpdate, { passive: true });
-    window.addEventListener('resize', scheduleUpdate);
+  const scheduleScrollEffects = () => {
+    if (scrollEffectsFrame) return;
+    scrollEffectsFrame = requestAnimationFrame(applyScrollEffects);
+  };
+
+  const bindScrollEffects = () => {
+    if (scrollEffectsBound) return;
+    scrollEffectsBound = true;
+    window.addEventListener('scroll', scheduleScrollEffects, { passive: true });
+    window.addEventListener('resize', scheduleScrollEffects);
+  };
+
+  const ensureScrollRail = () => {
+    if (!document.querySelector('.cv-scroll-rail')) {
+      const rail = document.createElement('div');
+      rail.className = 'cv-scroll-rail';
+      body.appendChild(rail);
+    }
+    scrollRailReady = true;
+    bindScrollEffects();
+    applyScrollEffects();
   };
 
   const syncParallax = () => {
-    const apply = () => {
-      const hero = document.querySelector('.academic-hero');
-      const offset = Math.min(120, window.scrollY * 0.12);
-      const scrollScale = shouldThrottleSections ? 0.08 : 0.12;
-      const scaledOffset = Math.min(120, window.scrollY * scrollScale);
-      root.style.setProperty('--cv-parallax-offset', `${-offset.toFixed(2)}px`);
-      if (scaledOffset !== 0) {
-        root.style.setProperty('--cv-parallax-offset', `${-scaledOffset.toFixed(2)}px`);
-      }
-    };
-
-    const onScroll = () => {
-      if (scrollProgressFrame) return;
-      scrollProgressFrame = requestAnimationFrame(() => {
-        scrollProgressFrame = 0;
-        apply();
-      });
-    };
-
     const hero = document.querySelector('.academic-hero');
-    onScroll();
-    window.addEventListener('scroll', onScroll, { passive: true });
+    parallaxReady = true;
+    bindScrollEffects();
+    applyScrollEffects();
     if (hero) hero.classList.add('cv-hero-parallax');
   };
 

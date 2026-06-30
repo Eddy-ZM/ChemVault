@@ -274,26 +274,29 @@ test("footer uses a ChemVault sticky footer adapted from the template", () => {
   }
 });
 
-test("site navigation uses a ChemVault tubelight tab treatment", () => {
+test("site navigation uses a 21st.dev-inspired spotlight tab treatment", () => {
   const styles = read("assets/styles.css");
   const shell = read("scripts/site-shell.js");
+  const commercialUi = read("scripts/commercial-ui.js");
 
   assert.match(shell, /<summary>Workflows<\/summary>/, "runtime commercial navigation groups workflow pages");
   assert.match(shell, /<summary>Knowledge<\/summary>/, "runtime commercial navigation groups knowledge pages");
   assert.match(shell, /<summary>Plans<\/summary>/, "runtime commercial navigation groups plan and team pages");
+  assert.match(shell, /function wireNavigationHighlight\(\)/, "runtime shell wires the top navigation spotlight");
+  assert.match(commercialUi, /function wireNavigationHighlight\(\)/, "commercial homepage wires the same navigation spotlight");
 
   for (const file of bootHtmlFiles) {
     const html = read(file);
 
     navMarkup(html);
-    assert.match(html, /styles\.css\?v=(?!20260603a)\d+/, `${file} references non-stale tubelight navigation styles`);
+    assert.match(html, /styles\.css\?v=(?!20260603a)\d+/, `${file} references non-stale spotlight navigation styles`);
   }
 
-  assert.match(styles, /\.site-nav\s*{[\s\S]*border-radius:\s*999px/, "navigation container is a rounded tubelight rail");
-  assert.match(styles, /\.site-nav\s*{[\s\S]*backdrop-filter:\s*blur\(18px\)/, "navigation rail uses translucent glass");
-  assert.match(styles, /\.site-nav a,\s*\n\.nav-more > summary\s*{[\s\S]*border-radius:\s*999px/, "navigation items are rounded tabs");
-  assert.match(styles, /\.site-nav a::after,\s*\n\.nav-more > summary::after\s*{[\s\S]*top:\s*-6px/, "navigation tabs draw the top lamp");
-  assert.match(styles, /\.site-nav a\[aria-current\],\s*\n\.nav-more > summary\[aria-current\][\s\S]*box-shadow:[\s\S]*rgba\(0, 113, 227, 0\.18\)/, "current page tab has a ChemVault blue glow");
+  assert.match(styles, /\.site-nav\s*{[\s\S]*--nav-indicator-x:\s*8px/, "navigation container exposes spotlight indicator variables");
+  assert.match(styles, /\.site-nav\s*{[\s\S]*backdrop-filter:\s*blur\(20px\)/, "navigation rail uses translucent glass");
+  assert.match(styles, /\.site-nav::before\s*{[\s\S]*bottom:\s*5px[\s\S]*transform:\s*translate3d\(var\(--nav-indicator-x\), 0, 0\)/, "navigation rail draws the moving underline spotlight");
+  assert.match(styles, /\.nav-more > summary::before\s*{[\s\S]*border-right:\s*1\.5px solid currentColor/, "category summaries use a chevron affordance");
+  assert.match(styles, /\.nav-more-menu\s*{[\s\S]*grid-template-columns:\s*repeat\(auto-fit, minmax\(180px, 1fr\)\)/, "category menus render as responsive option grids");
 });
 
 test("theme switch presents a stable, resolved light/dark control", () => {

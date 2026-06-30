@@ -11,6 +11,7 @@
     renderDashboardBlocks();
     applyFeatureGates();
     wireNavigationDisclosures();
+    wireNavigationHighlight();
     wirePlanPreview();
     wireCheckoutButtons();
     wireLeadForms();
@@ -228,19 +229,97 @@
     const nav = $(".site-nav");
     if (!nav || nav.dataset.disclosureWired) return;
     nav.dataset.disclosureWired = "true";
+    const notify = () => nav.dispatchEvent(new CustomEvent("chemvault:navstatechange"));
     nav.addEventListener("toggle", (event) => {
       const current = event.target;
       if (!current.matches?.(".nav-more") || !current.open) return;
       $$(".nav-more", nav).forEach((item) => {
         if (item !== current) item.open = false;
       });
+      notify();
     }, true);
     document.addEventListener("click", (event) => {
       if (event.target.closest(".site-nav")) return;
+      let closed = false;
       $$(".nav-more", nav).forEach((item) => {
-        item.open = false;
+        if (item.open) {
+          item.open = false;
+          closed = true;
+        }
       });
+      if (closed) notify();
     });
+  }
+
+  function wireNavigationHighlight() {
+    const nav = $(".site-nav");
+    if (!nav) return;
+
+    let frame = 0;
+    let pendingTarget = null;
+    const isMobileNav = () => window.matchMedia?.("(max-width: 900px)")?.matches === true;
+    const topItems = () => [...nav.children].map((item) => (
+      item.matches?.(".nav-more") ? $("summary", item) : item
+    )).filter(Boolean);
+    const stateTarget = (preferOpen = false) => {
+      const items = topItems();
+      if (preferOpen) {
+        const openSummary = $(".nav-more[open] > summary", nav);
+        if (openSummary) return openSummary;
+      }
+      return items.find((item) => item.matches("[aria-current]")) || items[0] || null;
+    };
+    const moveIndicator = (target) => {
+      if (!target || isMobileNav() || nav.offsetParent === null) {
+        nav.style.setProperty("--nav-indicator-opacity", "0");
+        return;
+      }
+      const navRect = nav.getBoundingClientRect();
+      const rect = target.getBoundingClientRect();
+      const inset = Math.min(14, Math.max(8, rect.width * 0.18));
+      const x = Math.max(6, rect.left - navRect.left + inset);
+      const width = Math.max(24, rect.width - inset * 2);
+      nav.style.setProperty("--nav-indicator-x", `${x.toFixed(1)}px`);
+      nav.style.setProperty("--nav-indicator-w", `${width.toFixed(1)}px`);
+      nav.style.setProperty("--nav-indicator-opacity", "1");
+    };
+    const schedule = (target) => {
+      pendingTarget = target || stateTarget(true);
+      if (frame) return;
+      frame = requestAnimationFrame(() => {
+        frame = 0;
+        moveIndicator(pendingTarget);
+        pendingTarget = null;
+      });
+    };
+
+    if (nav.dataset.highlightWired === "true") {
+      schedule(stateTarget(true));
+      return;
+    }
+    nav.dataset.highlightWired = "true";
+
+    nav.addEventListener("pointerover", (event) => {
+      const item = event.target.closest(".site-nav > a, .site-nav > .nav-more > summary");
+      if (item && nav.contains(item)) schedule(item);
+    }, { passive: true });
+    nav.addEventListener("focusin", (event) => {
+      const item = event.target.closest(".site-nav > a, .site-nav > .nav-more > summary");
+      if (item && nav.contains(item)) schedule(item);
+    });
+    nav.addEventListener("pointerleave", () => schedule(stateTarget(false)), { passive: true });
+    nav.addEventListener("chemvault:navstatechange", () => schedule(stateTarget(true)));
+    nav.addEventListener("toggle", (event) => {
+      const current = event.target;
+      if (!current.matches?.(".nav-more")) return;
+      schedule(current.open ? $("summary", current) : stateTarget(false));
+    }, true);
+    window.addEventListener("resize", () => schedule(stateTarget(true)), { passive: true });
+    if (window.ResizeObserver) {
+      const observer = new ResizeObserver(() => schedule(stateTarget(true)));
+      observer.observe(nav);
+    }
+    schedule(stateTarget(true));
   }
 
   function wireModuleAccordions() {
