@@ -67,6 +67,14 @@
     return Math.min(capDelay, baseDelay + stageIndex * stageGap + slotIndex * slotGap);
   };
 
+  const isSectionLead = (element) => element.matches([
+    '.academic-hero-content',
+    '.section-header',
+    '.cv-section-header',
+    '.page-hero',
+    '.vision-panel'
+  ].join(','));
+
   const getRevealSelector = () => [
     '.academic-hero-content',
     '.hero-title',
@@ -82,6 +90,14 @@
     '.search-row',
     '.quick-searches button',
     '.section-header',
+    '.cv-section-header',
+    '.text-column',
+    '.cv-module-grid',
+    '.cv-module-categories',
+    '.cv-team-home-panel',
+    '.research-grid',
+    '.feature-grid',
+    '.project-grid',
     '.research-area-card',
     '.feature-card',
     '.platform-capability-card',
@@ -135,16 +151,18 @@
       sectionSlot.set(anchor, slot + 1);
 
       const delay = resolveRevealDelay(element, stage, slot);
-      const stageDelay = Math.min(compactMotionProfile ? 680 : 1120, stage * (compactMotionProfile ? 132 : 198));
-      const slotDelay = Math.min(compactMotionProfile ? 280 : 540, slot * (compactMotionProfile ? 24 : 42));
+      const lead = isSectionLead(element);
+      const sectionStageDelay = Math.min(compactMotionProfile ? 120 : 180, stage * (compactMotionProfile ? 18 : 28));
+      const contentLeadGap = lead ? 0 : (compactMotionProfile ? 42 : 76);
+      const slotDelay = Math.min(compactMotionProfile ? 340 : 620, contentLeadGap + slot * (compactMotionProfile ? 24 : 42));
 
       element.classList.add('cv-reveal');
       element.style.setProperty('--cv-stage-index', String(stage));
       element.style.setProperty('--cv-slot-index', String(slot));
       element.style.setProperty('--cv-slot-delay', `${slotDelay}ms`);
-      element.style.setProperty('--cv-stage-delay', `${stageDelay}ms`);
+      element.style.setProperty('--cv-stage-delay', `${sectionStageDelay}ms`);
       element.style.setProperty('--cv-slot-count', String(Math.max(1, slot + 1)));
-      element.style.setProperty('--reveal-delay', `${Math.min(compactMotionProfile ? 920 : 1520, delay + slotDelay)}ms`);
+      element.style.setProperty('--reveal-delay', `${Math.min(compactMotionProfile ? 760 : 1180, delay + slotDelay)}ms`);
       if (!element.dataset.cvRevealBound) {
         element.dataset.cvRevealBound = "true";
         revealObserver.observe(element);
@@ -162,6 +180,7 @@
   }, { threshold: 0.13, rootMargin: '0px 0px -12% 0px' });
 
   stageAwareReveal();
+  window.addEventListener('DOMContentLoaded', stageAwareReveal);
   window.addEventListener('chemvault-motion-reveal-ready', stageAwareReveal);
   window.addEventListener('pageshow', stageAwareReveal);
 

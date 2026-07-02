@@ -205,6 +205,18 @@ test("startup welcome is wired through the shared motion layer", () => {
   assert.match(styles, /\.startup-welcome__enter/, "stylesheet defines the enter button styles");
 });
 
+test("home reveal orchestration keeps section titles ahead of body content", () => {
+  const effects = read("scripts/visual-effects.js");
+
+  assert.match(effects, /const isSectionLead = \(element\) => element\.matches/, "visual effects identify section-leading headings");
+  assert.match(effects, /'\.cv-section-header'/, "commercial home section headers participate in reveal ordering");
+  assert.match(effects, /'\.text-column'/, "home text blocks are hidden until their section reveal starts");
+  assert.match(effects, /'\.cv-module-grid'/, "commercial module content is included in the reveal queue");
+  assert.match(effects, /const contentLeadGap = lead \? 0 :/, "non-heading content waits behind its section heading");
+  assert.match(effects, /stage \* \(compactMotionProfile \? 18 : 28\)/, "cross-section delay stays small enough that scrolled titles appear promptly");
+  assert.match(effects, /window\.addEventListener\('DOMContentLoaded', stageAwareReveal\)/, "dynamic homepage content is re-queued after commercial UI rendering");
+});
+
 test("startup welcome assets use a fresh cache key on every HTML entry", () => {
   for (const file of bootHtmlFiles) {
     const html = read(file);
