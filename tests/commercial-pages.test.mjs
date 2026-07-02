@@ -96,6 +96,17 @@ test("commercial forms and client logic provide validation and clear states", ()
   assert.doesNotMatch(ui, /STRIPE_SECRET_KEY|STRIPE_WEBHOOK_SECRET|sk_live|sk_test/, "client UI does not embed payment secrets");
 });
 
+test("home lead forms use compact CTA layout and checkbox-safe controls", () => {
+  const home = read("index.html");
+  const commercialStyles = read("assets/commercial.css");
+
+  assert.match(home, /class="cv-section cv-lead-section"/, "home renders the updated lead section shell");
+  assert.match(home, /cv-lead-panel--newsletter/, "newsletter card gets its own visual treatment");
+  assert.match(home, /cv-lead-panel--beta/, "AI beta card gets its own visual treatment");
+  assert.match(commercialStyles, /\.cv-lead-panel input:not\(\[type="checkbox"\]\)/, "full-width input styling excludes checkboxes");
+  assert.match(commercialStyles, /\.cv-check-row input\[type="checkbox"\][\s\S]*width:\s*18px/, "checkboxes keep compact consent-row dimensions");
+});
+
 test("home modules are categorized and Team workspace is visible", () => {
   const home = read("index.html");
   const config = read("scripts/commercial-config.js");
