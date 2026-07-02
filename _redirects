@@ -7,7 +7,7 @@
 /pricing /pages/pricing.html 301
 /files /pages/file-library.html 301
 /file-library /pages/file-library.html 301
-/docs /pages/docs.html 301
+/docs https://docs.chemvault.science/ 301
 /molecular-modeling /pages/molecular-modeling.html 301
 /molstudio /pages/molecular-modeling.html 301
 /mail /pages/mail.html 301

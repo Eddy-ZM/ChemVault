@@ -276,7 +276,12 @@
   function markActivePage() {
     const current = normalisePath(location.pathname);
     document.querySelectorAll(".site-nav a").forEach((link) => {
-      const target = normalisePath(new URL(link.getAttribute("href") || "", location.href).pathname);
+      const url = new URL(link.getAttribute("href") || "", location.href);
+      if (url.origin !== location.origin) {
+        link.removeAttribute("aria-current");
+        return;
+      }
+      const target = normalisePath(url.pathname);
       if (target === current) link.setAttribute("aria-current", "page");
       else link.removeAttribute("aria-current");
     });
@@ -308,7 +313,7 @@
       <details class="nav-more">
         <summary>Knowledge</summary>
         <div class="nav-more-menu">
-          <a href="/pages/docs.html">Docs</a>
+          <a href="https://docs.chemvault.science/" target="_blank" rel="noopener noreferrer">Docs</a>
           <a href="/pages/research.html">Research</a>
           <a href="/pages/platform.html">Platform</a>
           <a href="/pages/projects.html">Projects</a>
@@ -380,7 +385,7 @@
       ["Home", "/index.html", "Active", "Free", "CV"],
       ["Compound Search", "/pages/search.html", "Active", "Free", "CS"],
       ["Research File Library", "/pages/file-library.html", "Beta", "Free", "FL"],
-      ["Professional Documentation", "/pages/docs.html", "Active", "Free", "DG"],
+      ["Professional Documentation", "https://docs.chemvault.science/", "Active", "Free", "DG"],
       ["Molecular Modeling", "/pages/molecular-modeling.html", "Beta", "Free", "MM"],
       ["Mail", "/pages/mail.html", "Beta", "Free", "ML"],
       ["AI Paper Search", "/pages/ai-paper-search.html", "Beta", "Free", "AI"],
@@ -527,6 +532,7 @@
                 </div>
                 <div class="footer-column footer-reveal" style="--footer-delay: 270ms">
                   <span class="footer-heading">Resources</span>
+                  <a href="https://docs.chemvault.science/" target="_blank" rel="noopener noreferrer">Docs</a>
                   <a href="/pages/library.html">Library</a>
                   <a href="/pages/methods.html">Methods</a>
                   <a href="/pages/spectroscopy.html">Spectroscopy</a>

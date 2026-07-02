@@ -45,13 +45,13 @@
     {
       id: "documentation",
       name: "Professional Documentation",
-      description: "Access manuals, professional guides, and workflows.",
-      route: "/pages/docs.html",
+      description: "Access the unified ChemVault manuals, professional guides, and workflows.",
+      route: "https://docs.chemvault.science/",
       status: "active",
       accessLevel: "free",
       icon: "book",
       category: "operations",
-      ctaLabel: "Read docs"
+      ctaLabel: "Open docs"
     },
     {
       id: "molecular_modeling",

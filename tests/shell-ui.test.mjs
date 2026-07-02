@@ -62,7 +62,7 @@ test("site navigation exposes core destinations through categorized disclosure g
     ["File Library", "/pages/file-library.html"],
     ["Molecular Modeling", "/pages/molecular-modeling.html"],
     ["AI Paper Search", "/pages/ai-paper-search.html"],
-    ["Docs", "/pages/docs.html"],
+    ["Docs", "https://docs.chemvault.science/"],
     ["Pricing", "/pages/pricing.html"],
     ["Dashboard", "/pages/dashboard.html"],
     ["Enterprise / Contact Sales", "/pages/contact.html"]
