@@ -11,6 +11,18 @@
 /pages/*
   Cache-Control: no-cache, max-age=0, must-revalidate
 
+/privacy
+  Cache-Control: no-cache, max-age=0, must-revalidate
+
+/terms
+  Cache-Control: no-cache, max-age=0, must-revalidate
+
+/security
+  Cache-Control: no-cache, max-age=0, must-revalidate
+
+/account/*
+  Cache-Control: no-cache, max-age=0, must-revalidate
+
 /favicon.ico
   Cache-Control: no-cache, max-age=0, must-revalidate
 

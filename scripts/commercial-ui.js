@@ -10,6 +10,7 @@
     renderPricingBlocks();
     renderDashboardBlocks();
     applyFeatureGates();
+    markActiveNavigation();
     wireNavigationDisclosures();
     wireNavigationHighlight();
     wirePlanPreview();
@@ -257,6 +258,8 @@
 
     let frame = 0;
     let pendingTarget = null;
+    let pointerFocusUntil = 0;
+    const now = () => window.performance?.now?.() || Date.now();
     const isMobileNav = () => window.matchMedia?.("(max-width: 900px)")?.matches === true;
     const topItems = () => [...nav.children].map((item) => (
       item.matches?.(".nav-more") ? $("summary", item) : item
@@ -299,13 +302,22 @@
     }
     nav.dataset.highlightWired = "true";
 
+    nav.addEventListener("pointerdown", () => {
+      pointerFocusUntil = now() + 420;
+    }, { passive: true });
     nav.addEventListener("pointerover", (event) => {
       const item = event.target.closest(".site-nav > a, .site-nav > .nav-more > summary");
       if (item && nav.contains(item)) schedule(item);
     }, { passive: true });
     nav.addEventListener("focusin", (event) => {
+      if (now() < pointerFocusUntil) return;
       const item = event.target.closest(".site-nav > a, .site-nav > .nav-more > summary");
       if (item && nav.contains(item)) schedule(item);
+    });
+    nav.addEventListener("focusout", () => {
+      window.setTimeout(() => {
+        if (!nav.contains(document.activeElement)) schedule(stateTarget(false));
+      }, 0);
     });
     nav.addEventListener("pointerleave", () => schedule(stateTarget(false)), { passive: true });
     nav.addEventListener("chemvault:navstatechange", () => schedule(stateTarget(true)));
@@ -320,6 +332,26 @@
       observer.observe(nav);
     }
     schedule(stateTarget(true));
+  }
+
+  function markActiveNavigation() {
+    const current = normalisePath(location.pathname);
+    $$(".site-nav a").forEach((link) => {
+      const url = new URL(link.getAttribute("href") || "", location.href);
+      if (url.origin !== location.origin) {
+        link.removeAttribute("aria-current");
+        return;
+      }
+      const target = normalisePath(url.pathname);
+      if (target === current) link.setAttribute("aria-current", "page");
+      else link.removeAttribute("aria-current");
+    });
+    $$(".nav-more").forEach((group) => {
+      const summary = $("summary", group);
+      if (!summary) return;
+      if ($("a[aria-current]", group)) summary.setAttribute("aria-current", "page");
+      else summary.removeAttribute("aria-current");
+    });
   }
 
   function wireModuleAccordions() {
@@ -597,6 +629,13 @@
       enterprise: "Enterprise",
       admin: "Admin"
     }[plan] || plan;
+  }
+
+  function normalisePath(pathname) {
+    let path = String(pathname || "").replace(/\/+$/, "");
+    if (!path || path === "/") return "index";
+    const file = path.split("/").pop() || "index";
+    return file.replace(/\.html$/i, "") || "index";
   }
 
   function formPayload(form) {

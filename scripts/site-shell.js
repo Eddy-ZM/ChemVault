@@ -61,6 +61,8 @@
 
     let frame = 0;
     let pendingTarget = null;
+    let pointerFocusUntil = 0;
+    const now = () => window.performance?.now?.() || Date.now();
     const isMobileNav = () => window.matchMedia?.("(max-width: 900px)")?.matches === true;
     const topItems = () => [...nav.children].map((item) => (
       item.matches?.(".nav-more") ? item.querySelector("summary") : item
@@ -103,13 +105,22 @@
     }
     nav.dataset.highlightWired = "true";
 
+    nav.addEventListener("pointerdown", () => {
+      pointerFocusUntil = now() + 420;
+    }, { passive: true });
     nav.addEventListener("pointerover", (event) => {
       const item = event.target.closest(".site-nav > a, .site-nav > .nav-more > summary");
       if (item && nav.contains(item)) schedule(item);
     }, { passive: true });
     nav.addEventListener("focusin", (event) => {
+      if (now() < pointerFocusUntil) return;
       const item = event.target.closest(".site-nav > a, .site-nav > .nav-more > summary");
       if (item && nav.contains(item)) schedule(item);
+    });
+    nav.addEventListener("focusout", () => {
+      window.setTimeout(() => {
+        if (!nav.contains(document.activeElement)) schedule(stateTarget(false));
+      }, 0);
     });
     nav.addEventListener("pointerleave", () => schedule(stateTarget(false)), { passive: true });
     nav.addEventListener("chemvault:navstatechange", () => schedule(stateTarget(true)));
@@ -544,6 +555,10 @@
                   <span class="footer-heading">Contact</span>
                   <a href="mailto:contact@chemvault.science">Email ChemVault</a>
                   <a href="/pages/contact.html">Collaborate</a>
+                  <a href="/privacy">Privacy Policy</a>
+                  <a href="/terms">Terms of Service</a>
+                  <a href="/security">Security / Abuse</a>
+                  <a href="https://forms.chemvault.science/" target="_blank" rel="noopener noreferrer">Forms / Feedback</a>
                   <a href="https://github.com/Eddy-ZM" target="_blank" rel="noopener noreferrer">GitHub</a>
                   <span>Independent academic technology initiative</span>
                   <span>© 2026 ChemVault</span>
@@ -563,6 +578,9 @@
                 <a href="/pages/platform.html">Platform</a>
                 <a href="/pages/team.html">Team</a>
                 <a href="/pages/contact.html">Contact</a>
+                <a href="/privacy">Privacy</a>
+                <a href="/terms">Terms</a>
+                <a href="/security">Security</a>
               </nav>
             </div>
             <div class="container footer-bottom">

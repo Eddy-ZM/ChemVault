@@ -5,6 +5,11 @@
 /search /pages/search.html 301
 /compounds /pages/search.html 301
 /pricing /pages/pricing.html 301
+/privacy /pages/privacy.html 301
+/terms /pages/terms.html 301
+/security /pages/security.html 301
+/account/delete /pages/account-delete.html 301
+/account/export /pages/account-export.html 301
 /files /pages/file-library.html 301
 /file-library /pages/file-library.html 301
 /docs https://docs.chemvault.science/ 301

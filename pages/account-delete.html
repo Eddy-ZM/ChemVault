@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Request Account Deletion | ChemVault</title>
+  <meta name="description" content="Request deletion of a ChemVault account. Requests require identity verification and may affect multiple ChemVault services." />
+  <meta name="theme-color" content="#07111f" />
+  <script src="/scripts/boot.js?v=20260618c"></script>
+  <link rel="canonical" href="https://chemvault.science/account/delete" />
+  <link rel="icon" href="/favicon.ico?v=20260628a" sizes="any" />
+  <link rel="icon" href="/assets/chemvault-logo-mark.png?v=20260628a" type="image/png" sizes="512x512" />
+  <link rel="apple-touch-icon" href="/assets/chemvault-apple-touch-icon.png?v=20260628a" />
+  <link rel="manifest" href="/site.webmanifest" />
+  <link rel="stylesheet" href="../assets/styles.css?v=20260702b" />
+  <link rel="stylesheet" href="../assets/portal.css?v=20260702b" />
+  <link rel="stylesheet" href="../assets/academic.css?v=20260630b" />
+  <script src="../data/chem-data.js?v=20260603a" defer></script>
+  <script src="../data/reagent-extension.js?v=20260603a" defer></script>
+  <script src="../data/research-data.js?v=20260603a" defer></script>
+  <script src="../data/dossier-data.js?v=20260603a" defer></script>
+  <script src="../data/method-data.js?v=20260603a" defer></script>
+  <script src="../data/spectroscopy-data.js?v=20260603a" defer></script>
+  <script src="../data/materials-data.js?v=20260603a" defer></script>
+  <script src="../data/database-expansion.js?v=20260603a" defer></script>
+  <script src="../data/reagent-megalibrary.js?v=20260603a" defer></script>
+  <script src="../data/knowledge-expansion.js?v=20260603a" defer></script>
+  <script src="../data/local-catalog-10000.js?v=20260603a" defer></script>
+  <script src="../data/external-sources.js?v=20260603a" defer></script>
+  <script src="../scripts/record-utils.js?v=20260603a" defer></script>
+  <script src="../scripts/search-intent.js?v=20260608a" defer></script>
+  <script src="../scripts/api.js?v=20260603a" defer></script>
+  <script src="../scripts/motion.js?v=20260618c" defer></script>
+  <script src="../scripts/site-shell.js?v=20260702b" defer></script>
+  <script src="../scripts/compliance-requests.js?v=20260702a" defer></script>
+</head>
+<body class="page-shell academic-site academic-page" data-boot-label="Account deletion">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="container nav-shell">
+      <a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true"><img src="../assets/chemvault-logo-mark.png" alt="" /></span><span><strong>ChemVault</strong><small>account deletion</small></span></a>
+      <button class="icon-button menu-toggle" type="button" aria-label="Open navigation" aria-expanded="false"><span></span><span></span><span></span></button>
+      <nav class="site-nav" aria-label="Main navigation"><a href="../index.html">Home</a><a href="search.html">Compound Search</a><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="/account/export">Data export</a></nav>
+      <div class="header-actions"><label class="search-shell" for="shellSearch"><span>Search</span><input id="shellSearch" type="search" placeholder="Search compounds..." /></label><button class="theme-toggle" type="button" data-shell-action="theme" aria-label="Switch theme"><span class="theme-toggle__icon" aria-hidden="true"></span></button></div>
+    </div>
+    <div class="container shell-search-results" id="shellSearchResults" aria-live="polite"></div>
+  </header>
+  <main id="main">
+    <section class="academic-page-hero">
+      <div class="container">
+        <div>
+          <span class="section-kicker">Privacy request</span>
+          <h1>Request account deletion</h1>
+          <p>Submit a pending deletion request. ChemVault must verify identity before processing, and some records may be retained for security, anti-abuse, compliance, or backup reasons for a limited period.</p>
+        </div>
+        <aside class="page-index-panel">
+          <strong>Related controls</strong>
+          <a href="/account/export">Request data export</a>
+          <a href="/privacy">Privacy Policy</a>
+          <a href="/security">Security / abuse</a>
+        </aside>
+      </div>
+    </section>
+    <section class="academic-section">
+      <div class="container cv-commercial-grid">
+        <article class="cv-feature-panel">
+          <h2>What deletion may affect</h2>
+          <p>Deletion may affect ChemVault Mail, Files, Docs, Notifications, Extract, Apple apps, sessions, OAuth connections, app passwords, API keys, uploaded content, AI outputs, and logs. Cross-service automation is a baseline implementation and may require manual handling.</p>
+          <p>Submitting this form does not immediately delete data or make deletion irreversible. The request enters <code>pending</code> status first.</p>
+        </article>
+        <form class="cv-lead-form" data-compliance-request data-endpoint="/api/account/deletion-request" data-status-target="#deleteRequestStatus">
+          <label>Email <input name="email" type="email" autocomplete="email" required /></label>
+          <label>Reason (optional) <textarea name="reason" rows="4" placeholder="Optional context for the deletion request"></textarea></label>
+          <label class="cv-check-row"><input type="checkbox" required /> I understand ChemVault must verify identity before processing this request.</label>
+          <button class="academic-button primary" type="submit">Submit deletion request</button>
+          <p id="deleteRequestStatus" class="form-status" role="status" aria-live="polite"></p>
+          <p>Contact: <a href="mailto:support@chemvault.science">support@chemvault.science</a></p>
+        </form>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

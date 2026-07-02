@@ -100,6 +100,7 @@ test("home modules are categorized and Team workspace is visible", () => {
   const home = read("index.html");
   const config = read("scripts/commercial-config.js");
   const ui = read("scripts/commercial-ui.js");
+  const commercialStyles = read("assets/commercial.css");
 
   assert.match(home, /data-render="app-modules" data-module-layout="categorized"/, "home asks the shared UI to render categorized modules");
   assert.match(home, /pages\/team\.html/, "home links back to the Team surface");
@@ -108,6 +109,8 @@ test("home modules are categorized and Team workspace is visible", () => {
   assert.match(ui, /function moduleCategoryMarkup/, "commercial UI renders module category disclosures");
   assert.match(ui, /data-module-categories/, "categorized module markup exposes an interactive accordion root");
   assert.match(ui, /function teamWorkspaceMarkup/, "dashboard restores a visible Teams workspace panel");
+  assert.match(commercialStyles, /\.cv-module-category::details-content[\s\S]*block-size:\s*0/, "module category disclosures animate their expanded height");
+  assert.match(commercialStyles, /\.cv-app-switcher\[open\] \.cv-app-switcher__menu[\s\S]*opacity:\s*1/, "app switcher menu fades into view when expanded");
 });
 
 test("commercial schema, env docs and implementation remain aligned", () => {

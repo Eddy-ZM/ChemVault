@@ -1,5 +1,6 @@
 const API_VERSION = "0.3.0";
 let schemaReady = false;
+const rateLimitStore = new Map();
 
 const fallbackRecords = [
   {
@@ -112,10 +113,19 @@ const fallbackRecords = [
 
 const jsonHeaders = {
   "access-control-allow-origin": "*",
-  "access-control-allow-methods": "GET, POST, OPTIONS",
-  "access-control-allow-headers": "content-type",
+  "access-control-allow-methods": "GET, POST, PATCH, OPTIONS",
+  "access-control-allow-headers": "content-type, authorization",
   "cache-control": "no-store",
   "content-type": "application/json; charset=utf-8"
+};
+
+const rateLimitPolicies = {
+  lead: { limit: 5, windowMs: 60 * 1000 },
+  accountRequest: { limit: 3, windowMs: 60 * 60 * 1000 },
+  adminRead: { limit: 30, windowMs: 60 * 1000 },
+  adminWrite: { limit: 10, windowMs: 60 * 1000 },
+  export: { limit: 10, windowMs: 60 * 1000 },
+  enrich: { limit: 20, windowMs: 60 * 1000 }
 };
 
 const serverPlanOrder = {
@@ -169,7 +179,7 @@ export async function onRequest(context) {
     return new Response(null, { headers: jsonHeaders });
   }
 
-  if (!["GET", "POST"].includes(request.method)) {
+  if (!["GET", "POST", "PATCH"].includes(request.method)) {
     return json({ error: "Method not allowed" }, 405);
   }
 
@@ -231,8 +241,52 @@ export async function onRequest(context) {
 
     if (segments[0] === "leads") {
       if (request.method !== "POST") return json({ error: "Method not allowed" }, 405);
+      const limited = checkRateLimit(request, "lead", rateLimitPolicies.lead);
+      if (!limited.ok) return rateLimitResponse(limited);
       const result = await createLead(env, await readJSONBody(request), hasDb);
       return json(result, result.ok ? 201 : 400);
+    }
+
+    if (segments[0] === "account") {
+      if (request.method !== "POST") return json({ error: "Method not allowed" }, 405);
+      const limited = checkRateLimit(request, `account:${segments[1] || "request"}`, rateLimitPolicies.accountRequest);
+      if (!limited.ok) return rateLimitResponse(limited);
+      const body = await readJSONBody(request);
+      if (segments[1] === "deletion-request") {
+        const result = await createAccountDeletionRequest(env, body, hasDb, request);
+        return json(result, result.ok ? 202 : 400);
+      }
+      if (segments[1] === "export-request") {
+        const result = await createDataExportRequest(env, body, hasDb, request);
+        return json(result, result.ok ? 202 : 400);
+      }
+      return json({ error: "Not found", routes: ["/api/account/deletion-request", "/api/account/export-request"] }, 404);
+    }
+
+    if (segments[0] === "admin") {
+      const admin = requireAdminAccess(request, env);
+      if (!admin.ok) return json(admin, 403);
+      const limited = checkRateLimit(
+        request,
+        `admin:${request.method}:${segments[1] || "unknown"}`,
+        request.method === "PATCH" ? rateLimitPolicies.adminWrite : rateLimitPolicies.adminRead
+      );
+      if (!limited.ok) return rateLimitResponse(limited);
+      if (segments[1] === "deletion-requests") {
+        if (request.method === "GET") return json(await listRequestRows(env, hasDb, "account_deletion_requests"));
+        if (request.method === "PATCH" && segments[2]) {
+          const result = await updateRequestStatus(env, hasDb, request, "account_deletion_requests", segments[2], await readJSONBody(request), "account_deletion_request");
+          return json(result, result.ok ? 200 : 400);
+        }
+      }
+      if (segments[1] === "export-requests") {
+        if (request.method === "GET") return json(await listRequestRows(env, hasDb, "data_export_requests"));
+        if (request.method === "PATCH" && segments[2]) {
+          const result = await updateRequestStatus(env, hasDb, request, "data_export_requests", segments[2], await readJSONBody(request), "data_export_request");
+          return json(result, result.ok ? 200 : 400);
+        }
+      }
+      return json({ error: "Not found", routes: ["/api/admin/deletion-requests", "/api/admin/export-requests"] }, 404);
     }
 
     if (segments[0] === "billing") {
@@ -250,6 +304,8 @@ export async function onRequest(context) {
 
     if (segments[0] === "export") {
       if (request.method !== "POST") return json({ error: "Method not allowed" }, 405);
+      const limited = checkRateLimit(request, "export", rateLimitPolicies.export);
+      if (!limited.ok) return rateLimitResponse(limited);
       const plan = resolveServerPlan(request, env);
       const access = requireServerFeatureAccess(plan, "compound.search.export");
       if (!access.ok) return json(access, 402);
@@ -271,6 +327,8 @@ export async function onRequest(context) {
     }
 
     if (segments[0] === "enrich") {
+      const limited = checkRateLimit(request, "enrich", rateLimitPolicies.enrich);
+      if (!limited.ok) return rateLimitResponse(limited);
       return json(await enrichRecords(env, request, url.searchParams, hasDb));
     }
 
@@ -279,10 +337,10 @@ export async function onRequest(context) {
       return json(await getFacets(env, hasDb));
     }
 
-    return json({ error: "Not found", routes: ["/api/health", "/api/entitlements", "/api/leads", "/api/billing/checkout", "/api/export/compound", "/api/records", "/api/records/:type/:id", "/api/enrich", "/api/facets"] }, 404);
+    return json({ error: "Not found", routes: ["/api/health", "/api/entitlements", "/api/leads", "/api/account/deletion-request", "/api/account/export-request", "/api/billing/checkout", "/api/export/compound", "/api/records", "/api/records/:type/:id", "/api/enrich", "/api/facets"] }, 404);
   } catch (error) {
     return json(fallbackEnvelope({
-      warning: `D1 query failed; returned fallback records. ${error.message || error}`
+      warning: "D1 query failed; returned fallback records. Internal details were suppressed."
     }));
   }
 }
@@ -395,6 +453,186 @@ async function createLead(env, body, hasDb) {
       email: lead.email,
       createdAt: lead.createdAt
     },
+    meta: { version: API_VERSION }
+  };
+}
+
+async function createAccountDeletionRequest(env, body, hasDb, request) {
+  const email = clean(body.email).toLowerCase();
+  if (!isEmail(email)) {
+    return { ok: false, error: "A valid email address is required." };
+  }
+
+  const deletionRequest = {
+    id: randomId("delreq"),
+    userId: clean(body.userId),
+    email,
+    requestedAt: new Date().toISOString(),
+    status: "pending",
+    reasonOptional: clean(body.reason || body.reason_optional).slice(0, 2000)
+  };
+
+  if (hasDb) {
+    await ensureCommercialSchema(env.DB);
+    await env.DB.prepare(`
+      INSERT INTO account_deletion_requests (
+        id, user_id, email, requested_at, status, reason_optional
+      ) VALUES (?, ?, ?, ?, ?, ?)
+    `).bind(
+      deletionRequest.id,
+      deletionRequest.userId,
+      deletionRequest.email,
+      deletionRequest.requestedAt,
+      deletionRequest.status,
+      deletionRequest.reasonOptional
+    ).run();
+    await writeAdminAuditLog(env, request, {
+      action: "account_deletion_request.created",
+      targetType: "account_deletion_request",
+      targetId: deletionRequest.id,
+      metadata: { email: deletionRequest.email, stored: true }
+    });
+  }
+
+  return {
+    ok: true,
+    stored: hasDb,
+    mode: hasDb ? "d1" : "mock",
+    message: hasDb
+      ? "Your account deletion request was recorded as pending. ChemVault must verify identity before processing."
+      : "Your account deletion request was accepted in placeholder mode. No database binding is configured yet.",
+    request: {
+      id: deletionRequest.id,
+      email: deletionRequest.email,
+      status: deletionRequest.status,
+      requestedAt: deletionRequest.requestedAt
+    },
+    meta: {
+      version: API_VERSION,
+      note: "This endpoint records a request only. It does not immediately delete data."
+    }
+  };
+}
+
+async function createDataExportRequest(env, body, hasDb, request) {
+  const email = clean(body.email).toLowerCase();
+  if (!isEmail(email)) {
+    return { ok: false, error: "A valid email address is required." };
+  }
+
+  const exportRequest = {
+    id: randomId("expreq"),
+    userId: clean(body.userId),
+    email,
+    requestedAt: new Date().toISOString(),
+    status: "pending",
+    exportScope: normaliseExportScope(body.exportScope || body.export_scope)
+  };
+
+  if (hasDb) {
+    await ensureCommercialSchema(env.DB);
+    await env.DB.prepare(`
+      INSERT INTO data_export_requests (
+        id, user_id, email, requested_at, status, export_scope
+      ) VALUES (?, ?, ?, ?, ?, ?)
+    `).bind(
+      exportRequest.id,
+      exportRequest.userId,
+      exportRequest.email,
+      exportRequest.requestedAt,
+      exportRequest.status,
+      exportRequest.exportScope
+    ).run();
+    await writeAdminAuditLog(env, request, {
+      action: "data_export_request.created",
+      targetType: "data_export_request",
+      targetId: exportRequest.id,
+      metadata: { email: exportRequest.email, exportScope: exportRequest.exportScope, stored: true }
+    });
+  }
+
+  return {
+    ok: true,
+    stored: hasDb,
+    mode: hasDb ? "d1" : "mock",
+    message: hasDb
+      ? "Your data export request was recorded as pending. ChemVault must verify identity before processing."
+      : "Your data export request was accepted in placeholder mode. No database binding is configured yet.",
+    request: {
+      id: exportRequest.id,
+      email: exportRequest.email,
+      status: exportRequest.status,
+      exportScope: exportRequest.exportScope,
+      requestedAt: exportRequest.requestedAt
+    },
+    meta: {
+      version: API_VERSION,
+      note: "This endpoint records a request only. It does not generate a downloadable archive yet."
+    }
+  };
+}
+
+async function listRequestRows(env, hasDb, tableName) {
+  if (!hasDb) {
+    return {
+      ok: true,
+      stored: false,
+      mode: "mock",
+      requests: [],
+      message: "No database binding is configured, so request rows cannot be listed."
+    };
+  }
+  await ensureCommercialSchema(env.DB);
+  const rows = await env.DB.prepare(`
+    SELECT id, user_id, email, requested_at, status, admin_notes, completed_at
+    ${tableName === "data_export_requests" ? ", export_scope" : ", reason_optional"}
+    FROM ${tableName}
+    ORDER BY requested_at DESC
+    LIMIT 100
+  `).all();
+  return {
+    ok: true,
+    stored: true,
+    requests: rows.results || [],
+    meta: { version: API_VERSION }
+  };
+}
+
+async function updateRequestStatus(env, hasDb, request, tableName, id, body, targetType) {
+  const status = clean(body.status);
+  if (!["pending", "verified", "processing", "completed", "rejected"].includes(status)) {
+    return { ok: false, error: "Unsupported status." };
+  }
+  const adminNotes = clean(body.adminNotes || body.admin_notes).slice(0, 4000);
+  const completedAt = status === "completed" ? new Date().toISOString() : clean(body.completedAt || body.completed_at) || null;
+
+  if (!hasDb) {
+    return {
+      ok: false,
+      stored: false,
+      mode: "mock",
+      error: "A database binding is required to update request status."
+    };
+  }
+
+  await ensureCommercialSchema(env.DB);
+  const result = await env.DB.prepare(`
+    UPDATE ${tableName}
+    SET status = ?, admin_notes = ?, completed_at = ?
+    WHERE id = ?
+  `).bind(status, adminNotes, completedAt, clean(id)).run();
+
+  await writeAdminAuditLog(env, request, {
+    action: `${targetType}.status_updated`,
+    targetType,
+    targetId: clean(id),
+    metadata: { status, completedAt: completedAt || null }
+  });
+
+  return {
+    ok: Boolean(result?.success),
+    stored: true,
+    request: { id: clean(id), status, completedAt },
     meta: { version: API_VERSION }
   };
 }
@@ -1284,12 +1522,132 @@ async function ensureCommercialSchema(db) {
       created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
     )
   `).run();
+  await db.prepare(`
+    CREATE TABLE IF NOT EXISTS account_deletion_requests (
+      id TEXT PRIMARY KEY,
+      user_id TEXT,
+      email TEXT NOT NULL,
+      requested_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      status TEXT NOT NULL DEFAULT 'pending',
+      reason_optional TEXT,
+      admin_notes TEXT,
+      completed_at TEXT
+    )
+  `).run();
+  await db.prepare(`
+    CREATE TABLE IF NOT EXISTS data_export_requests (
+      id TEXT PRIMARY KEY,
+      user_id TEXT,
+      email TEXT NOT NULL,
+      requested_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      status TEXT NOT NULL DEFAULT 'pending',
+      export_scope TEXT NOT NULL DEFAULT 'account',
+      admin_notes TEXT,
+      completed_at TEXT
+    )
+  `).run();
+  await db.prepare(`
+    CREATE TABLE IF NOT EXISTS admin_audit_logs (
+      id TEXT PRIMARY KEY,
+      actor_user_id TEXT,
+      actor_email TEXT,
+      action TEXT NOT NULL,
+      target_type TEXT NOT NULL,
+      target_id TEXT,
+      ip_address TEXT,
+      user_agent TEXT,
+      metadata_json TEXT NOT NULL DEFAULT '{}',
+      created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+    )
+  `).run();
   await Promise.all([
     db.prepare("CREATE INDEX IF NOT EXISTS leads_type_idx ON leads (type)").run(),
     db.prepare("CREATE INDEX IF NOT EXISTS leads_email_idx ON leads (email)").run(),
     db.prepare("CREATE INDEX IF NOT EXISTS subscriptions_plan_idx ON subscriptions (plan)").run(),
-    db.prepare("CREATE INDEX IF NOT EXISTS usage_records_feature_idx ON usage_records (feature_key)").run()
+    db.prepare("CREATE INDEX IF NOT EXISTS usage_records_feature_idx ON usage_records (feature_key)").run(),
+    db.prepare("CREATE INDEX IF NOT EXISTS account_deletion_requests_email_idx ON account_deletion_requests (email)").run(),
+    db.prepare("CREATE INDEX IF NOT EXISTS account_deletion_requests_status_idx ON account_deletion_requests (status)").run(),
+    db.prepare("CREATE INDEX IF NOT EXISTS data_export_requests_email_idx ON data_export_requests (email)").run(),
+    db.prepare("CREATE INDEX IF NOT EXISTS data_export_requests_status_idx ON data_export_requests (status)").run(),
+    db.prepare("CREATE INDEX IF NOT EXISTS admin_audit_logs_action_idx ON admin_audit_logs (action)").run(),
+    db.prepare("CREATE INDEX IF NOT EXISTS admin_audit_logs_target_idx ON admin_audit_logs (target_type, target_id)").run()
   ]);
+}
+
+async function writeAdminAuditLog(env, request, event) {
+  if (!env?.DB?.prepare) return;
+  const metadata = redactMetadata(event.metadata || {});
+  await env.DB.prepare(`
+    INSERT INTO admin_audit_logs (
+      id, actor_user_id, actor_email, action, target_type, target_id, ip_address, user_agent, metadata_json, created_at
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `).bind(
+    randomId("audit"),
+    clean(event.actorUserId),
+    clean(event.actorEmail),
+    clean(event.action),
+    clean(event.targetType),
+    clean(event.targetId),
+    getClientIp(request),
+    clean(request.headers.get("user-agent")).slice(0, 500),
+    JSON.stringify(metadata),
+    new Date().toISOString()
+  ).run();
+}
+
+function requireAdminAccess(request, env) {
+  const plan = resolveServerPlan(request, env);
+  if (plan === "admin") return { ok: true };
+  return {
+    ok: false,
+    error: "Admin access required.",
+    message: "This placeholder admin endpoint requires the configured admin bearer token outside production. Replace with ChemVault User roles before production use."
+  };
+}
+
+function checkRateLimit(request, scope, policy) {
+  const now = Date.now();
+  const key = `${scope}:${getClientIp(request)}:${clean(request.headers.get("authorization")).slice(0, 32)}`;
+  const bucket = rateLimitStore.get(key) || [];
+  const fresh = bucket.filter((timestamp) => now - timestamp < policy.windowMs);
+  if (fresh.length >= policy.limit) {
+    rateLimitStore.set(key, fresh);
+    return {
+      ok: false,
+      limit: policy.limit,
+      retryAfterSeconds: Math.max(1, Math.ceil((policy.windowMs - (now - fresh[0])) / 1000))
+    };
+  }
+  fresh.push(now);
+  rateLimitStore.set(key, fresh);
+  return { ok: true };
+}
+
+function rateLimitResponse(result) {
+  return json({
+    error: "Too many requests. Please try again later.",
+    retryAfterSeconds: result.retryAfterSeconds
+  }, 429);
+}
+
+function getClientIp(request) {
+  return clean(request.headers.get("cf-connecting-ip")
+    || request.headers.get("x-forwarded-for")?.split(",")[0]
+    || "local");
+}
+
+function normaliseExportScope(value) {
+  const scope = clean(value || "account").toLowerCase();
+  return ["account", "account_files", "account_mail", "account_ai", "all"].includes(scope) ? scope : "account";
+}
+
+function redactMetadata(value) {
+  if (Array.isArray(value)) return value.map(redactMetadata);
+  if (!value || typeof value !== "object") return value;
+  return Object.fromEntries(Object.entries(value).map(([key, entry]) => {
+    if (/secret|token|password|key|credential|authorization|cookie/i.test(key)) return [key, "[redacted]"];
+    return [key, redactMetadata(entry)];
+  }));
 }
 
 function resolveServerPlan(request, env) {

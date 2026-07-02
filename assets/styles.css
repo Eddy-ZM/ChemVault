@@ -28,6 +28,7 @@
   --motion-reveal-compact-duration: 210ms;
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-spring: cubic-bezier(0.2, 0.8, 0.2, 1);
+  interpolate-size: allow-keywords;
   --font-display: "Aptos", "Avenir Next", "Avenir", "Segoe UI", "PingFang SC", "Noto Sans", sans-serif;
   --font-body: "Aptos", "IBM Plex Sans", "Noto Sans", "Segoe UI", sans-serif;
   --font-mono-var: "IBM Plex Mono", "SFMono-Regular", "Consolas", "Liberation Mono", Menlo, monospace;

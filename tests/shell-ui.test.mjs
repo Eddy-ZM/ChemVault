@@ -98,6 +98,7 @@ test("site navigation exposes core destinations through categorized disclosure g
 
 test("search page keeps long-tail filters behind a collapsed advanced disclosure", () => {
   const html = read("pages/search.html");
+  const portalStyles = read("assets/portal.css");
 
   assert.match(html, /class="scope-chip-row"/, "search page has quick scope chips");
   assert.match(html, /class="primary-filter-grid"/, "search page has a compact primary filter grid");
@@ -108,6 +109,8 @@ test("search page keeps long-tail filters behind a collapsed advanced disclosure
   assert.match(advanced, /id="searchFacet"/, "domain/family filter is inside advanced filters");
   assert.match(advanced, /id="searchTag"/, "tag filter is inside advanced filters");
   assert.match(advanced, /id="searchExact"/, "exact phrase filter is inside advanced filters");
+  assert.match(portalStyles, /\.advanced-search-disclosure::details-content[\s\S]*block-size:\s*0/, "advanced disclosure content animates from a collapsed block size");
+  assert.match(portalStyles, /\.advanced-search-disclosure\[open\] \.advanced-search-grid[\s\S]*opacity:\s*1/, "advanced disclosure grid fades into the expanded state");
 });
 
 test("search page paginates local results instead of rendering the full default stack", () => {
@@ -134,7 +137,7 @@ test("home page search uses a clearable icon input adapted from the template", (
   const script = read("scripts/home.js");
   const styles = read("assets/portal.css");
 
-  assert.match(html, /portal\.css\?v=20260619c/, "home page refreshes the portal stylesheet for the search input");
+  assert.match(html, /portal\.css\?v=(?!20260619c)\d+[a-z]?/, "home page refreshes the portal stylesheet for the search input");
   assert.match(html, /home\.js\?v=(?!20260603a)\d+/, "home page uses a non-stale search interaction script");
   assert.match(html, /id="homeSearchForm"/, "home page keeps the compound search form");
   assert.match(html, /id="homeSearch"/, "home page keeps the home compound search input");
@@ -284,6 +287,9 @@ test("site navigation uses a 21st.dev-inspired spotlight tab treatment", () => {
   assert.match(shell, /<summary>Plans<\/summary>/, "runtime commercial navigation groups plan and team pages");
   assert.match(shell, /function wireNavigationHighlight\(\)/, "runtime shell wires the top navigation spotlight");
   assert.match(commercialUi, /function wireNavigationHighlight\(\)/, "commercial homepage wires the same navigation spotlight");
+  assert.match(commercialUi, /function markActiveNavigation\(\)/, "commercial homepage clears stale grouped active states before measuring the spotlight");
+  assert.match(shell, /pointerFocusUntil/, "runtime shell ignores pointer-created focus when positioning the spotlight");
+  assert.match(commercialUi, /focusout[\s\S]*stateTarget\(false\)/, "commercial homepage returns the spotlight to the current page after focus leaves navigation");
 
   for (const file of bootHtmlFiles) {
     const html = read(file);

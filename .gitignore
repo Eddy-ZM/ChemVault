@@ -12,6 +12,25 @@ ChemVault/
 !*.env.example
 .dev.vars
 .dev.vars.*
+
+# Secrets and credentials
+*.p8
+*.p12
+*.pem
+*.key
+*.cer
+*AuthKey*
+*private*
+*secret*
+*token*
+*password*
+
+# Apple signing / provisioning
+*.mobileprovision
+*.provisionprofile
+*.xcarchive
+*.ipa
+
 dist/
 build/
 .cache/

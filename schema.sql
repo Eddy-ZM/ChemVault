@@ -102,6 +102,41 @@ CREATE TABLE IF NOT EXISTS resources (
   updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE IF NOT EXISTS account_deletion_requests (
+  id TEXT PRIMARY KEY,
+  user_id TEXT,
+  email TEXT NOT NULL,
+  requested_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'verified', 'processing', 'completed', 'rejected')),
+  reason_optional TEXT,
+  admin_notes TEXT,
+  completed_at TEXT
+);
+
+CREATE TABLE IF NOT EXISTS data_export_requests (
+  id TEXT PRIMARY KEY,
+  user_id TEXT,
+  email TEXT NOT NULL,
+  requested_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'verified', 'processing', 'completed', 'rejected')),
+  export_scope TEXT NOT NULL DEFAULT 'account',
+  admin_notes TEXT,
+  completed_at TEXT
+);
+
+CREATE TABLE IF NOT EXISTS admin_audit_logs (
+  id TEXT PRIMARY KEY,
+  actor_user_id TEXT,
+  actor_email TEXT,
+  action TEXT NOT NULL,
+  target_type TEXT NOT NULL,
+  target_id TEXT,
+  ip_address TEXT,
+  user_agent TEXT,
+  metadata_json TEXT NOT NULL DEFAULT '{}',
+  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE INDEX IF NOT EXISTS leads_type_idx ON leads (type);
 CREATE INDEX IF NOT EXISTS leads_email_idx ON leads (email);
 CREATE INDEX IF NOT EXISTS organizations_plan_idx ON organizations (plan);
@@ -110,3 +145,9 @@ CREATE INDEX IF NOT EXISTS subscriptions_plan_idx ON subscriptions (plan);
 CREATE INDEX IF NOT EXISTS feature_entitlements_plan_idx ON feature_entitlements (plan);
 CREATE INDEX IF NOT EXISTS usage_records_feature_idx ON usage_records (feature_key);
 CREATE UNIQUE INDEX IF NOT EXISTS resources_slug_idx ON resources (slug);
+CREATE INDEX IF NOT EXISTS account_deletion_requests_email_idx ON account_deletion_requests (email);
+CREATE INDEX IF NOT EXISTS account_deletion_requests_status_idx ON account_deletion_requests (status);
+CREATE INDEX IF NOT EXISTS data_export_requests_email_idx ON data_export_requests (email);
+CREATE INDEX IF NOT EXISTS data_export_requests_status_idx ON data_export_requests (status);
+CREATE INDEX IF NOT EXISTS admin_audit_logs_action_idx ON admin_audit_logs (action);
+CREATE INDEX IF NOT EXISTS admin_audit_logs_target_idx ON admin_audit_logs (target_type, target_id);
