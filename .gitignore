@@ -35,6 +35,7 @@ dist/
 build/
 .cache/
 dev-server.log
+*-dev-server*.log
 *.sqlite
 *.sqlite3
 *.db

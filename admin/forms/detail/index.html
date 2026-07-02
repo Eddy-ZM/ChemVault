@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Form Detail | ChemVault</title>
+  <meta name="robots" content="noindex,nofollow" />
+  <meta name="theme-color" content="#f5f5f7" />
+  <script src="/scripts/boot.js?v=20260618c"></script>
+  <link rel="icon" href="/favicon.ico?v=20260628a" sizes="any" />
+  <link rel="icon" href="/assets/chemvault-logo-mark.png?v=20260628a" type="image/png" sizes="512x512" />
+  <link rel="apple-touch-icon" href="/assets/chemvault-apple-touch-icon.png?v=20260628a" />
+  <link rel="stylesheet" href="/assets/styles.css?v=20260702b" />
+  <link rel="stylesheet" href="/assets/forms-admin.css?v=20260702a" />
+  <script src="/scripts/site-shell.js?v=20260702b" defer></script>
+  <script src="/scripts/forms-admin.js?v=20260702a" defer></script>
+</head>
+<body class="page-shell forms-admin-shell" data-boot-label="Form Detail" data-admin-form-detail>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="container nav-shell">
+      <a class="brand" href="/index.html"><span class="brand-mark" aria-hidden="true"><img src="/assets/chemvault-logo-mark.png" alt="" /></span><span><strong>ChemVault</strong><small>forms admin</small></span></a>
+      <button class="icon-button menu-toggle" type="button" aria-label="Open navigation" aria-expanded="false"><span></span><span></span><span></span></button>
+      <nav class="site-nav" aria-label="Main navigation">
+        <a href="/admin/forms/">Forms</a>
+        <a href="/feedback">Feedback page</a>
+        <a href="/index.html">Main site</a>
+      </nav>
+      <div class="header-actions"><button class="theme-toggle" type="button" data-shell-action="theme" aria-label="Switch theme"><span class="theme-toggle__icon" aria-hidden="true"></span></button></div>
+    </div>
+  </header>
+
+  <main id="main" class="forms-admin-main">
+    <div class="container">
+      <div class="forms-admin-header">
+        <div>
+          <span class="section-kicker">Forms / Feedback</span>
+          <h1 data-detail-title>Submission detail</h1>
+          <p data-detail-summary>Loading submission...</p>
+        </div>
+        <a class="forms-button forms-button--ghost" href="/admin/forms/">Back to table</a>
+      </div>
+
+      <section class="forms-panel" aria-label="Admin token">
+        <div class="forms-form forms-token-row">
+          <input class="forms-token" type="password" autocomplete="off" data-admin-token placeholder="CHEMVAULT_ADMIN_TOKEN" />
+          <button class="forms-button forms-button--quiet" type="button" data-admin-token-save>Use token</button>
+        </div>
+      </section>
+
+      <div class="forms-detail-grid">
+        <section class="forms-detail-content">
+          <article class="forms-panel">
+            <div class="forms-panel__header">
+              <div>
+                <h2 data-detail-subject>Submission</h2>
+                <p data-detail-tracking></p>
+              </div>
+            </div>
+            <div class="forms-meta-grid" data-detail-meta></div>
+            <div class="forms-form">
+              <div class="forms-field">
+                <span>Message</span>
+                <div class="forms-detail-message" data-detail-message></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="forms-panel">
+            <div class="forms-panel__header">
+              <div>
+                <h2>Replies</h2>
+                <p>Saved email replies for this submission.</p>
+              </div>
+            </div>
+            <div class="forms-replies" data-detail-replies></div>
+          </article>
+        </section>
+
+        <aside class="forms-detail-content">
+          <section class="forms-panel">
+            <div class="forms-panel__header">
+              <div>
+                <h3>Status</h3>
+                <p>Update workflow fields and internal notes.</p>
+              </div>
+            </div>
+            <form class="forms-form" data-detail-update>
+              <div class="forms-field">
+                <label for="detailStatus">Status</label>
+                <select id="detailStatus" name="status">
+                  <option value="new">new</option>
+                  <option value="reviewing">reviewing</option>
+                  <option value="waiting_user">waiting_user</option>
+                  <option value="resolved">resolved</option>
+                  <option value="closed">closed</option>
+                </select>
+              </div>
+              <div class="forms-field">
+                <label for="detailPriority">Priority</label>
+                <select id="detailPriority" name="priority">
+                  <option value="low">low</option>
+                  <option value="normal">normal</option>
+                  <option value="high">high</option>
+                  <option value="urgent">urgent</option>
+                </select>
+              </div>
+              <div class="forms-field">
+                <label for="detailOwner">Assigned to</label>
+                <input id="detailOwner" name="assigned_to" type="text" maxlength="120" />
+              </div>
+              <div class="forms-field">
+                <label for="detailNotes">Internal notes</label>
+                <textarea id="detailNotes" name="internal_notes" maxlength="8000"></textarea>
+              </div>
+              <button class="forms-button" type="submit">Save</button>
+              <p class="forms-status" data-detail-update-status aria-live="polite"></p>
+            </form>
+          </section>
+
+          <section class="forms-panel">
+            <div class="forms-panel__header">
+              <div>
+                <h3>Reply by email</h3>
+                <p data-detail-reply-to>Recipient loads from submission email.</p>
+              </div>
+            </div>
+            <form class="forms-form" data-detail-reply>
+              <div class="forms-field">
+                <label for="replySubject">Subject</label>
+                <input id="replySubject" name="subject" type="text" maxlength="180" required />
+              </div>
+              <div class="forms-field">
+                <label for="replyBody">Body</label>
+                <textarea id="replyBody" name="body" maxlength="6000" required></textarea>
+              </div>
+              <button class="forms-button" type="submit">Send reply</button>
+              <p class="forms-status" data-detail-reply-status aria-live="polite"></p>
+            </form>
+          </section>
+        </aside>
+      </div>
+    </div>
+  </main>
+</body>
+</html>

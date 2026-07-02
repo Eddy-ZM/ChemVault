@@ -17,6 +17,7 @@ Last reviewed: July 2, 2026
 | `CLOUDFLARE_ACCOUNT_ID` | Cloudflare account id | No | Yes for deploy | Low | `your_cloudflare_account_id_here` | Not a secret alone, but treat as operational config. |
 | `CLOUDFLARE_ZONE_ID` | Cloudflare zone id | No | If used | Low | `your_cloudflare_zone_id_here` | Needed by some deploy workflows. |
 | `CLOUDFLARE_DATABASE_ID` | Main D1 database id | No | If D1 used | Low | `your_d1_database_id_here` | Configure in Cloudflare. |
+| `FORMS_DB` | Forms D1 binding name reference | No | Yes for Forms | No | `DB` | Binding name must match the Pages Function code path `env.DB`; configure as a D1 binding, not a browser variable. |
 | `CHEMVAULT_SITE_ORIGIN` | Sitemap/site origin | No | No | No | `https://chemvault.science` | Used by sitemap generation. |
 | `PAYMENT_PROVIDER` | Payment provider selector | No | If billing enabled | No | `stripe` | Empty/placeholder keeps billing disabled. |
 | `STRIPE_SECRET_KEY` | Stripe server secret key | No | If Stripe enabled | Yes | `your_stripe_secret_key_here` | Never expose to browser code. |
@@ -28,6 +29,12 @@ Last reviewed: July 2, 2026
 | `ENTERPRISE_LEAD_EMAIL` | Lead notification destination | No | If enabled | Moderate | `support@example.com` | Use a confirmed official address. |
 | `NEWSLETTER_PROVIDER` | Newsletter provider selector | No | If enabled | No | `placeholder` | Marketing email must have consent/unsubscribe. |
 | `RESEND_API_KEY` | Resend email API key | No | If Resend enabled | Yes | `your_resend_api_key_here` | Store as provider secret. |
+| `FORMS_NOTIFY_TO` | Forms notification recipient | No | Yes for Forms mail | Moderate | `forms@chemvault.science` | Receives new submission notifications. |
+| `FORMS_FROM` | Forms sender address | No | Yes for Forms mail | Moderate | `forms@chemvault.science` | Must be allowed by the verified Resend sending domain. |
+| `FORMS_IP_HASH_SALT` | Optional salt for Forms `ip_hash` | No | Recommended | Yes | `replace_with_forms_hash_salt` | Used only to hash client IPs before storage; raw IP is not stored in Forms tables. |
+| `GITHUB_FEEDBACK_TOKEN` | Optional GitHub fallback issue token | No | Optional | Yes | `replace_with_github_issue_token` | Used only by `/api/feedback` compatibility fallback for non-security feedback. |
+| `GITHUB_FEEDBACK_REPO` | Optional GitHub fallback repo | No | Optional | Low | `Eddy-ZM/chemvault` | Security reports must not use this fallback. |
+| `GITHUB_FEEDBACK_LABELS` | Optional GitHub fallback issue labels | No | Optional | No | `feedback,forms-fallback` | Comma-separated labels for non-security compatibility fallback issues. |
 | `RESEND_WEBHOOK_SECRET` | Resend webhook verification | No | If webhooks enabled | Yes | `replace_with_resend_webhook_secret` | Required before accepting provider webhooks. |
 | `OPENAI_API_KEY` | OpenAI API key for AI features | No | If platform AI enabled | Yes | `your_openai_api_key_here` | Store server-side only. |
 | `APP_URL` | Extract web app URL | Yes | Yes | No | `https://app.chemvault.science` | Set in Extract environment. |

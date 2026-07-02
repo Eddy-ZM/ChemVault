@@ -1,0 +1,134 @@
+# ChemVault Forms Admin
+
+Last reviewed: July 2, 2026
+
+ChemVault Forms replaces the old public GitHub-Issue-only feedback path with a private D1-backed intake and admin workflow. The compatibility `/api/feedback` endpoint remains available, but security reports must never fall back to public GitHub Issues.
+
+Official references:
+
+- Cloudflare D1 databases and Wrangler: https://developers.cloudflare.com/d1/
+- Cloudflare Pages Functions bindings: https://developers.cloudflare.com/pages/functions/bindings/
+- Resend email API: https://resend.com/docs/api-reference/emails/send-email
+- Resend domains: https://resend.com/docs/dashboard/domains/introduction
+
+## Routes
+
+Public:
+
+- `POST /api/forms/submit`
+- `POST /api/feedback` compatibility path
+- `/feedback` public form page
+
+Admin:
+
+- `GET /api/admin/forms`
+- `GET /api/admin/forms/:id`
+- `PATCH /api/admin/forms`
+- `PATCH /api/admin/forms/:id`
+- `POST /api/admin/forms/:id/reply`
+- `GET /api/admin/forms/export.csv`
+- `/admin/forms`
+- `/admin/forms/:id`
+
+## D1 setup
+
+Create separate D1 databases for preview/staging and production. Do not bind preview directly to production data.
+
+```powershell
+npx wrangler d1 create chemvault-staging
+npx wrangler d1 create chemvault-production
+```
+
+Bind the target database to Cloudflare Pages Functions with binding name `DB`. The code expects `env.DB`; `FORMS_DB=DB` is documentation only, not a browser-exposed variable.
+
+Apply the migration to an existing database:
+
+```powershell
+npx wrangler d1 execute chemvault-staging --remote --file=migrations/0002_add_forms_management.sql
+npx wrangler d1 execute chemvault-production --remote --file=migrations/0002_add_forms_management.sql
+```
+
+For a full local or fresh environment initialization, `schema.sql` also contains the Forms tables:
+
+```powershell
+npx wrangler d1 execute chemvault-dev --local --file=schema.sql
+```
+
+## Environment variables
+
+Configure these in Cloudflare Pages for the target environment. Do not commit real values.
+
+| Variable | Required | Purpose |
+| --- | --- | --- |
+| `DB` D1 binding | Yes | D1 binding used by Pages Functions. |
+| `RESEND_API_KEY` | Required for mail | Sends new-submission notifications and admin replies. |
+| `FORMS_NOTIFY_TO` | Yes for mail | Notification inbox, normally `forms@chemvault.science`. |
+| `FORMS_FROM` | Yes for mail | Sender, normally `forms@chemvault.science` or `noreply@chemvault.science`. |
+| `FORMS_IP_HASH_SALT` | Recommended | Salt used before hashing client IPs for `ip_hash`. |
+| `CHEMVAULT_ADMIN_TOKEN` | Required until real auth exists | Bearer token for admin APIs and admin pages. |
+| `PUBLIC_APP_URL` | Recommended | Used to generate admin links inside notification emails. |
+| `GITHUB_FEEDBACK_TOKEN` | Optional | Non-security compatibility fallback only. |
+| `GITHUB_FEEDBACK_REPO` | Optional | Fallback repo, default `Eddy-ZM/chemvault`. |
+| `GITHUB_FEEDBACK_LABELS` | Optional | Comma-separated fallback issue labels. |
+
+## Resend setup
+
+1. Verify the sending domain for `chemvault.science` in Resend.
+2. Configure the DNS records Resend provides for the domain.
+3. Create a Resend API key and store it as `RESEND_API_KEY` in Cloudflare Pages.
+4. Set `FORMS_FROM` to an address allowed by that verified domain.
+5. Set `FORMS_NOTIFY_TO=forms@chemvault.science`.
+
+If email sending fails or Resend is not configured, the submission still saves to D1. The API records `email_notification_failed` in `metadata_json` and returns `submitted=true`.
+
+## Admin access
+
+The admin APIs require authorization. Until ChemVault User roles are connected, use:
+
+```text
+Authorization: Bearer <CHEMVAULT_ADMIN_TOKEN>
+```
+
+The admin UI at `/admin/forms` stores the token only in browser `sessionStorage` for that session. Replace the token placeholder flow with real admin sessions or Cloudflare Access before broad production use.
+
+## Security report handling
+
+- `type=security` submissions are private D1 records.
+- Security reports do not create public GitHub Issues.
+- Do not paste vulnerability details into public URLs, issue trackers, logs, or screenshots.
+- Use `/admin/forms` to triage, update status, add internal notes, and reply by email when the reporter provided an address.
+
+## Local testing
+
+```powershell
+npm install
+npx wrangler d1 execute chemvault --local --file=migrations/0002_add_forms_management.sql
+node --test tests/*.test.mjs
+npm run build
+npx wrangler pages dev dist --d1 DB=chemvault --port 8788
+```
+
+Open:
+
+- `http://127.0.0.1:8788/feedback`
+- `http://127.0.0.1:8788/admin/forms`
+
+For API-only testing:
+
+```powershell
+$headers = @{ "content-type" = "application/json" }
+$body = @{
+  type = "feedback"
+  email = "researcher@example.com"
+  subject = "Example feedback"
+  message = "This is a local test submission."
+} | ConvertTo-Json
+Invoke-RestMethod -Uri "http://127.0.0.1:8788/api/forms/submit" -Method Post -Headers $headers -Body $body
+```
+
+Admin list:
+
+```powershell
+$adminHeaders = @{ "authorization" = "Bearer <CHEMVAULT_ADMIN_TOKEN>" }
+Invoke-RestMethod -Uri "http://127.0.0.1:8788/api/admin/forms" -Headers $adminHeaders
+```

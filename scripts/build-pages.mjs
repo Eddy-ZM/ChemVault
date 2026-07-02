@@ -9,6 +9,7 @@ const entries = [
   "BingSiteAuth.xml",
   "_headers",
   "_redirects",
+  "admin",
   "assets",
   "data",
   "favicon.ico",

@@ -26,6 +26,10 @@
 /about /pages/about.html 301
 /team /pages/team.html 301
 /contact /pages/contact.html 301
+/feedback /pages/feedback 301
+/forms /pages/feedback 301
+/security-report /pages/feedback?type=security 301
+/admin/forms /admin/forms/index.html 200
 /dossiers /pages/dossiers.html 301
 /methods /pages/methods.html 301
 /spectroscopy /pages/spectroscopy.html 301
@@ -33,3 +37,4 @@
 /reagents /pages/reagents.html 301
 /atlas /pages/atlas.html 301
 /library /pages/library.html 301
+/admin/forms/:id /admin/forms/detail/?id=:id 302

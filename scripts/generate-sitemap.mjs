@@ -29,6 +29,7 @@ const staticUrls = [
   { path: "/pages/about.html", priority: "0.7", changefreq: "monthly" },
   { path: "/team", priority: "0.7", changefreq: "monthly" },
   { path: "/pages/contact.html", priority: "0.7", changefreq: "monthly" },
+  { path: "/feedback", priority: "0.6", changefreq: "monthly" },
   { path: "/pages/app.html", priority: "0.9", changefreq: "weekly" },
   { path: "/pages/dashboard.html", priority: "0.9", changefreq: "weekly" },
   { path: "/pages/pricing.html", priority: "0.9", changefreq: "weekly" },

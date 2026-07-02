@@ -1,5 +1,6 @@
-const API_VERSION = "0.3.0";
+const API_VERSION = "0.4.0";
 let schemaReady = false;
+let formsSchemaReady = false;
 const rateLimitStore = new Map();
 
 const fallbackRecords = [
@@ -121,6 +122,7 @@ const jsonHeaders = {
 
 const rateLimitPolicies = {
   lead: { limit: 5, windowMs: 60 * 1000 },
+  formsSubmit: { limit: 4, windowMs: 60 * 1000 },
   accountRequest: { limit: 3, windowMs: 60 * 60 * 1000 },
   adminRead: { limit: 30, windowMs: 60 * 1000 },
   adminWrite: { limit: 10, windowMs: 60 * 1000 },
@@ -171,6 +173,33 @@ const serverFeatureEntitlements = {
 const leadTypes = new Set(["newsletter", "enterprise", "ai_beta"]);
 const commercialModes = new Set(["mock", "staging", "production"]);
 const deploymentEnvironments = new Set(["development", "staging", "production"]);
+const formTypes = new Set([
+  "feedback",
+  "bug",
+  "feature",
+  "question",
+  "security",
+  "privacy",
+  "account",
+  "billing",
+  "beta",
+  "testflight",
+  "enterprise",
+  "compliance",
+  "other"
+]);
+const formStatuses = new Set(["new", "reviewing", "waiting_user", "resolved", "closed"]);
+const formPriorities = new Set(["low", "normal", "high", "urgent"]);
+const formSubmitLimits = {
+  subject: 180,
+  message: 8000,
+  name: 120,
+  email: 254,
+  sourceUrl: 500,
+  internalNotes: 8000,
+  replyBody: 6000,
+  assignedTo: 120
+};
 
 export async function onRequest(context) {
   const { request, env } = context;
@@ -202,6 +231,8 @@ export async function onRequest(context) {
           academicEnrichment: true,
           commercialMvp: true,
           leadStorage: hasDb,
+          formsStorage: hasDb,
+          formsMailer: Boolean(env?.RESEND_API_KEY),
           paymentPlaceholder: true
         },
         commercial: {
@@ -247,6 +278,22 @@ export async function onRequest(context) {
       return json(result, result.ok ? 201 : 400);
     }
 
+    if (segments[0] === "forms" && segments[1] === "submit") {
+      if (request.method !== "POST") return json({ error: "Method not allowed" }, 405);
+      const limited = checkRateLimit(request, "forms:submit", rateLimitPolicies.formsSubmit);
+      if (!limited.ok) return rateLimitResponse(limited);
+      const result = await createFormSubmission(env, await readJSONBody(request), request, hasDb);
+      return json(stripHttpStatus(result), result.httpStatus || (result.ok ? 201 : 400));
+    }
+
+    if (segments[0] === "feedback") {
+      if (request.method !== "POST") return json({ error: "Method not allowed" }, 405);
+      const limited = checkRateLimit(request, "forms:feedback-compat", rateLimitPolicies.formsSubmit);
+      if (!limited.ok) return rateLimitResponse(limited);
+      const result = await createFeedbackCompatibilitySubmission(env, await readJSONBody(request), request, hasDb);
+      return json(stripHttpStatus(result), result.httpStatus || (result.ok ? 201 : 400));
+    }
+
     if (segments[0] === "account") {
       if (request.method !== "POST") return json({ error: "Method not allowed" }, 405);
       const limited = checkRateLimit(request, `account:${segments[1] || "request"}`, rateLimitPolicies.accountRequest);
@@ -269,9 +316,34 @@ export async function onRequest(context) {
       const limited = checkRateLimit(
         request,
         `admin:${request.method}:${segments[1] || "unknown"}`,
-        request.method === "PATCH" ? rateLimitPolicies.adminWrite : rateLimitPolicies.adminRead
+        ["PATCH", "POST"].includes(request.method) ? rateLimitPolicies.adminWrite : rateLimitPolicies.adminRead
       );
       if (!limited.ok) return rateLimitResponse(limited);
+      if (segments[1] === "forms") {
+        if (request.method === "GET" && segments[2] === "export.csv") {
+          return exportFormsCsv(env, hasDb, url.searchParams);
+        }
+        if (request.method === "GET" && segments[2]) {
+          const result = await getFormSubmission(env, hasDb, segments[2]);
+          return json(result, result.ok ? 200 : 404);
+        }
+        if (request.method === "GET") {
+          const result = await listFormSubmissions(env, hasDb, url.searchParams);
+          return json(result, result.ok ? 200 : 503);
+        }
+        if (request.method === "PATCH" && segments[2]) {
+          const result = await updateFormSubmission(env, hasDb, request, segments[2], await readJSONBody(request));
+          return json(result, result.ok ? 200 : 400);
+        }
+        if (request.method === "PATCH") {
+          const result = await bulkUpdateFormSubmissions(env, hasDb, request, await readJSONBody(request));
+          return json(result, result.ok ? 200 : 400);
+        }
+        if (request.method === "POST" && segments[2] && segments[3] === "reply") {
+          const result = await createFormReply(env, hasDb, request, segments[2], await readJSONBody(request));
+          return json(stripHttpStatus(result), result.httpStatus || (result.ok ? 201 : 400));
+        }
+      }
       if (segments[1] === "deletion-requests") {
         if (request.method === "GET") return json(await listRequestRows(env, hasDb, "account_deletion_requests"));
         if (request.method === "PATCH" && segments[2]) {
@@ -286,7 +358,7 @@ export async function onRequest(context) {
           return json(result, result.ok ? 200 : 400);
         }
       }
-      return json({ error: "Not found", routes: ["/api/admin/deletion-requests", "/api/admin/export-requests"] }, 404);
+      return json({ error: "Not found", routes: ["/api/admin/forms", "/api/admin/forms/:id", "/api/admin/forms/:id/reply", "/api/admin/forms/export.csv", "/api/admin/deletion-requests", "/api/admin/export-requests"] }, 404);
     }
 
     if (segments[0] === "billing") {
@@ -337,8 +409,14 @@ export async function onRequest(context) {
       return json(await getFacets(env, hasDb));
     }
 
-    return json({ error: "Not found", routes: ["/api/health", "/api/entitlements", "/api/leads", "/api/account/deletion-request", "/api/account/export-request", "/api/billing/checkout", "/api/export/compound", "/api/records", "/api/records/:type/:id", "/api/enrich", "/api/facets"] }, 404);
+    return json({ error: "Not found", routes: ["/api/health", "/api/entitlements", "/api/leads", "/api/forms/submit", "/api/feedback", "/api/account/deletion-request", "/api/account/export-request", "/api/billing/checkout", "/api/export/compound", "/api/records", "/api/records/:type/:id", "/api/enrich", "/api/facets"] }, 404);
   } catch (error) {
+    if (segments[0] === "forms" || segments[0] === "feedback" || segments[0] === "admin") {
+      return json({
+        ok: false,
+        error: "Request failed. Internal details were suppressed."
+      }, 500);
+    }
     return json(fallbackEnvelope({
       warning: "D1 query failed; returned fallback records. Internal details were suppressed."
     }));
@@ -455,6 +533,435 @@ async function createLead(env, body, hasDb) {
     },
     meta: { version: API_VERSION }
   };
+}
+
+async function createFeedbackCompatibilitySubmission(env, body, request, hasDb) {
+  return createFormSubmission(env, body, request, hasDb, {
+    compatibilityMode: true,
+    allowGithubFallback: true
+  });
+}
+
+async function createFormSubmission(env, body, request, hasDb, options = {}) {
+  const normalized = await normalizeFormSubmission(body, request, env, options);
+  if (!normalized.ok) {
+    return { ok: false, submitted: false, error: normalized.error, httpStatus: 400 };
+  }
+
+  const submission = normalized.submission;
+  if (!hasDb) {
+    if (options.allowGithubFallback && submission.type !== "security") {
+      const fallback = await createGitHubIssueFallback(env, submission);
+      if (fallback.ok) {
+        return {
+          ok: true,
+          submitted: true,
+          stored: false,
+          mode: "github_fallback",
+          issueUrl: fallback.issueUrl,
+          githubFallbackUsed: true,
+          trackingId: submission.publicTrackingId,
+          message: "Feedback was accepted through the compatibility GitHub Issue fallback.",
+          httpStatus: 202,
+          meta: { version: API_VERSION }
+        };
+      }
+      return {
+        ok: false,
+        submitted: false,
+        stored: false,
+        mode: "not_configured",
+        githubFallbackSkipped: fallback.reason || "not_configured",
+        error: "Forms database is not configured.",
+        httpStatus: 503
+      };
+    }
+    return {
+      ok: false,
+      submitted: false,
+      stored: false,
+      mode: "not_configured",
+      error: "Forms database is not configured.",
+      message: submission.type === "security"
+        ? "Security reports cannot use public GitHub Issue fallback."
+        : "Configure the D1 DB binding before accepting form submissions.",
+      httpStatus: 503
+    };
+  }
+
+  await ensureFormsSchema(env.DB);
+  await env.DB.prepare(`
+    INSERT INTO forms_submissions (
+      id, created_at, updated_at, type, status, priority, name, email, subject, message,
+      source_url, user_agent, ip_hash, assigned_to, internal_notes, public_tracking_id, metadata_json
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `).bind(
+    submission.id,
+    submission.createdAt,
+    submission.updatedAt,
+    submission.type,
+    submission.status,
+    submission.priority,
+    submission.name,
+    submission.email,
+    submission.subject,
+    submission.message,
+    submission.sourceUrl,
+    submission.userAgent,
+    submission.ipHash,
+    submission.assignedTo,
+    submission.internalNotes,
+    submission.publicTrackingId,
+    stringifyMetadata(submission.metadata)
+  ).run();
+
+  const notification = await sendFormSubmissionNotification(env, submission, request);
+  if (!notification.ok) {
+    const updatedMetadata = {
+      ...submission.metadata,
+      email_notification_failed: true,
+      email_notification_status: notification.reason || String(notification.status || "failed")
+    };
+    await env.DB.prepare(`
+      UPDATE forms_submissions
+      SET metadata_json = ?, updated_at = ?
+      WHERE id = ?
+    `).bind(stringifyMetadata(updatedMetadata), new Date().toISOString(), submission.id).run();
+    submission.metadata = updatedMetadata;
+  }
+
+  return {
+    ok: true,
+    submitted: true,
+    stored: true,
+    mode: "d1",
+    trackingId: submission.publicTrackingId,
+    message: "Thanks. Your submission was recorded.",
+    emailNotificationSent: notification.ok,
+    emailNotificationSkipped: Boolean(notification.skipped),
+    submission: publicSubmissionShape(submission),
+    meta: { version: API_VERSION }
+  };
+}
+
+async function normalizeFormSubmission(body = {}, request, env = {}, options = {}) {
+  const answers = normalizeLegacyAnswers(body.answers);
+  const type = normalizeFormType(body.type || body.kind || body.category || body.formId || body.formTitle);
+  const email = clean(body.email || findAnswerValue(answers, /e-?mail|email address/i)).toLowerCase().slice(0, formSubmitLimits.email);
+  if (email && !isEmail(email)) {
+    return { ok: false, error: "A valid email address is required when email is provided." };
+  }
+
+  const subject = limitText(
+    body.subject
+      || body.title
+      || findAnswerValue(answers, /subject|title|topic|summary/i)
+      || body.formTitle
+      || "ChemVault feedback",
+    formSubmitLimits.subject
+  );
+  const message = limitText(
+    body.message
+      || body.body
+      || body.description
+      || body.details
+      || legacyAnswersToMessage(answers),
+    formSubmitLimits.message
+  );
+
+  if (subject.length < 3) return { ok: false, error: "Subject must be at least 3 characters." };
+  if (message.length < 5) return { ok: false, error: "Message must be at least 5 characters." };
+
+  const now = new Date().toISOString();
+  const sourceUrl = limitText(
+    body.source_url || body.sourceUrl || body.pageUrl || request.headers.get("referer") || "",
+    formSubmitLimits.sourceUrl
+  );
+  const metadata = redactMetadata({
+    source: "chemvault-main-site",
+    compatibility_mode: Boolean(options.compatibilityMode),
+    form_id: clean(body.formId).slice(0, 120),
+    form_title: clean(body.formTitle).slice(0, 180),
+    user_agent_present: Boolean(request.headers.get("user-agent")),
+    github_fallback_allowed: Boolean(options.allowGithubFallback),
+    client_metadata: trimMetadata(body.metadata || body.metadata_json || {}),
+    legacy_answers: answers.slice(0, 40)
+  });
+
+  return {
+    ok: true,
+    submission: {
+      id: randomId("form"),
+      createdAt: now,
+      updatedAt: now,
+      type,
+      status: "new",
+      priority: normalizeFormPriority(body.priority || (type === "security" ? "urgent" : "normal"), "normal"),
+      name: limitText(body.name || findAnswerValue(answers, /name|contact/i), formSubmitLimits.name),
+      email,
+      subject,
+      message,
+      sourceUrl,
+      userAgent: limitText(request.headers.get("user-agent") || "", 500),
+      ipHash: await hashClientIp(request, env),
+      assignedTo: "",
+      internalNotes: "",
+      publicTrackingId: createTrackingId(),
+      metadata
+    }
+  };
+}
+
+async function listFormSubmissions(env, hasDb, params) {
+  if (!hasDb) return { ok: false, error: "Forms database is not configured.", submissions: [] };
+  await ensureFormsSchema(env.DB);
+  const query = formListQuery(params);
+  const [rows, countRow] = await Promise.all([
+    bindStatement(env.DB.prepare(`
+      SELECT id, created_at, updated_at, type, status, priority, name, email, subject, message,
+        source_url, assigned_to, public_tracking_id
+      FROM forms_submissions
+      ${query.whereSql}
+      ORDER BY created_at ${query.direction}
+      LIMIT ? OFFSET ?
+    `), [...query.values, query.limit, query.offset]).all(),
+    bindStatement(env.DB.prepare(`
+      SELECT COUNT(*) AS count
+      FROM forms_submissions
+      ${query.whereSql}
+    `), query.values).first()
+  ]);
+
+  return {
+    ok: true,
+    submissions: (rows.results || []).map((row) => ({
+      id: row.id,
+      createdAt: row.created_at,
+      updatedAt: row.updated_at,
+      type: row.type,
+      status: row.status,
+      priority: row.priority,
+      name: row.name || "",
+      email: row.email || "",
+      subject: row.subject,
+      messagePreview: limitText(row.message || "", 180),
+      sourceUrl: row.source_url || "",
+      assignedTo: row.assigned_to || "",
+      trackingId: row.public_tracking_id || ""
+    })),
+    page: query.page,
+    limit: query.limit,
+    offset: query.offset,
+    count: Number(countRow?.count || 0),
+    filters: query.filters,
+    meta: { version: API_VERSION }
+  };
+}
+
+async function getFormSubmission(env, hasDb, id) {
+  if (!hasDb) return { ok: false, error: "Forms database is not configured." };
+  await ensureFormsSchema(env.DB);
+  const submission = await env.DB.prepare(`
+    SELECT *
+    FROM forms_submissions
+    WHERE id = ? OR public_tracking_id = ?
+    LIMIT 1
+  `).bind(id, id).first();
+  if (!submission) return { ok: false, error: "Submission not found." };
+
+  const replies = await env.DB.prepare(`
+    SELECT id, submission_id, created_at, admin_user, to_email, subject, body,
+      provider_message_id, status
+    FROM forms_replies
+    WHERE submission_id = ?
+    ORDER BY created_at DESC
+  `).bind(submission.id).all();
+
+  return {
+    ok: true,
+    submission: adminSubmissionShape(submission),
+    replies: (replies.results || []).map(adminReplyShape),
+    meta: { version: API_VERSION }
+  };
+}
+
+async function updateFormSubmission(env, hasDb, request, id, body = {}) {
+  if (!hasDb) return { ok: false, error: "Forms database is not configured." };
+  await ensureFormsSchema(env.DB);
+  const existing = await env.DB.prepare("SELECT id FROM forms_submissions WHERE id = ? OR public_tracking_id = ? LIMIT 1").bind(id, id).first();
+  if (!existing) return { ok: false, error: "Submission not found." };
+
+  const fields = [];
+  const values = [];
+  if ("status" in body) {
+    const status = normalizeFormStatus(body.status);
+    if (!status) return { ok: false, error: "Invalid status." };
+    fields.push("status = ?");
+    values.push(status);
+  }
+  if ("priority" in body) {
+    const priority = normalizeFormPriority(body.priority, "");
+    if (!priority) return { ok: false, error: "Invalid priority." };
+    fields.push("priority = ?");
+    values.push(priority);
+  }
+  if ("assigned_to" in body || "assignedTo" in body) {
+    fields.push("assigned_to = ?");
+    values.push(limitText(body.assigned_to || body.assignedTo, formSubmitLimits.assignedTo));
+  }
+  if ("internal_notes" in body || "internalNotes" in body) {
+    fields.push("internal_notes = ?");
+    values.push(limitText(body.internal_notes || body.internalNotes, formSubmitLimits.internalNotes));
+  }
+  if (!fields.length) return { ok: false, error: "No supported fields were provided." };
+
+  const updatedAt = new Date().toISOString();
+  fields.push("updated_at = ?");
+  values.push(updatedAt, existing.id);
+  await env.DB.prepare(`
+    UPDATE forms_submissions
+    SET ${fields.join(", ")}
+    WHERE id = ?
+  `).bind(...values).run();
+  await writeAdminAuditLog(env, request, {
+    action: "form_submission.updated",
+    targetType: "form_submission",
+    targetId: existing.id,
+    metadata: { fields: fields.map((field) => field.split(" ")[0]) }
+  });
+  return getFormSubmission(env, hasDb, existing.id);
+}
+
+async function bulkUpdateFormSubmissions(env, hasDb, request, body = {}) {
+  if (!hasDb) return { ok: false, error: "Forms database is not configured." };
+  const ids = Array.isArray(body.ids) ? body.ids.map(clean).filter(Boolean).slice(0, 100) : [];
+  const status = normalizeFormStatus(body.status);
+  if (!ids.length) return { ok: false, error: "At least one submission id is required." };
+  if (!status) return { ok: false, error: "Invalid status." };
+  await ensureFormsSchema(env.DB);
+  const updatedAt = new Date().toISOString();
+  let updated = 0;
+  for (const id of ids) {
+    const result = await env.DB.prepare(`
+      UPDATE forms_submissions
+      SET status = ?, updated_at = ?
+      WHERE id = ? OR public_tracking_id = ?
+    `).bind(status, updatedAt, id, id).run();
+    updated += Number(result?.meta?.changes || 0);
+  }
+  await writeAdminAuditLog(env, request, {
+    action: "form_submission.bulk_status_updated",
+    targetType: "form_submission",
+    targetId: ids.join(",").slice(0, 500),
+    metadata: { status, requested: ids.length, updated }
+  });
+  return { ok: true, updated, status, meta: { version: API_VERSION } };
+}
+
+async function createFormReply(env, hasDb, request, id, body = {}) {
+  if (!hasDb) return { ok: false, error: "Forms database is not configured." };
+  await ensureFormsSchema(env.DB);
+  const submission = await env.DB.prepare(`
+    SELECT id, email, subject
+    FROM forms_submissions
+    WHERE id = ? OR public_tracking_id = ?
+    LIMIT 1
+  `).bind(id, id).first();
+  if (!submission) return { ok: false, error: "Submission not found." };
+  const toEmail = clean(body.to_email || body.toEmail || submission.email).toLowerCase();
+  if (!isEmail(toEmail)) return { ok: false, error: "This submission does not have a valid recipient email." };
+  const replySubject = limitText(body.subject || `Re: ${submission.subject || "ChemVault Forms"}`, formSubmitLimits.subject);
+  const replyBody = limitText(body.body || body.message, formSubmitLimits.replyBody);
+  if (replyBody.length < 5) return { ok: false, error: "Reply body must be at least 5 characters." };
+
+  const emailResult = await sendResendEmail(env, {
+    to: toEmail,
+    from: formsFromAddress(env),
+    subject: replySubject,
+    text: replyBody
+  });
+  const reply = {
+    id: randomId("reply"),
+    submissionId: submission.id,
+    createdAt: new Date().toISOString(),
+    adminUser: limitText(body.admin_user || body.adminUser || adminActorFromRequest(request), 120),
+    toEmail,
+    subject: replySubject,
+    body: replyBody,
+    providerMessageId: emailResult.providerMessageId || "",
+    status: emailResult.ok ? "sent" : "failed"
+  };
+  await env.DB.prepare(`
+    INSERT INTO forms_replies (
+      id, submission_id, created_at, admin_user, to_email, subject, body, provider_message_id, status
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `).bind(
+    reply.id,
+    reply.submissionId,
+    reply.createdAt,
+    reply.adminUser,
+    reply.toEmail,
+    reply.subject,
+    reply.body,
+    reply.providerMessageId,
+    reply.status
+  ).run();
+  await env.DB.prepare("UPDATE forms_submissions SET status = ?, updated_at = ? WHERE id = ?")
+    .bind("waiting_user", new Date().toISOString(), submission.id)
+    .run();
+  await writeAdminAuditLog(env, request, {
+    action: "form_reply.created",
+    targetType: "form_submission",
+    targetId: submission.id,
+    metadata: { emailSent: emailResult.ok, replyStatus: reply.status }
+  });
+
+  return {
+    ok: true,
+    saved: true,
+    emailSent: emailResult.ok,
+    warning: emailResult.ok ? "" : "Reply was saved but email sending failed or is not configured.",
+    reply,
+    httpStatus: emailResult.ok ? 201 : 202,
+    meta: { version: API_VERSION }
+  };
+}
+
+async function exportFormsCsv(env, hasDb, params) {
+  if (!hasDb) return json({ ok: false, error: "Forms database is not configured." }, 503);
+  await ensureFormsSchema(env.DB);
+  const query = formListQuery(params, { exportMode: true });
+  const rows = await bindStatement(env.DB.prepare(`
+    SELECT id, created_at, updated_at, type, status, priority, name, email, subject, message,
+      source_url, assigned_to, public_tracking_id
+    FROM forms_submissions
+    ${query.whereSql}
+    ORDER BY created_at ${query.direction}
+    LIMIT ? OFFSET 0
+  `), [...query.values, query.limit]).all();
+  const columns = [
+    "id",
+    "created_at",
+    "updated_at",
+    "type",
+    "status",
+    "priority",
+    "name",
+    "email",
+    "subject",
+    "message",
+    "source_url",
+    "assigned_to",
+    "public_tracking_id"
+  ];
+  const csv = [
+    columns.join(","),
+    ...(rows.results || []).map((row) => columns.map((column) => csvCell(row[column])).join(","))
+  ].join("\n");
+  const headers = new Headers(jsonHeaders);
+  headers.set("content-type", "text/csv; charset=utf-8");
+  headers.set("content-disposition", `attachment; filename="chemvault-forms-${new Date().toISOString().slice(0, 10)}.csv"`);
+  return new Response(csv, { status: 200, headers });
 }
 
 async function createAccountDeletionRequest(env, body, hasDb, request) {
@@ -1574,6 +2081,369 @@ async function ensureCommercialSchema(db) {
   ]);
 }
 
+async function ensureFormsSchema(db) {
+  if (formsSchemaReady) return;
+  await db.prepare(`
+    CREATE TABLE IF NOT EXISTS forms_submissions (
+      id TEXT PRIMARY KEY,
+      created_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL,
+      type TEXT NOT NULL,
+      status TEXT NOT NULL DEFAULT 'new',
+      priority TEXT NOT NULL DEFAULT 'normal',
+      name TEXT,
+      email TEXT,
+      subject TEXT NOT NULL,
+      message TEXT NOT NULL,
+      source_url TEXT,
+      user_agent TEXT,
+      ip_hash TEXT,
+      assigned_to TEXT,
+      internal_notes TEXT,
+      public_tracking_id TEXT,
+      metadata_json TEXT
+    )
+  `).run();
+  await db.prepare(`
+    CREATE TABLE IF NOT EXISTS forms_replies (
+      id TEXT PRIMARY KEY,
+      submission_id TEXT NOT NULL,
+      created_at TEXT NOT NULL,
+      admin_user TEXT,
+      to_email TEXT NOT NULL,
+      subject TEXT NOT NULL,
+      body TEXT NOT NULL,
+      provider_message_id TEXT,
+      status TEXT NOT NULL DEFAULT 'sent',
+      FOREIGN KEY (submission_id) REFERENCES forms_submissions(id)
+    )
+  `).run();
+  await Promise.all([
+    db.prepare("CREATE INDEX IF NOT EXISTS forms_submissions_created_idx ON forms_submissions (created_at)").run(),
+    db.prepare("CREATE INDEX IF NOT EXISTS forms_submissions_status_idx ON forms_submissions (status)").run(),
+    db.prepare("CREATE INDEX IF NOT EXISTS forms_submissions_type_idx ON forms_submissions (type)").run(),
+    db.prepare("CREATE INDEX IF NOT EXISTS forms_submissions_priority_idx ON forms_submissions (priority)").run(),
+    db.prepare("CREATE INDEX IF NOT EXISTS forms_submissions_email_idx ON forms_submissions (email)").run(),
+    db.prepare("CREATE UNIQUE INDEX IF NOT EXISTS forms_submissions_tracking_idx ON forms_submissions (public_tracking_id)").run(),
+    db.prepare("CREATE INDEX IF NOT EXISTS forms_replies_submission_idx ON forms_replies (submission_id)").run(),
+    db.prepare("CREATE INDEX IF NOT EXISTS forms_replies_created_idx ON forms_replies (created_at)").run()
+  ]);
+  formsSchemaReady = true;
+}
+
+function formListQuery(params, options = {}) {
+  const limit = clamp(Number(params.get("limit") || (options.exportMode ? 1000 : 50)), 1, options.exportMode ? 5000 : 100);
+  const page = clamp(Number(params.get("page") || 1), 1, 100000);
+  const rawOffset = params.get("offset");
+  const offset = options.exportMode
+    ? 0
+    : rawOffset == null
+      ? (page - 1) * limit
+      : clamp(Number(rawOffset), 0, 1000000);
+  const direction = clean(params.get("direction") || params.get("order")).toLowerCase() === "asc" ? "ASC" : "DESC";
+  const q = clean(params.get("q") || params.get("search")).slice(0, 120);
+  const rawStatus = clean(params.get("status"));
+  const rawType = clean(params.get("type"));
+  const rawPriority = clean(params.get("priority"));
+  const status = rawStatus ? normalizeFormStatus(rawStatus) : "";
+  const type = rawType ? normalizeFormType(rawType) : "";
+  const priority = rawPriority ? normalizeFormPriority(rawPriority, "") : "";
+  const where = [];
+  const values = [];
+  if (q) {
+    where.push("(subject LIKE ? OR message LIKE ? OR email LIKE ? OR public_tracking_id LIKE ?)");
+    const like = `%${q}%`;
+    values.push(like, like, like, like);
+  }
+  if (status) {
+    where.push("status = ?");
+    values.push(status);
+  }
+  if (type) {
+    where.push("type = ?");
+    values.push(type);
+  }
+  if (priority) {
+    where.push("priority = ?");
+    values.push(priority);
+  }
+  return {
+    limit,
+    page,
+    offset,
+    direction,
+    whereSql: where.length ? `WHERE ${where.join(" AND ")}` : "",
+    values,
+    filters: { q, status: status || "", type: type || "", priority: priority || "", direction }
+  };
+}
+
+function normalizeFormType(value) {
+  const text = clean(value || "feedback").toLowerCase().replace(/[^a-z0-9_-]+/g, "_");
+  if (/security|abuse|vulnerability|vuln|responsible_disclosure/.test(text)) return "security";
+  if (/bug|error|defect/.test(text)) return "bug";
+  if (/feature|idea|request/.test(text)) return "feature";
+  if (/question|support|help/.test(text)) return "question";
+  if (/privacy|gdpr|data/.test(text)) return "privacy";
+  if (/account|login|delete|export/.test(text)) return "account";
+  if (/billing|payment|invoice|subscription/.test(text)) return "billing";
+  if (/testflight|beta/.test(text)) return text.includes("testflight") ? "testflight" : "beta";
+  if (/enterprise|sales|lab|team/.test(text)) return "enterprise";
+  if (/compliance|legal/.test(text)) return "compliance";
+  return formTypes.has(text) ? text : "feedback";
+}
+
+function normalizeFormStatus(value) {
+  const status = clean(value).toLowerCase();
+  return formStatuses.has(status) ? status : "";
+}
+
+function normalizeFormPriority(value, fallback = "normal") {
+  const priority = clean(value || fallback).toLowerCase();
+  if (formPriorities.has(priority)) return priority;
+  return fallback && formPriorities.has(fallback) ? fallback : "";
+}
+
+function normalizeLegacyAnswers(answers) {
+  if (!Array.isArray(answers)) return [];
+  return answers.map((answer) => {
+    const label = limitText(answer?.label || answer?.question || answer?.name || answer?.field || "", 120);
+    const rawValue = Array.isArray(answer?.value || answer?.answer)
+      ? (answer.value || answer.answer).join(", ")
+      : answer?.value ?? answer?.answer ?? answer?.text ?? "";
+    return {
+      label,
+      value: limitText(rawValue, 2000)
+    };
+  }).filter((answer) => answer.label || answer.value);
+}
+
+function findAnswerValue(answers, pattern) {
+  return clean((answers || []).find((answer) => pattern.test(answer.label))?.value || "");
+}
+
+function legacyAnswersToMessage(answers) {
+  return (answers || []).map((answer) => {
+    const label = answer.label || "Response";
+    return `${label}: ${answer.value || ""}`;
+  }).join("\n");
+}
+
+function trimMetadata(value) {
+  if (Array.isArray(value)) return value.slice(0, 40).map(trimMetadata);
+  if (!value || typeof value !== "object") return limitText(value, 1000);
+  return Object.fromEntries(Object.entries(value).slice(0, 40).map(([key, entry]) => [
+    limitText(key, 80),
+    trimMetadata(entry)
+  ]));
+}
+
+function stringifyMetadata(metadata) {
+  const text = JSON.stringify(redactMetadata(metadata || {}));
+  if (text.length <= 20000) return text;
+  return JSON.stringify({ truncated: true, reason: "metadata_size_limit" });
+}
+
+function publicSubmissionShape(submission) {
+  return {
+    id: submission.id,
+    trackingId: submission.publicTrackingId,
+    type: submission.type,
+    status: submission.status,
+    priority: submission.priority,
+    subject: submission.subject,
+    createdAt: submission.createdAt
+  };
+}
+
+function adminSubmissionShape(row) {
+  return {
+    id: row.id,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+    type: row.type,
+    status: row.status,
+    priority: row.priority,
+    name: row.name || "",
+    email: row.email || "",
+    subject: row.subject,
+    message: row.message,
+    sourceUrl: row.source_url || "",
+    userAgent: row.user_agent || "",
+    ipHash: row.ip_hash || "",
+    assignedTo: row.assigned_to || "",
+    internalNotes: row.internal_notes || "",
+    trackingId: row.public_tracking_id || "",
+    metadata: safeJSON(row.metadata_json, {})
+  };
+}
+
+function adminReplyShape(row) {
+  return {
+    id: row.id,
+    submissionId: row.submission_id,
+    createdAt: row.created_at,
+    adminUser: row.admin_user || "",
+    toEmail: row.to_email,
+    subject: row.subject,
+    body: row.body,
+    providerMessageId: row.provider_message_id || "",
+    status: row.status
+  };
+}
+
+async function sendFormSubmissionNotification(env, submission, request) {
+  const adminUrl = buildAdminFormUrl(env, request, submission.id);
+  return sendResendEmail(env, {
+    to: formsNotifyAddresses(env),
+    from: formsFromAddress(env),
+    subject: `[ChemVault Forms] ${submission.type}: ${submission.subject}`,
+    text: [
+      "New ChemVault Forms submission",
+      "",
+      `Submitted: ${submission.createdAt}`,
+      `Tracking ID: ${submission.publicTrackingId}`,
+      `Submission ID: ${submission.id}`,
+      `Name: ${submission.name || "Not provided"}`,
+      `Email: ${submission.email || "Not provided"}`,
+      `Type: ${submission.type}`,
+      `Priority: ${submission.priority}`,
+      `Subject: ${submission.subject}`,
+      `Source page: ${submission.sourceUrl || "Not provided"}`,
+      `Admin link: ${adminUrl}`,
+      "",
+      "Message:",
+      submission.message
+    ].join("\n")
+  });
+}
+
+async function sendResendEmail(env, email) {
+  const apiKey = clean(env?.RESEND_API_KEY);
+  const recipients = Array.isArray(email.to) ? email.to.map(clean).filter(Boolean) : [clean(email.to)].filter(Boolean);
+  if (!apiKey || !recipients.length || typeof fetch !== "function") {
+    return { ok: false, skipped: true, reason: "not_configured" };
+  }
+  try {
+    const response = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        authorization: `Bearer ${apiKey}`,
+        "content-type": "application/json"
+      },
+      body: JSON.stringify({
+        from: email.from,
+        to: recipients,
+        subject: email.subject,
+        text: email.text
+      })
+    });
+    let payload = {};
+    try {
+      payload = await response.json();
+    } catch {
+      payload = {};
+    }
+    if (!response.ok) return { ok: false, status: response.status, reason: "provider_rejected" };
+    return { ok: true, providerMessageId: clean(payload.id) };
+  } catch {
+    return { ok: false, reason: "provider_unavailable" };
+  }
+}
+
+function formsNotifyAddresses(env = {}) {
+  const configured = clean(env.FORMS_NOTIFY_TO || "forms@chemvault.science");
+  const recipients = configured.split(",").map((entry) => entry.trim()).filter(isEmail);
+  return recipients.length ? recipients : ["forms@chemvault.science"];
+}
+
+function formsFromAddress(env = {}) {
+  return clean(env.FORMS_FROM || "forms@chemvault.science");
+}
+
+function buildAdminFormUrl(env, request, id) {
+  const configuredOrigin = clean(env.PUBLIC_APP_URL).replace(/\/+$/, "");
+  const origin = configuredOrigin || new URL(request.url).origin;
+  return `${origin}/admin/forms/${encodeURIComponent(id)}`;
+}
+
+function adminActorFromRequest(request) {
+  return clean(
+    request.headers.get("x-admin-user")
+      || request.headers.get("cf-access-authenticated-user-email")
+      || "chemvault-admin"
+  );
+}
+
+async function hashClientIp(request, env = {}) {
+  const ip = getClientIp(request);
+  const salt = clean(env.FORMS_IP_HASH_SALT || "chemvault-forms");
+  const subtle = globalThis.crypto?.subtle;
+  if (!subtle || !globalThis.TextEncoder) return "";
+  const input = new TextEncoder().encode(`${ip}:${salt}`);
+  const digest = await subtle.digest("SHA-256", input);
+  return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+
+function createTrackingId() {
+  const date = new Date().toISOString().slice(0, 10).replace(/-/g, "");
+  const uuid = globalThis.crypto?.randomUUID?.().replace(/-/g, "") || Math.random().toString(36).slice(2);
+  return `CVF-${date}-${uuid.slice(0, 8).toUpperCase()}`;
+}
+
+function limitText(value, max) {
+  return clean(value).slice(0, max);
+}
+
+function csvCell(value) {
+  const text = String(value ?? "");
+  return `"${text.replace(/"/g, '""')}"`;
+}
+
+async function createGitHubIssueFallback(env, submission) {
+  if (submission.type === "security") return { ok: false, reason: "security_reports_do_not_use_public_issues" };
+  const token = clean(env.GITHUB_FEEDBACK_TOKEN);
+  const repo = clean(env.GITHUB_FEEDBACK_REPO || "Eddy-ZM/chemvault");
+  if (!token || !repo || typeof fetch !== "function") return { ok: false, reason: "not_configured" };
+  const labels = clean(env.GITHUB_FEEDBACK_LABELS || "feedback,forms-fallback")
+    .split(",")
+    .map((label) => label.trim())
+    .filter(Boolean)
+    .slice(0, 10);
+  const response = await fetch(`https://api.github.com/repos/${repo}/issues`, {
+    method: "POST",
+    headers: {
+      accept: "application/vnd.github+json",
+      authorization: `Bearer ${token}`,
+      "content-type": "application/json",
+      "user-agent": "chemvault-forms"
+    },
+    body: JSON.stringify({
+      title: `[ChemVault Feedback] ${submission.subject}`,
+      labels,
+      body: [
+        "Compatibility fallback issue from ChemVault Forms.",
+        "",
+        `Type: ${submission.type}`,
+        `Tracking ID: ${submission.publicTrackingId}`,
+        `Source: ${submission.sourceUrl || "Not provided"}`,
+        `Contact email provided: ${submission.email ? "yes" : "no"}`,
+        "",
+        "Message:",
+        submission.message
+      ].join("\n")
+    })
+  });
+  if (!response.ok) return { ok: false, reason: "provider_rejected" };
+  let payload = {};
+  try {
+    payload = await response.json();
+  } catch {
+    payload = {};
+  }
+  return { ok: true, issueUrl: clean(payload.html_url) };
+}
+
 async function writeAdminAuditLog(env, request, event) {
   if (!env?.DB?.prepare) return;
   const metadata = redactMetadata(event.metadata || {});
@@ -1596,6 +2466,9 @@ async function writeAdminAuditLog(env, request, event) {
 }
 
 function requireAdminAccess(request, env) {
+  const auth = request.headers.get("authorization") || "";
+  const token = clean(env.CHEMVAULT_ADMIN_TOKEN);
+  if (token && auth === `Bearer ${token}`) return { ok: true };
   const plan = resolveServerPlan(request, env);
   if (plan === "admin") return { ok: true };
   return {

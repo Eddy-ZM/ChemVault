@@ -520,6 +520,7 @@
                   <a class="footer-social" href="/pages/search.html" aria-label="Search ChemVault">Compound Search</a>
                   <a class="footer-social" href="/pages/platform.html" aria-label="Open platform">Platform</a>
                   <a class="footer-social" href="/pages/public-data.html" aria-label="Open public data overview">Public Data</a>
+                  <a class="footer-social" href="/feedback" aria-label="Open ChemVault feedback form">Feedback</a>
                 </div>
               </div>
               <div class="footer-link-groups">
@@ -558,7 +559,7 @@
                   <a href="/privacy">Privacy Policy</a>
                   <a href="/terms">Terms of Service</a>
                   <a href="/security">Security / Abuse</a>
-                  <a href="https://forms.chemvault.science/" target="_blank" rel="noopener noreferrer">Forms / Feedback</a>
+                  <a href="/feedback">Forms / Feedback</a>
                   <a href="https://github.com/Eddy-ZM" target="_blank" rel="noopener noreferrer">GitHub</a>
                   <span>Independent academic technology initiative</span>
                   <span>© 2026 ChemVault</span>
@@ -578,6 +579,7 @@
                 <a href="/pages/platform.html">Platform</a>
                 <a href="/pages/team.html">Team</a>
                 <a href="/pages/contact.html">Contact</a>
+                <a href="/feedback">Feedback</a>
                 <a href="/privacy">Privacy</a>
                 <a href="/terms">Terms</a>
                 <a href="/security">Security</a>

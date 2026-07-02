@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Forms / Feedback | ChemVault</title>
+  <meta name="description" content="Submit ChemVault feedback, product issues, security reports, privacy requests and platform questions." />
+  <meta name="theme-color" content="#f5f5f7" />
+  <script src="/scripts/boot.js?v=20260618c"></script>
+  <link rel="canonical" href="https://chemvault.science/feedback" />
+  <link rel="icon" href="/favicon.ico?v=20260628a" sizes="any" />
+  <link rel="icon" href="/assets/chemvault-logo-mark.png?v=20260628a" type="image/png" sizes="512x512" />
+  <link rel="apple-touch-icon" href="/assets/chemvault-apple-touch-icon.png?v=20260628a" />
+  <link rel="manifest" href="/site.webmanifest" />
+  <link rel="stylesheet" href="../assets/styles.css?v=20260702b" />
+  <link rel="stylesheet" href="../assets/forms-admin.css?v=20260702a" />
+  <script src="../scripts/motion.js?v=20260618c" defer></script>
+  <script src="../scripts/site-shell.js?v=20260702b" defer></script>
+  <script src="../scripts/forms-feedback.js?v=20260702a" defer></script>
+</head>
+<body class="page-shell forms-page" data-boot-label="Forms">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="container nav-shell">
+      <a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true"><img src="../assets/chemvault-logo-mark.png" alt="" /></span><span><strong>ChemVault</strong><small>forms and feedback</small></span></a>
+      <button class="icon-button menu-toggle" type="button" aria-label="Open navigation" aria-expanded="false"><span></span><span></span><span></span></button>
+      <nav class="site-nav" aria-label="Main navigation">
+        <a href="../index.html">Home</a>
+        <a href="search.html">Compound Search</a>
+        <a href="platform.html">Platform</a>
+        <a href="pricing.html">Pricing</a>
+        <a href="contact.html">Contact</a>
+        <a href="feedback.html" aria-current="page">Feedback</a>
+      </nav>
+      <div class="header-actions"><label class="search-shell" for="shellSearch"><span>Search</span><input id="shellSearch" type="search" placeholder="Search ChemVault..." /></label><button class="theme-toggle" type="button" data-shell-action="theme" aria-label="Switch theme"><span class="theme-toggle__icon" aria-hidden="true"></span></button></div>
+    </div>
+    <div class="container shell-search-results" id="shellSearchResults" aria-live="polite"></div>
+  </header>
+
+  <main id="main">
+    <section class="forms-hero">
+      <div class="container forms-hero__grid">
+        <div>
+          <span class="section-kicker">Forms / Feedback</span>
+          <h1>Send feedback to ChemVault.</h1>
+          <p>Use this intake point for product feedback, bugs, feature requests, account questions, privacy requests and security reports. Submissions are stored in the ChemVault Forms admin system.</p>
+        </div>
+        <aside class="forms-hero__side" aria-label="Feedback routing">
+          <div><span>Notify</span><strong>forms@chemvault.science</strong></div>
+          <div><span>Tracking</span><strong>Every saved submission returns a tracking ID.</strong></div>
+          <div><span>Security</span><strong>Security reports stay off public GitHub Issues.</strong></div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="forms-section">
+      <div class="container forms-layout">
+        <section class="forms-panel" aria-labelledby="feedback-form-title">
+          <div class="forms-panel__header">
+            <div>
+              <h2 id="feedback-form-title">Submit a form</h2>
+              <p data-feedback-helper>If you include an email, ChemVault admins may reply by email.</p>
+            </div>
+          </div>
+          <form class="forms-form" data-feedback-form>
+            <div class="forms-grid">
+              <div class="forms-field">
+                <label for="feedbackType">Type</label>
+                <select id="feedbackType" name="type" required>
+                  <option value="feedback">General feedback</option>
+                  <option value="bug">Bug report</option>
+                  <option value="feature">Feature request</option>
+                  <option value="question">Question</option>
+                  <option value="security">Security report</option>
+                  <option value="privacy">Privacy request</option>
+                  <option value="account">Account request</option>
+                  <option value="billing">Billing</option>
+                  <option value="beta">Beta / TestFlight</option>
+                  <option value="enterprise">Enterprise / Lab</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+              <div class="forms-field">
+                <label for="feedbackEmail">Email</label>
+                <input id="feedbackEmail" name="email" type="email" autocomplete="email" maxlength="254" placeholder="you@example.com" />
+              </div>
+              <div class="forms-field">
+                <label for="feedbackName">Name</label>
+                <input id="feedbackName" name="name" type="text" autocomplete="name" maxlength="120" placeholder="Optional" />
+              </div>
+              <div class="forms-field">
+                <label for="feedbackSource">Source page</label>
+                <input id="feedbackSource" name="source_url" type="url" maxlength="500" />
+              </div>
+              <div class="forms-field forms-field--wide">
+                <label for="feedbackSubject">Subject</label>
+                <input id="feedbackSubject" name="subject" type="text" required maxlength="180" placeholder="Short summary" />
+              </div>
+              <div class="forms-field forms-field--wide">
+                <label for="feedbackMessage">Message</label>
+                <textarea id="feedbackMessage" name="message" required maxlength="8000" placeholder="Include enough detail for the ChemVault team to review."></textarea>
+              </div>
+            </div>
+            <div class="forms-actions">
+              <button class="forms-button" type="submit" data-feedback-submit>Submit</button>
+              <a class="forms-button forms-button--ghost" href="/security">Security policy</a>
+            </div>
+            <p class="forms-status" data-feedback-status aria-live="polite"></p>
+          </form>
+        </section>
+
+        <aside class="forms-panel">
+          <div class="forms-panel__header">
+            <div>
+              <h3>Routing</h3>
+              <p>Security and privacy items are handled in private admin workflows.</p>
+            </div>
+          </div>
+          <ul class="forms-note-list">
+            <li>Regular feedback is saved to D1 first and can use the compatibility GitHub fallback only when the forms endpoint is unavailable.</li>
+            <li>Security reports are never sent to public GitHub Issue fallback.</li>
+            <li>Submission email notifications go to forms@chemvault.science when Resend is configured.</li>
+          </ul>
+        </aside>
+      </div>
+    </section>
+  </main>
+  <script src="/scripts/visual-effects.js?v=20260702c" defer></script>
+</body>
+</html>

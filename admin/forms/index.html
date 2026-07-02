@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Forms Admin | ChemVault</title>
+  <meta name="robots" content="noindex,nofollow" />
+  <meta name="theme-color" content="#f5f5f7" />
+  <script src="/scripts/boot.js?v=20260618c"></script>
+  <link rel="icon" href="/favicon.ico?v=20260628a" sizes="any" />
+  <link rel="icon" href="/assets/chemvault-logo-mark.png?v=20260628a" type="image/png" sizes="512x512" />
+  <link rel="apple-touch-icon" href="/assets/chemvault-apple-touch-icon.png?v=20260628a" />
+  <link rel="stylesheet" href="/assets/styles.css?v=20260702b" />
+  <link rel="stylesheet" href="/assets/forms-admin.css?v=20260702a" />
+  <script src="/scripts/site-shell.js?v=20260702b" defer></script>
+  <script src="/scripts/forms-admin.js?v=20260702a" defer></script>
+</head>
+<body class="page-shell forms-admin-shell" data-boot-label="Forms Admin" data-admin-forms-list>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="container nav-shell">
+      <a class="brand" href="/index.html"><span class="brand-mark" aria-hidden="true"><img src="/assets/chemvault-logo-mark.png" alt="" /></span><span><strong>ChemVault</strong><small>forms admin</small></span></a>
+      <button class="icon-button menu-toggle" type="button" aria-label="Open navigation" aria-expanded="false"><span></span><span></span><span></span></button>
+      <nav class="site-nav" aria-label="Main navigation">
+        <a href="/admin/forms/" aria-current="page">Forms</a>
+        <a href="/feedback">Feedback page</a>
+        <a href="/pages/contact.html">Contact</a>
+        <a href="/index.html">Main site</a>
+      </nav>
+      <div class="header-actions"><button class="theme-toggle" type="button" data-shell-action="theme" aria-label="Switch theme"><span class="theme-toggle__icon" aria-hidden="true"></span></button></div>
+    </div>
+  </header>
+
+  <main id="main" class="forms-admin-main">
+    <div class="container">
+      <div class="forms-admin-header">
+        <div>
+          <span class="section-kicker">Forms / Feedback</span>
+          <h1>Submission table</h1>
+          <p data-admin-summary>Loading submissions...</p>
+        </div>
+        <a class="forms-button forms-button--ghost" href="/feedback">Open public form</a>
+      </div>
+
+      <section class="forms-panel" aria-label="Admin token">
+        <div class="forms-form forms-token-row">
+          <input class="forms-token" type="password" autocomplete="off" data-admin-token placeholder="CHEMVAULT_ADMIN_TOKEN" />
+          <button class="forms-button forms-button--quiet" type="button" data-admin-token-save>Use token</button>
+        </div>
+      </section>
+
+      <section class="forms-toolbar" aria-label="Table controls">
+        <input type="search" data-admin-search placeholder="Search subject, message, email" />
+        <select data-admin-status>
+          <option value="">All statuses</option>
+          <option value="new">new</option>
+          <option value="reviewing">reviewing</option>
+          <option value="waiting_user">waiting_user</option>
+          <option value="resolved">resolved</option>
+          <option value="closed">closed</option>
+        </select>
+        <select data-admin-type>
+          <option value="">All types</option>
+          <option value="feedback">feedback</option>
+          <option value="bug">bug</option>
+          <option value="feature">feature</option>
+          <option value="question">question</option>
+          <option value="security">security</option>
+          <option value="privacy">privacy</option>
+          <option value="account">account</option>
+          <option value="billing">billing</option>
+          <option value="beta">beta</option>
+          <option value="enterprise">enterprise</option>
+          <option value="other">other</option>
+        </select>
+        <select data-admin-priority>
+          <option value="">All priorities</option>
+          <option value="low">low</option>
+          <option value="normal">normal</option>
+          <option value="high">high</option>
+          <option value="urgent">urgent</option>
+        </select>
+        <select data-admin-direction>
+          <option value="desc">Newest first</option>
+          <option value="asc">Oldest first</option>
+        </select>
+        <button class="forms-button forms-button--quiet" type="button" data-admin-export>Export CSV</button>
+      </section>
+
+      <section class="forms-bulkbar" aria-label="Bulk actions">
+        <div>
+          <select data-admin-bulk-status>
+            <option value="">Set status</option>
+            <option value="new">new</option>
+            <option value="reviewing">reviewing</option>
+            <option value="waiting_user">waiting_user</option>
+            <option value="resolved">resolved</option>
+            <option value="closed">closed</option>
+          </select>
+          <button class="forms-button forms-button--quiet" type="button" data-admin-bulk-apply>Apply to selected</button>
+        </div>
+        <p class="forms-status" data-admin-status-message aria-live="polite"></p>
+      </section>
+
+      <div class="forms-table-wrap">
+        <table class="forms-table">
+          <thead>
+            <tr>
+              <th class="col-check"><input type="checkbox" data-admin-check-all aria-label="Select all submissions" /></th>
+              <th class="col-id">ID</th>
+              <th class="col-date">Time</th>
+              <th class="col-type">Type</th>
+              <th class="col-email">Email</th>
+              <th class="col-title">Title</th>
+              <th class="col-status">Status</th>
+              <th class="col-priority">Priority</th>
+              <th class="col-owner">Owner</th>
+            </tr>
+          </thead>
+          <tbody data-admin-table>
+            <tr><td colspan="9">Loading...</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <nav class="forms-pagination" aria-label="Pagination">
+        <div>
+          <button class="forms-button forms-button--quiet" type="button" data-admin-prev>Previous</button>
+          <button class="forms-button forms-button--quiet" type="button" data-admin-next>Next</button>
+        </div>
+        <div>
+          <span data-admin-page>Page 1</span>
+          <select data-admin-limit>
+            <option value="25">25 rows</option>
+            <option value="50" selected>50 rows</option>
+            <option value="100">100 rows</option>
+          </select>
+        </div>
+      </nav>
+    </div>
+  </main>
+</body>
+</html>
