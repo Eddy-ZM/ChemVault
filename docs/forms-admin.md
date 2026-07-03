@@ -70,7 +70,7 @@ Configure these in Cloudflare Pages for the target environment. Do not commit re
 | `CHEMVAULT_ADMIN_EMAILS` | Yes | Comma-separated allow-list for authenticated admin emails. Default production values are `ziwen.mu@chemvault.science,admin@chemvault.science`. |
 | `USER_SYSTEM_ORIGIN` | Recommended | ChemVault User Center origin used for `/api/access/check` permission validation. |
 | `CHEMVAULT_ADMIN_TOKEN` | Emergency fallback | Legacy fallback token. Store only as a Cloudflare secret. |
-| `CHEMVAULT_ADMIN_TOKEN_FALLBACK` | Optional | Set `false` after Cloudflare Access/User Center login is confirmed. |
+| `CHEMVAULT_ADMIN_TOKEN_FALLBACK` | Optional emergency only | Keep `false` in production unless a temporary break-glass token window is explicitly needed. |
 | `PUBLIC_APP_URL` | Recommended | Used to generate admin links inside notification emails. |
 | `GITHUB_FEEDBACK_TOKEN` | Optional | Non-security compatibility fallback only. |
 | `GITHUB_FEEDBACK_REPO` | Optional | Fallback repo, default `Eddy-ZM/chemvault`. |
@@ -92,7 +92,7 @@ The admin APIs and `/admin/*` pages require an authenticated administrator ident
 
 - Cloudflare Access authenticated email in `CHEMVAULT_ADMIN_EMAILS`;
 - ChemVault User Center account with the required `main_admin:*` permission and an email in `CHEMVAULT_ADMIN_EMAILS`;
-- legacy `CHEMVAULT_ADMIN_TOKEN` only when `CHEMVAULT_ADMIN_TOKEN_FALLBACK` is not disabled.
+- legacy `CHEMVAULT_ADMIN_TOKEN` only when `CHEMVAULT_ADMIN_TOKEN_FALLBACK=true`.
 
 Configure Cloudflare Access for `/admin/*` and `/api/admin/*` with an include policy for:
 
@@ -101,7 +101,7 @@ Configure Cloudflare Access for `/admin/*` and `/api/admin/*` with an include po
 
 ChemVault User Center must include the permissions from `db/migrations/008_main_site_admin_permissions.sql` in the User Center repository. The main site still checks `CHEMVAULT_ADMIN_EMAILS`, so granting a permission to another User Center account is not sufficient unless that email is also allow-listed.
 
-The admin UI at `/admin/login/` can use the fallback token to set an HttpOnly `chemvault_admin_session` cookie. Do not distribute this fallback token; disable it once Cloudflare Access/User Center admin login is verified.
+The admin UI at `/admin/login/` only shows the emergency token input when `CHEMVAULT_ADMIN_TOKEN_FALLBACK=true`. Do not distribute this fallback token; keep the fallback disabled for normal production operation.
 
 ## Security report handling
 
@@ -138,9 +138,10 @@ $body = @{
 Invoke-RestMethod -Uri "http://127.0.0.1:8788/api/forms/submit" -Method Post -Headers $headers -Body $body
 ```
 
-Admin list:
+Admin list with a temporary local fallback token:
 
 ```powershell
+$env:CHEMVAULT_ADMIN_TOKEN_FALLBACK = "true"
 $adminHeaders = @{ "authorization" = "Bearer <CHEMVAULT_ADMIN_TOKEN>" }
 Invoke-RestMethod -Uri "http://127.0.0.1:8788/api/admin/forms" -Headers $adminHeaders
 ```

@@ -322,9 +322,22 @@ test("admin forms API rejects authenticated but unapproved admin email", async (
   assert.match(payload.message, /not-admin@chemvault\.science/);
 });
 
+test("admin session reports disabled legacy token fallback", async () => {
+  const { response, payload } = await callApi("admin/session", {
+    env: {
+      CHEMVAULT_ADMIN_TOKEN: "admin_test_token",
+      CHEMVAULT_ADMIN_TOKEN_FALLBACK: "false"
+    }
+  });
+  assert.equal(response.status, 403);
+  assert.equal(payload.ok, false);
+  assert.equal(payload.legacyTokenEnabled, false);
+});
+
 test("admin session can use legacy token fallback cookie", async () => {
   const env = {
-    CHEMVAULT_ADMIN_TOKEN: "admin_test_token"
+    CHEMVAULT_ADMIN_TOKEN: "admin_test_token",
+    CHEMVAULT_ADMIN_TOKEN_FALLBACK: "true"
   };
   const login = await callApi("admin/session", {
     method: "POST",
@@ -383,6 +396,7 @@ test("admin can update submission status and save reply", async () => {
     const env = {
       DB: db,
       CHEMVAULT_ADMIN_TOKEN: "admin_test_token",
+      CHEMVAULT_ADMIN_TOKEN_FALLBACK: "true",
       RESEND_API_KEY: "test_resend_key",
       FORMS_NOTIFY_TO: "forms@chemvault.science",
       FORMS_FROM: "forms@chemvault.science"

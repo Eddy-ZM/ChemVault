@@ -41,12 +41,12 @@
               Use Cloudflare Access or a ChemVault User account with the main-site admin permissions. Approved emails are managed by CHEMVAULT_ADMIN_EMAILS.
             </div>
           </div>
-          <div class="forms-field">
-            <label for="adminToken">Fallback admin token</label>
-            <input id="adminToken" class="forms-token" type="password" autocomplete="off" data-admin-token placeholder="Only for emergency fallback" />
+          <div class="forms-field" data-admin-token-panel hidden>
+            <label for="adminToken">Emergency admin token</label>
+            <input id="adminToken" class="forms-token" type="password" autocomplete="off" data-admin-token placeholder="Only when token fallback is enabled" />
           </div>
           <div class="forms-actions">
-            <button class="forms-button" type="button" data-admin-token-save>Use fallback token</button>
+            <button class="forms-button" type="button" data-admin-token-save hidden>Use emergency token</button>
             <a class="forms-button forms-button--quiet" href="https://user.chemvault.science/login">Open User Center</a>
           </div>
           <p class="forms-status" data-admin-login-status aria-live="polite"></p>

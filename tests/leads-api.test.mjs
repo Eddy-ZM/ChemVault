@@ -372,7 +372,7 @@ test("newsletter subscriber is upserted once and can unsubscribe by token", asyn
 
 test("admin leads API requires token and supports detail/status update", async () => {
   const db = new LeadsD1Mock();
-  const env = { DB: db, CHEMVAULT_ADMIN_TOKEN: "admin_test_token" };
+  const env = { DB: db, CHEMVAULT_ADMIN_TOKEN: "admin_test_token", CHEMVAULT_ADMIN_TOKEN_FALLBACK: "true" };
   const created = await callApi("leads", {
     method: "POST",
     env,

@@ -2954,7 +2954,7 @@ async function createGitHubIssueFallback(env, submission) {
 async function handleAdminSessionRequest(request, env = {}) {
   if (request.method === "GET") {
     const admin = await requireAdminAccess(request, env, { permission: ADMIN_ACCESS_PERMISSION, label: "Admin session" });
-    if (!admin.ok) return json(admin, 403);
+    if (!admin.ok) return json({ ...admin, legacyTokenEnabled: legacyAdminTokenEnabled(env) }, 403);
     return json({
       ok: true,
       identity: publicAdminIdentity(admin.identity),

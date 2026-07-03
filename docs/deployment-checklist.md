@@ -84,7 +84,7 @@ Recommended Production variables:
 - Configure `CHEMVAULT_ADMIN_EMAILS` for the authenticated administrator allow-list.
 - Configure Cloudflare Access for `/admin/*` and `/api/admin/*` with the same allowed emails.
 - Configure `USER_SYSTEM_ORIGIN` if ChemVault User Center permission checks should authorize main-site admin access.
-- Configure `CHEMVAULT_ADMIN_TOKEN` only as an emergency fallback secret, and set `CHEMVAULT_ADMIN_TOKEN_FALLBACK=false` after Cloudflare Access/User Center login is verified.
+- Configure `CHEMVAULT_ADMIN_TOKEN` only as an emergency fallback secret, and keep `CHEMVAULT_ADMIN_TOKEN_FALLBACK=false` unless a temporary break-glass window is explicitly needed.
 - Configure `FORMS_IP_HASH_SALT` as a Cloudflare secret before production Forms launch.
 - Configure `LEADS_IP_HASH_SALT` as a Cloudflare secret before production lead/newsletter launch, or let leads reuse `FORMS_IP_HASH_SALT`.
 - Configure `GITHUB_FEEDBACK_TOKEN` only if non-security `/api/feedback` fallback issue creation is required.
@@ -169,7 +169,7 @@ After deployment:
 3. Configure `RESEND_API_KEY` as a secret.
 4. Verify the sending domain in Resend, then set `LEADS_FROM` or `FORMS_FROM` to an allowed address.
 5. Configure `LEADS_NOTIFY_TO` or `FORMS_NOTIFY_TO` for the administrator inbox.
-6. Configure `CHEMVAULT_ADMIN_TOKEN` for `/api/admin/leads` and `/admin/leads`.
+6. Verify `/admin/leads` with Cloudflare Access or ChemVault User admin permissions. Use `CHEMVAULT_ADMIN_TOKEN_FALLBACK=true` only for a temporary emergency token window.
 7. Submit a real lead from the frontend and verify D1 insertion, admin notification email, user confirmation email, newsletter subscriber upsert when applicable, and visibility in `/admin/leads`.
 
 ## Product Smoke Checks
@@ -184,7 +184,7 @@ After deployment:
 - `/pages/molecular-modeling`
 - `/pages/mail`
 - `/feedback`
-- `/admin/login` redirects authenticated admins or accepts the emergency fallback token.
+- `/admin/login` redirects authenticated admins and hides the emergency token field when fallback is disabled.
 - `/admin/forms` with Cloudflare Access or ChemVault User admin permission.
 - `/404.html`
 - Pricing page is accessible.

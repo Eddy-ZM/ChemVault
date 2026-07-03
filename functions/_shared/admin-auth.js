@@ -90,7 +90,7 @@ export function clearAdminSessionCookie(env = {}, request) {
 
 export function legacyAdminTokenEnabled(env = {}) {
   const value = clean(env.CHEMVAULT_ADMIN_TOKEN_FALLBACK || env.CHEMVAULT_ADMIN_TOKEN_ENABLED).toLowerCase();
-  return value !== "false" && value !== "disabled";
+  return value === "true" || value === "enabled" || value === "1" || value === "yes";
 }
 
 function accessEmailIdentity(request, env = {}) {

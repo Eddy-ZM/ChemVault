@@ -52,8 +52,15 @@
       return;
     }
     if (label) label.textContent = "Admin sign-in required";
-    if (detail) detail.textContent = result.payload?.message || result.payload?.error || "Use Cloudflare Access, ChemVault User permissions, or the fallback token.";
-    if (panel) panel.hidden = false;
+    const fallbackEnabled = result.payload?.legacyTokenEnabled === true;
+    if (detail) {
+      detail.textContent = result.payload?.message
+        || result.payload?.error
+        || (fallbackEnabled
+          ? "Use Cloudflare Access, ChemVault User permissions, or the emergency token."
+          : "Use Cloudflare Access or ChemVault User permissions.");
+    }
+    if (panel) panel.hidden = !fallbackEnabled;
   }
 
   function initLeadList() {

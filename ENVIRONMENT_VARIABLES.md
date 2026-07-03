@@ -15,7 +15,7 @@ Last reviewed: July 3, 2026
 | `CHEMVAULT_ADMIN_EMAILS` | Allowed main-site administrator emails | No | Yes for `/admin/*` | Moderate | `ziwen.mu@chemvault.science,admin@chemvault.science` | Used after Cloudflare Access or ChemVault User authentication. Email is not enough by itself; the request must also be authenticated. |
 | `USER_SYSTEM_ORIGIN` | ChemVault User Center origin for permission checks | No | Recommended | No | `https://user.chemvault.science` | Main site calls `/api/access/check` with the user session cookie when available. |
 | `CHEMVAULT_ADMIN_TOKEN` | Legacy main admin fallback token | No | Emergency fallback only | Yes | `replace_with_secure_token` | Store only as a Cloudflare secret. Prefer Cloudflare Access or ChemVault User permissions. |
-| `CHEMVAULT_ADMIN_TOKEN_FALLBACK` | Enables legacy admin-token fallback | No | Optional | No | `true` | Set `false` after Cloudflare Access/User Center admin login is fully confirmed. |
+| `CHEMVAULT_ADMIN_TOKEN_FALLBACK` | Enables legacy admin-token fallback | No | Optional emergency only | No | `false` | Keep `false` in production unless a temporary break-glass token window is explicitly needed. |
 | `CLOUDFLARE_API_TOKEN` | Cloudflare deployment/API access | No | Yes for deploy | Yes | `your_cloudflare_api_token_here` | Store in GitHub Secrets or Cloudflare. Rotate if exposed. |
 | `CLOUDFLARE_ACCOUNT_ID` | Cloudflare account id | No | Yes for deploy | Low | `your_cloudflare_account_id_here` | Not a secret alone, but treat as operational config. |
 | `CLOUDFLARE_ZONE_ID` | Cloudflare zone id | No | If used | Low | `your_cloudflare_zone_id_here` | Needed by some deploy workflows. |

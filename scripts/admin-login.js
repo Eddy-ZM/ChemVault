@@ -1,6 +1,7 @@
 (function () {
   const tokenInput = document.querySelector("[data-admin-token]");
   const tokenSave = document.querySelector("[data-admin-token-save]");
+  const tokenPanel = document.querySelector("[data-admin-token-panel]");
   const summary = document.querySelector("[data-admin-login-summary]");
   const statusNode = document.querySelector("[data-admin-login-status]");
   const returnTo = safeReturnTo(new URLSearchParams(window.location.search).get("return_to") || "/admin/forms/");
@@ -16,7 +17,12 @@
       window.location.assign(returnTo);
       return;
     }
-    if (summary) summary.textContent = "Sign in with Cloudflare Access, User Center permissions, or fallback token.";
+    const fallbackEnabled = result.payload?.legacyTokenEnabled === true;
+    if (tokenPanel) tokenPanel.hidden = !fallbackEnabled;
+    if (tokenSave) tokenSave.hidden = !fallbackEnabled;
+    if (summary) summary.textContent = fallbackEnabled
+      ? "Sign in with Cloudflare Access, User Center permissions, or emergency token."
+      : "Sign in with Cloudflare Access or User Center permissions.";
   }
 
   async function loginWithToken() {
