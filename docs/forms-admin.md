@@ -2,7 +2,7 @@
 
 Last reviewed: July 2, 2026
 
-ChemVault Forms replaces the old public GitHub-Issue-only feedback path with a private D1-backed intake and admin workflow. The compatibility `/api/feedback` endpoint remains available, but security reports must never fall back to public GitHub Issues.
+ChemVault Forms replaces the old public GitHub-Issue-only feedback path with a private D1-backed intake, admin workflow, email notification flow and public ticket lookup. The compatibility `/api/feedback` endpoint remains available, but it stores submissions in the same private Forms system and does not create GitHub Issues.
 
 Commercial leads use the same protected administrator workflow at `/admin/leads` and `/api/admin/leads`. Lead email notifications reuse `RESEND_API_KEY`, `FORMS_NOTIFY_TO` and `FORMS_FROM` unless `LEADS_NOTIFY_TO` or `LEADS_FROM` are configured.
 
@@ -18,6 +18,7 @@ Official references:
 Public:
 
 - `POST /api/forms/submit`
+- `GET /api/forms/lookup?ticket=CVF-YYYYMMDD-...`
 - `POST /api/feedback` compatibility path
 - `/feedback` public form page
 
@@ -72,9 +73,6 @@ Configure these in Cloudflare Pages for the target environment. Do not commit re
 | `CHEMVAULT_ADMIN_TOKEN` | Emergency fallback | Legacy fallback token. Store only as a Cloudflare secret. |
 | `CHEMVAULT_ADMIN_TOKEN_FALLBACK` | Optional emergency only | Keep `false` in production unless a temporary break-glass token window is explicitly needed. |
 | `PUBLIC_APP_URL` | Recommended | Used to generate admin links inside notification emails. |
-| `GITHUB_FEEDBACK_TOKEN` | Optional | Non-security compatibility fallback only. |
-| `GITHUB_FEEDBACK_REPO` | Optional | Fallback repo, default `Eddy-ZM/chemvault`. |
-| `GITHUB_FEEDBACK_LABELS` | Optional | Comma-separated fallback issue labels. |
 
 ## Resend setup
 
@@ -106,9 +104,17 @@ The admin UI at `/admin/login/` only shows the emergency token input when `CHEMV
 ## Security report handling
 
 - `type=security` submissions are private D1 records.
-- Security reports do not create public GitHub Issues.
+- No Forms submission creates public GitHub Issues.
 - Do not paste vulnerability details into public URLs, issue trackers, logs, or screenshots.
 - Use `/admin/forms` to triage, update status, add internal notes, and reply by email when the reporter provided an address.
+
+## Public ticket lookup
+
+- Successful submissions return a `CVF-YYYYMMDD-...` feedback ticket.
+- Users can enter that ticket on `/feedback#ticket-lookup` or call `GET /api/forms/lookup?ticket=...`.
+- The lookup response includes the submitted message, public status, priority, contact fields and saved replies.
+- The lookup response does not expose internal notes, assigned owner, admin identity, IP hash, user agent or email provider message IDs.
+- Treat the ticket as a private access token. New ticket IDs include a longer random suffix to reduce guessing risk.
 
 ## Local testing
 

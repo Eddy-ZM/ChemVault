@@ -14,7 +14,7 @@ import {
   requireAdminAccess
 } from "../_shared/admin-auth.js";
 
-const API_VERSION = "0.5.0";
+const API_VERSION = "0.5.1";
 let schemaReady = false;
 let formsSchemaReady = false;
 const rateLimitStore = new Map();
@@ -139,6 +139,7 @@ const jsonHeaders = {
 const rateLimitPolicies = {
   lead: { limit: 5, windowMs: 60 * 1000 },
   formsSubmit: { limit: 4, windowMs: 60 * 1000 },
+  formsLookup: { limit: 20, windowMs: 60 * 1000 },
   accountRequest: { limit: 3, windowMs: 60 * 60 * 1000 },
   adminRead: { limit: 30, windowMs: 60 * 1000 },
   adminWrite: { limit: 10, windowMs: 60 * 1000 },
@@ -326,6 +327,14 @@ export async function onRequest(context) {
       return json(stripHttpStatus(result), result.httpStatus || (result.ok ? 201 : 400));
     }
 
+    if (segments[0] === "forms" && segments[1] === "lookup") {
+      if (request.method !== "GET") return json({ error: "Method not allowed" }, 405);
+      const limited = checkRateLimit(request, "forms:lookup", rateLimitPolicies.formsLookup);
+      if (!limited.ok) return rateLimitResponse(limited);
+      const result = await lookupPublicFormSubmission(env, hasDb, url.searchParams);
+      return json(stripHttpStatus(result), result.httpStatus || (result.ok ? 200 : 404));
+    }
+
     if (segments[0] === "feedback") {
       if (request.method !== "POST") return json({ error: "Method not allowed" }, 405);
       const limited = checkRateLimit(request, "forms:feedback-compat", rateLimitPolicies.formsSubmit);
@@ -472,7 +481,7 @@ export async function onRequest(context) {
       return json(await getFacets(env, hasDb));
     }
 
-    return json({ error: "Not found", routes: ["/api/health", "/api/entitlements", "/api/leads", "/api/newsletter/unsubscribe", "/api/forms/submit", "/api/feedback", "/api/account/deletion-request", "/api/account/export-request", "/api/billing/checkout", "/api/export/compound", "/api/records", "/api/records/:type/:id", "/api/enrich", "/api/facets"] }, 404);
+    return json({ error: "Not found", routes: ["/api/health", "/api/entitlements", "/api/leads", "/api/newsletter/unsubscribe", "/api/forms/submit", "/api/forms/lookup", "/api/feedback", "/api/account/deletion-request", "/api/account/export-request", "/api/billing/checkout", "/api/export/compound", "/api/records", "/api/records/:type/:id", "/api/enrich", "/api/facets"] }, 404);
   } catch (error) {
     if (segments[0] === "forms" || segments[0] === "feedback" || segments[0] === "leads" || segments[0] === "newsletter" || segments[0] === "admin") {
       return json({
@@ -1025,7 +1034,7 @@ function parseConsentBoolean(value) {
 async function createFeedbackCompatibilitySubmission(env, body, request, hasDb) {
   return createFormSubmission(env, body, request, hasDb, {
     compatibilityMode: true,
-    allowGithubFallback: true
+    allowGithubFallback: false
   });
 }
 
@@ -1037,41 +1046,13 @@ async function createFormSubmission(env, body, request, hasDb, options = {}) {
 
   const submission = normalized.submission;
   if (!hasDb) {
-    if (options.allowGithubFallback && submission.type !== "security") {
-      const fallback = await createGitHubIssueFallback(env, submission);
-      if (fallback.ok) {
-        return {
-          ok: true,
-          submitted: true,
-          stored: false,
-          mode: "github_fallback",
-          issueUrl: fallback.issueUrl,
-          githubFallbackUsed: true,
-          trackingId: submission.publicTrackingId,
-          message: "Feedback was accepted through the compatibility GitHub Issue fallback.",
-          httpStatus: 202,
-          meta: { version: API_VERSION }
-        };
-      }
-      return {
-        ok: false,
-        submitted: false,
-        stored: false,
-        mode: "not_configured",
-        githubFallbackSkipped: fallback.reason || "not_configured",
-        error: "Forms database is not configured.",
-        httpStatus: 503
-      };
-    }
     return {
       ok: false,
       submitted: false,
       stored: false,
-      mode: "not_configured",
+      mode: "database_required",
       error: "Forms database is not configured.",
-      message: submission.type === "security"
-        ? "Security reports cannot use public GitHub Issue fallback."
-        : "Configure the D1 DB binding before accepting form submissions.",
+      message: "Feedback is not redirected to GitHub Issues. Configure the D1 DB binding before accepting form submissions.",
       httpStatus: 503
     };
   }
@@ -1170,7 +1151,7 @@ async function normalizeFormSubmission(body = {}, request, env = {}, options = {
     form_id: clean(body.formId).slice(0, 120),
     form_title: clean(body.formTitle).slice(0, 180),
     user_agent_present: Boolean(request.headers.get("user-agent")),
-    github_fallback_allowed: Boolean(options.allowGithubFallback),
+    public_issue_fallback: false,
     client_metadata: trimMetadata(body.metadata || body.metadata_json || {}),
     legacy_answers: answers.slice(0, 40)
   });
@@ -1268,6 +1249,56 @@ async function getFormSubmission(env, hasDb, id) {
     ok: true,
     submission: adminSubmissionShape(submission),
     replies: (replies.results || []).map(adminReplyShape),
+    meta: { version: API_VERSION }
+  };
+}
+
+async function lookupPublicFormSubmission(env, hasDb, params) {
+  if (!hasDb) {
+    return {
+      ok: false,
+      error: "Forms database is not configured.",
+      httpStatus: 503
+    };
+  }
+
+  const ticket = normalizeTrackingId(params.get("ticket") || params.get("trackingId") || params.get("id"));
+  if (!ticket) {
+    return {
+      ok: false,
+      error: "A valid feedback ticket number is required.",
+      httpStatus: 400
+    };
+  }
+
+  await ensureFormsSchema(env.DB);
+  const submission = await env.DB.prepare(`
+    SELECT id, created_at, updated_at, type, status, priority, name, email, subject, message,
+      source_url, public_tracking_id, metadata_json
+    FROM forms_submissions
+    WHERE public_tracking_id = ?
+    LIMIT 1
+  `).bind(ticket).first();
+  if (!submission) {
+    return {
+      ok: false,
+      error: "Feedback ticket not found.",
+      httpStatus: 404
+    };
+  }
+
+  const replies = await env.DB.prepare(`
+    SELECT id, created_at, to_email, subject, body, status
+    FROM forms_replies
+    WHERE submission_id = ?
+    ORDER BY created_at ASC
+  `).bind(submission.id).all();
+
+  return {
+    ok: true,
+    ticket: submission.public_tracking_id,
+    submission: publicLookupSubmissionShape(submission),
+    replies: (replies.results || []).map(publicReplyShape),
     meta: { version: API_VERSION }
   };
 }
@@ -2790,13 +2821,49 @@ function stringifyMetadata(metadata) {
 
 function publicSubmissionShape(submission) {
   return {
-    id: submission.id,
     trackingId: submission.publicTrackingId,
     type: submission.type,
     status: submission.status,
     priority: submission.priority,
     subject: submission.subject,
     createdAt: submission.createdAt
+  };
+}
+
+function publicLookupSubmissionShape(row) {
+  const metadata = safeJSON(row.metadata_json, {});
+  return {
+    trackingId: row.public_tracking_id || "",
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+    type: row.type,
+    status: row.status,
+    priority: row.priority,
+    name: row.name || "",
+    email: row.email || "",
+    subject: row.subject,
+    message: row.message,
+    sourceUrl: row.source_url || "",
+    answers: publicAnswerShapes(metadata.legacy_answers)
+  };
+}
+
+function publicAnswerShapes(answers) {
+  if (!Array.isArray(answers)) return [];
+  return answers.slice(0, 40).map((answer) => ({
+    label: limitText(answer?.label, 120),
+    value: limitText(answer?.value, 4000)
+  })).filter((answer) => answer.label || answer.value);
+}
+
+function publicReplyShape(row) {
+  return {
+    id: row.id,
+    createdAt: row.created_at,
+    toEmail: row.to_email || "",
+    subject: row.subject,
+    body: row.body,
+    status: row.status
   };
 }
 
@@ -2895,7 +2962,12 @@ async function hashClientIp(request, env = {}) {
 function createTrackingId() {
   const date = new Date().toISOString().slice(0, 10).replace(/-/g, "");
   const uuid = globalThis.crypto?.randomUUID?.().replace(/-/g, "") || Math.random().toString(36).slice(2);
-  return `CVF-${date}-${uuid.slice(0, 8).toUpperCase()}`;
+  return `CVF-${date}-${uuid.slice(0, 16).toUpperCase()}`;
+}
+
+function normalizeTrackingId(value) {
+  const ticket = clean(value).toUpperCase().replace(/\s+/g, "").slice(0, 80);
+  return /^CVF-\d{8}-[A-Z0-9]{6,32}$/.test(ticket) ? ticket : "";
 }
 
 function limitText(value, max) {
@@ -2905,50 +2977,6 @@ function limitText(value, max) {
 function csvCell(value) {
   const text = String(value ?? "");
   return `"${text.replace(/"/g, '""')}"`;
-}
-
-async function createGitHubIssueFallback(env, submission) {
-  if (submission.type === "security") return { ok: false, reason: "security_reports_do_not_use_public_issues" };
-  const token = clean(env.GITHUB_FEEDBACK_TOKEN);
-  const repo = clean(env.GITHUB_FEEDBACK_REPO || "Eddy-ZM/chemvault");
-  if (!token || !repo || typeof fetch !== "function") return { ok: false, reason: "not_configured" };
-  const labels = clean(env.GITHUB_FEEDBACK_LABELS || "feedback,forms-fallback")
-    .split(",")
-    .map((label) => label.trim())
-    .filter(Boolean)
-    .slice(0, 10);
-  const response = await fetch(`https://api.github.com/repos/${repo}/issues`, {
-    method: "POST",
-    headers: {
-      accept: "application/vnd.github+json",
-      authorization: `Bearer ${token}`,
-      "content-type": "application/json",
-      "user-agent": "chemvault-forms"
-    },
-    body: JSON.stringify({
-      title: `[ChemVault Feedback] ${submission.subject}`,
-      labels,
-      body: [
-        "Compatibility fallback issue from ChemVault Forms.",
-        "",
-        `Type: ${submission.type}`,
-        `Tracking ID: ${submission.publicTrackingId}`,
-        `Source: ${submission.sourceUrl || "Not provided"}`,
-        `Contact email provided: ${submission.email ? "yes" : "no"}`,
-        "",
-        "Message:",
-        submission.message
-      ].join("\n")
-    })
-  });
-  if (!response.ok) return { ok: false, reason: "provider_rejected" };
-  let payload = {};
-  try {
-    payload = await response.json();
-  } catch {
-    payload = {};
-  }
-  return { ok: true, issueUrl: clean(payload.html_url) };
 }
 
 async function handleAdminSessionRequest(request, env = {}) {

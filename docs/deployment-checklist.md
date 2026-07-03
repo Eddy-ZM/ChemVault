@@ -87,7 +87,6 @@ Recommended Production variables:
 - Configure `CHEMVAULT_ADMIN_TOKEN` only as an emergency fallback secret, and keep `CHEMVAULT_ADMIN_TOKEN_FALLBACK=false` unless a temporary break-glass window is explicitly needed.
 - Configure `FORMS_IP_HASH_SALT` as a Cloudflare secret before production Forms launch.
 - Configure `LEADS_IP_HASH_SALT` as a Cloudflare secret before production lead/newsletter launch, or let leads reuse `FORMS_IP_HASH_SALT`.
-- Configure `GITHUB_FEEDBACK_TOKEN` only if non-security `/api/feedback` fallback issue creation is required.
 - Keep payment secrets only in Cloudflare environment variables/secrets.
 - Do not expose `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, provider customer IDs or subscription IDs in frontend code.
 
@@ -138,7 +137,9 @@ npx wrangler d1 execute chemvault-production --remote --file=schema.sql
 - `POST /api/newsletter/unsubscribe` updates subscriber status when given a valid token.
 - `GET /api/admin/leads` returns 403 without an admin bearer token and lead rows with a valid token.
 - `POST /api/forms/submit` saves a feedback submission and returns a tracking ID.
-- `POST /api/forms/submit` with `type=security` saves privately and does not use public GitHub Issue fallback.
+- `POST /api/forms/submit` with `type=security` saves privately and does not create a public GitHub Issue.
+- `POST /api/feedback` remains a compatibility path that saves to the same private Forms system.
+- `GET /api/forms/lookup?ticket=<CVF ticket>` returns the user's submitted information and saved replies without internal admin fields.
 - `GET /api/admin/forms` returns 403 without an admin bearer token.
 - `GET /api/admin/forms` returns submissions with an admin bearer token.
 - `PATCH /api/admin/forms/:id` updates status, priority, owner or internal notes.
@@ -193,7 +194,7 @@ After deployment:
 - Newsletter and AI paper beta signup forms are visible.
 - Forms / Feedback entry is visible in the shared footer and points to `/feedback`.
 - Feedback form returns success state and tracking ID.
-- Security report type does not show public GitHub fallback.
+- Feedback failures do not show any public issue-tracker fallback.
 - Admin Forms table loads, filters, supports bulk status update and exports CSV.
 - Admin Forms detail page updates status/priority/internal notes and shows saved replies.
 - Dashboard/workbench page is accessible.

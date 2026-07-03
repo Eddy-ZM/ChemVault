@@ -3,6 +3,7 @@ import test from "node:test";
 import { onRequest } from "../functions/api/[[path]].js";
 
 async function callApi(path, { method = "GET", env = {}, body, headers = {} } = {}) {
+  const routePath = String(path).split("?")[0];
   const request = new Request(`https://chemvault.test/api/${path}`, {
     method,
     headers: {
@@ -14,7 +15,7 @@ async function callApi(path, { method = "GET", env = {}, body, headers = {} } = 
   const response = await onRequest({
     request,
     env,
-    params: { path }
+    params: { path: routePath }
   });
   const contentType = response.headers.get("content-type") || "";
   const payload = contentType.includes("application/json") ? await response.json() : await response.text();
@@ -257,7 +258,7 @@ test("regular form submission saves to D1 when email notification fails", async 
   }
 });
 
-test("security feedback compatibility path does not create public GitHub fallback", async () => {
+test("feedback compatibility path does not create public GitHub issues", async () => {
   const originalFetch = globalThis.fetch;
   let fetchCalls = 0;
   globalThis.fetch = async () => {
@@ -272,16 +273,16 @@ test("security feedback compatibility path does not create public GitHub fallbac
         GITHUB_FEEDBACK_REPO: "Eddy-ZM/chemvault"
       },
       body: {
-        formId: "security-report",
-        formTitle: "Security report",
-        subject: "Private vulnerability report",
-        message: "This should stay private."
+        formId: "beta-feedback",
+        formTitle: "Beta Feedback",
+        subject: "Private feedback",
+        message: "This should go to the private forms system."
       }
     });
 
     assert.equal(response.status, 503);
     assert.equal(payload.submitted, false);
-    assert.match(payload.message, /Security reports cannot use public GitHub Issue fallback/i);
+    assert.match(payload.message, /not redirected to GitHub Issues/i);
     assert.equal(fetchCalls, 0);
   } finally {
     globalThis.fetch = originalFetch;
@@ -412,7 +413,7 @@ test("admin can update submission status and save reply", async () => {
         source_url: "https://chemvault.test/admin/forms"
       }
     });
-    const id = created.payload.submission.id;
+    const id = created.payload.trackingId;
     const auth = { authorization: "Bearer admin_test_token" };
 
     const updated = await callApi(`admin/forms/${id}`, {
@@ -445,7 +446,19 @@ test("admin can update submission status and save reply", async () => {
     assert.equal(reply.payload.emailSent, true);
     assert.equal(db.replies.size, 1);
     assert.equal([...db.replies.values()][0].provider_message_id, "email_test_123");
-    assert.equal(db.submissions.get(id).status, "waiting_user");
+    const saved = [...db.submissions.values()].find((row) => row.public_tracking_id === id);
+    assert.equal(saved.status, "waiting_user");
+
+    const lookup = await callApi(`forms/lookup?ticket=${encodeURIComponent(id)}`, {
+      env
+    });
+    assert.equal(lookup.response.status, 200);
+    assert.equal(lookup.payload.ok, true);
+    assert.equal(lookup.payload.submission.trackingId, id);
+    assert.equal(lookup.payload.submission.message, "The admin table hover state is hard to see.");
+    assert.equal(lookup.payload.replies.length, 1);
+    assert.equal(lookup.payload.replies[0].body, "Thanks, we are reviewing this.");
+    assert.equal(lookup.payload.submission.internalNotes, undefined);
   } finally {
     globalThis.fetch = originalFetch;
   }

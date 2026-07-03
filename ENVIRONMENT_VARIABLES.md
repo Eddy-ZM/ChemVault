@@ -38,9 +38,6 @@ Last reviewed: July 3, 2026
 | `FORMS_NOTIFY_TO` | Forms notification recipient | No | Yes for Forms mail | Moderate | `forms@chemvault.science` | Receives new submission notifications. |
 | `FORMS_FROM` | Forms sender address | No | Yes for Forms mail | Moderate | `forms@chemvault.science` | Must be allowed by the verified Resend sending domain. |
 | `FORMS_IP_HASH_SALT` | Optional salt for Forms `ip_hash` | No | Recommended | Yes | `replace_with_forms_hash_salt` | Used only to hash client IPs before storage; raw IP is not stored in Forms tables. |
-| `GITHUB_FEEDBACK_TOKEN` | Optional GitHub fallback issue token | No | Optional | Yes | `replace_with_github_issue_token` | Used only by `/api/feedback` compatibility fallback for non-security feedback. |
-| `GITHUB_FEEDBACK_REPO` | Optional GitHub fallback repo | No | Optional | Low | `Eddy-ZM/chemvault` | Security reports must not use this fallback. |
-| `GITHUB_FEEDBACK_LABELS` | Optional GitHub fallback issue labels | No | Optional | No | `feedback,forms-fallback` | Comma-separated labels for non-security compatibility fallback issues. |
 | `RESEND_WEBHOOK_SECRET` | Resend webhook verification | No | If webhooks enabled | Yes | `replace_with_resend_webhook_secret` | Required before accepting provider webhooks. |
 | `OPENAI_API_KEY` | OpenAI API key for AI features | No | If platform AI enabled | Yes | `your_openai_api_key_here` | Store server-side only. |
 | `APP_URL` | Extract web app URL | Yes | Yes | No | `https://app.chemvault.science` | Set in Extract environment. |
