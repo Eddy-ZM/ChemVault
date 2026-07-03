@@ -1,4 +1,11 @@
-const API_VERSION = "0.4.0";
+import {
+  sendAdminLeadNotification,
+  sendNewsletterConfirmation,
+  sendResendEmail as sendResendEmailProvider,
+  sendUserLeadConfirmation
+} from "../../lib/email/resend.js";
+
+const API_VERSION = "0.5.0";
 let schemaReady = false;
 let formsSchemaReady = false;
 const rateLimitStore = new Map();
@@ -171,8 +178,23 @@ const serverFeatureEntitlements = {
 };
 
 const leadTypes = new Set(["newsletter", "enterprise", "ai_beta"]);
+const leadStatuses = new Set(["new", "notified", "failed", "subscribed", "archived", "contacted"]);
+const newsletterStatuses = new Set(["active", "unsubscribed", "bounced"]);
 const commercialModes = new Set(["mock", "staging", "production"]);
 const deploymentEnvironments = new Set(["development", "staging", "production"]);
+const leadSubmitLimits = {
+  email: 254,
+  name: 120,
+  organization: 160,
+  role: 120,
+  teamSize: 80,
+  source: 500,
+  page: 500,
+  formId: 120,
+  message: 8000,
+  userAgent: 500,
+  lastError: 1000
+};
 const formTypes = new Set([
   "feedback",
   "bug",
@@ -274,8 +296,17 @@ export async function onRequest(context) {
       if (request.method !== "POST") return json({ error: "Method not allowed" }, 405);
       const limited = checkRateLimit(request, "lead", rateLimitPolicies.lead);
       if (!limited.ok) return rateLimitResponse(limited);
-      const result = await createLead(env, await readJSONBody(request), hasDb);
-      return json(result, result.ok ? 201 : 400);
+      const result = await createLead(env, await readJSONBody(request), request, hasDb);
+      return json(stripHttpStatus(result), result.httpStatus || (result.ok ? 201 : 400));
+    }
+
+    if (segments[0] === "newsletter" && segments[1] === "unsubscribe") {
+      if (!["GET", "POST"].includes(request.method)) return json({ error: "Method not allowed" }, 405);
+      const limited = checkRateLimit(request, "newsletter:unsubscribe", rateLimitPolicies.lead);
+      if (!limited.ok) return rateLimitResponse(limited);
+      const body = request.method === "POST" ? await readJSONBody(request) : {};
+      const result = await unsubscribeNewsletter(env, body, request, hasDb, url.searchParams);
+      return json(stripHttpStatus(result), result.httpStatus || (result.ok ? 200 : 400));
     }
 
     if (segments[0] === "forms" && segments[1] === "submit") {
@@ -344,6 +375,24 @@ export async function onRequest(context) {
           return json(stripHttpStatus(result), result.httpStatus || (result.ok ? 201 : 400));
         }
       }
+      if (segments[1] === "leads") {
+        if (request.method === "GET" && segments[2]) {
+          const result = await getLead(env, hasDb, segments[2]);
+          return json(result, result.ok ? 200 : 404);
+        }
+        if (request.method === "GET") {
+          const result = await listLeads(env, hasDb, url.searchParams);
+          return json(result, result.ok ? 200 : 503);
+        }
+        if (request.method === "POST" && segments[2] && segments[3] === "status") {
+          const result = await updateLeadStatus(env, hasDb, request, segments[2], await readJSONBody(request));
+          return json(result, result.ok ? 200 : 400);
+        }
+        if (request.method === "POST" && segments[2] && segments[3] === "notify") {
+          const result = await resendLeadAdminNotification(env, hasDb, request, segments[2]);
+          return json(stripHttpStatus(result), result.httpStatus || (result.ok ? 200 : 400));
+        }
+      }
       if (segments[1] === "deletion-requests") {
         if (request.method === "GET") return json(await listRequestRows(env, hasDb, "account_deletion_requests"));
         if (request.method === "PATCH" && segments[2]) {
@@ -358,7 +407,7 @@ export async function onRequest(context) {
           return json(result, result.ok ? 200 : 400);
         }
       }
-      return json({ error: "Not found", routes: ["/api/admin/forms", "/api/admin/forms/:id", "/api/admin/forms/:id/reply", "/api/admin/forms/export.csv", "/api/admin/deletion-requests", "/api/admin/export-requests"] }, 404);
+      return json({ error: "Not found", routes: ["/api/admin/forms", "/api/admin/forms/:id", "/api/admin/forms/:id/reply", "/api/admin/forms/export.csv", "/api/admin/leads", "/api/admin/leads/:id", "/api/admin/leads/:id/status", "/api/admin/leads/:id/notify", "/api/admin/deletion-requests", "/api/admin/export-requests"] }, 404);
     }
 
     if (segments[0] === "billing") {
@@ -409,9 +458,9 @@ export async function onRequest(context) {
       return json(await getFacets(env, hasDb));
     }
 
-    return json({ error: "Not found", routes: ["/api/health", "/api/entitlements", "/api/leads", "/api/forms/submit", "/api/feedback", "/api/account/deletion-request", "/api/account/export-request", "/api/billing/checkout", "/api/export/compound", "/api/records", "/api/records/:type/:id", "/api/enrich", "/api/facets"] }, 404);
+    return json({ error: "Not found", routes: ["/api/health", "/api/entitlements", "/api/leads", "/api/newsletter/unsubscribe", "/api/forms/submit", "/api/feedback", "/api/account/deletion-request", "/api/account/export-request", "/api/billing/checkout", "/api/export/compound", "/api/records", "/api/records/:type/:id", "/api/enrich", "/api/facets"] }, 404);
   } catch (error) {
-    if (segments[0] === "forms" || segments[0] === "feedback" || segments[0] === "admin") {
+    if (segments[0] === "forms" || segments[0] === "feedback" || segments[0] === "leads" || segments[0] === "newsletter" || segments[0] === "admin") {
       return json({
         ok: false,
         error: "Request failed. Internal details were suppressed."
@@ -478,61 +527,483 @@ async function listRecords(env, params, hasDb) {
   };
 }
 
-async function createLead(env, body, hasDb) {
-  const type = leadTypes.has(clean(body.type)) ? clean(body.type) : "newsletter";
-  const email = clean(body.email).toLowerCase();
-  if (!isEmail(email)) {
-    return { ok: false, error: "A valid email address is required." };
+async function createLead(env, body, request, hasDb) {
+  if (clean(body.website || body.url || body.homepage)) {
+    return {
+      ok: true,
+      submitted: true,
+      stored: false,
+      mode: "accepted",
+      message: "Thanks, we have received your request.",
+      httpStatus: 202,
+      meta: { version: API_VERSION }
+    };
   }
 
-  const lead = {
-    id: randomId("lead"),
-    type,
-    email,
-    name: clean(body.name),
-    organization: clean(body.organization),
-    role: clean(body.role),
-    teamSize: clean(body.teamSize),
-    interests: normalizeInterests(body.interests || body.interestArea || body.modules),
-    message: clean(body.message || body.useCase),
-    createdAt: new Date().toISOString()
-  };
-
-  if (hasDb) {
-    await ensureCommercialSchema(env.DB);
-    await env.DB.prepare(`
-      INSERT INTO leads (
-        id, type, email, name, organization, role, team_size, interests_json, message, created_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `).bind(
-      lead.id,
-      lead.type,
-      lead.email,
-      lead.name,
-      lead.organization,
-      lead.role,
-      lead.teamSize,
-      JSON.stringify(lead.interests),
-      lead.message,
-      lead.createdAt
-    ).run();
+  const normalized = await normalizeLeadSubmission(env, body, request);
+  if (!normalized.ok) {
+    return { ok: false, submitted: false, error: normalized.error, httpStatus: 400 };
   }
+  const lead = normalized.lead;
+
+  if (!hasDb) {
+    return {
+      ok: true,
+      submitted: true,
+      stored: false,
+      mode: "mock",
+      message: "Thanks, we have received your request.",
+      lead: publicLeadShape(lead),
+      meta: { version: API_VERSION }
+    };
+  }
+
+  await ensureCommercialSchema(env.DB);
+  await insertLead(env.DB, lead);
+
+  let subscriber = null;
+  if (lead.subscribe) {
+    subscriber = await upsertNewsletterSubscriber(env, env.DB, lead);
+  }
+
+  const mailResults = [];
+  mailResults.push(await sendAdminLeadNotification(env, {
+    ...lead,
+    adminUrl: buildAdminLeadUrl(env, request, lead.id)
+  }));
+  if (subscriber) {
+    mailResults.push(await sendNewsletterConfirmation(env, subscriber));
+  } else {
+    mailResults.push(await sendUserLeadConfirmation(env, lead));
+  }
+
+  const status = leadStatusAfterMail(lead, mailResults);
+  const lastError = leadLastError(mailResults);
+  await updateLeadMailStatus(env.DB, lead.id, status, lastError);
+  lead.status = status;
+  lead.lastError = lastError;
+  lead.updatedAt = new Date().toISOString();
 
   return {
     ok: true,
-    stored: hasDb,
-    mode: hasDb ? "d1" : "mock",
-    message: hasDb
-      ? "Thanks. Your request has been recorded."
-      : "Thanks. This prototype accepted the lead request, but no database binding is configured yet.",
-    lead: {
-      id: lead.id,
-      type: lead.type,
-      email: lead.email,
-      createdAt: lead.createdAt
-    },
+    submitted: true,
+    stored: true,
+    mode: "d1",
+    message: "Thanks, we have received your request.",
+    emailNotificationSent: mailResults.some((result) => result.ok),
+    emailNotificationSkipped: mailResults.every((result) => result.skipped),
+    newsletterSubscribed: Boolean(subscriber),
+    lead: publicLeadShape(lead),
     meta: { version: API_VERSION }
   };
+}
+
+async function normalizeLeadSubmission(env, body = {}, request) {
+  const type = normalizeLeadType(body.type || body.leadType || body.formId);
+  const email = limitText(body.email, leadSubmitLimits.email).toLowerCase();
+  if (!isEmail(email)) return { ok: false, error: "A valid email address is required." };
+  if (!parseConsentBoolean(body.consent)) return { ok: false, error: "Consent is required before submitting." };
+
+  const now = new Date().toISOString();
+  const source = limitText(body.source || body.sourceUrl || body.referrer || request.headers.get("referer") || "website", leadSubmitLimits.source);
+  const page = limitText(body.page || body.pageUrl || request.headers.get("referer") || source, leadSubmitLimits.page);
+  const formId = limitText(body.formId || body.form_id || `${type}-lead-form`, leadSubmitLimits.formId);
+  const subscribe = parseConsentBoolean(body.subscribe)
+    || type === "newsletter"
+    || /newsletter|subscribe|updates/i.test(`${formId} ${source} ${body.interestArea || ""}`);
+
+  return {
+    ok: true,
+    lead: {
+      id: randomId("lead"),
+      type,
+      email,
+      name: limitText(body.name, leadSubmitLimits.name),
+      organization: limitText(body.organization, leadSubmitLimits.organization),
+      role: limitText(body.role, leadSubmitLimits.role),
+      teamSize: limitText(body.teamSize || body.team_size, leadSubmitLimits.teamSize),
+      interests: normalizeInterests(body.interests || body.interestArea || body.modules),
+      message: limitText(body.message || body.useCase || body.notes, leadSubmitLimits.message),
+      source,
+      page,
+      formId,
+      consent: true,
+      subscribe,
+      ipHash: await hashLeadIp(request, env),
+      userAgent: limitText(request.headers.get("user-agent") || "", leadSubmitLimits.userAgent),
+      status: "new",
+      lastError: "",
+      createdAt: now,
+      updatedAt: now
+    }
+  };
+}
+
+async function insertLead(db, lead) {
+  await db.prepare(`
+    INSERT INTO leads (
+      id, type, email, name, organization, role, team_size, interests_json, message,
+      source, page, form_id, consent, ip_hash, user_agent, status, last_error, created_at, updated_at
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `).bind(
+    lead.id,
+    lead.type,
+    lead.email,
+    lead.name,
+    lead.organization,
+    lead.role,
+    lead.teamSize,
+    JSON.stringify(lead.interests),
+    lead.message,
+    lead.source,
+    lead.page,
+    lead.formId,
+    lead.consent ? 1 : 0,
+    lead.ipHash,
+    lead.userAgent,
+    lead.status,
+    lead.lastError,
+    lead.createdAt,
+    lead.updatedAt
+  ).run();
+}
+
+async function upsertNewsletterSubscriber(env, db, lead) {
+  const now = new Date().toISOString();
+  const token = createSecureToken("unsub");
+  const tokenHash = await hashSecretToken(token, env);
+  await db.prepare(`
+    INSERT INTO newsletter_subscribers (
+      id, email, source, consent, status, unsubscribe_token_hash, created_at, updated_at
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    ON CONFLICT(email) DO UPDATE SET
+      source = excluded.source,
+      consent = excluded.consent,
+      status = 'active',
+      unsubscribe_token_hash = excluded.unsubscribe_token_hash,
+      updated_at = excluded.updated_at,
+      unsubscribed_at = NULL
+  `).bind(
+    randomId("sub"),
+    lead.email,
+    lead.source || lead.page || lead.formId,
+    lead.consent ? 1 : 0,
+    "active",
+    tokenHash,
+    now,
+    now
+  ).run();
+
+  const row = await db.prepare(`
+    SELECT id, email, source, consent, status, unsubscribe_token_hash, created_at, updated_at
+    FROM newsletter_subscribers
+    WHERE email = ?
+    LIMIT 1
+  `).bind(lead.email).first();
+
+  return {
+    id: row?.id || "",
+    email: lead.email,
+    source: row?.source || lead.source,
+    consent: Boolean(row?.consent ?? lead.consent),
+    status: row?.status || "active",
+    createdAt: row?.created_at || now,
+    updatedAt: row?.updated_at || now,
+    unsubscribeUrl: buildUnsubscribeUrl(env, token)
+  };
+}
+
+async function updateLeadMailStatus(db, id, status, lastError) {
+  const now = new Date().toISOString();
+  await db.prepare(`
+    UPDATE leads
+    SET status = ?, last_error = ?, updated_at = ?,
+      notified_at = CASE WHEN ? IN ('notified', 'subscribed') THEN COALESCE(notified_at, ?) ELSE notified_at END,
+      subscribed_at = CASE WHEN ? = 'subscribed' THEN COALESCE(subscribed_at, ?) ELSE subscribed_at END
+    WHERE id = ?
+  `).bind(status, lastError, now, status, now, status, now, id).run();
+}
+
+async function listLeads(env, hasDb, params) {
+  if (!hasDb) return { ok: false, error: "Leads database is not configured.", leads: [] };
+  await ensureCommercialSchema(env.DB);
+  const query = leadListQuery(params);
+  const [rows, countRow] = await Promise.all([
+    bindStatement(env.DB.prepare(`
+      SELECT id, type, email, name, source, page, form_id, message, status, last_error, created_at, updated_at
+      FROM leads
+      ${query.whereSql}
+      ORDER BY created_at ${query.direction}
+      LIMIT ? OFFSET ?
+    `), [...query.values, query.limit, query.offset]).all(),
+    bindStatement(env.DB.prepare(`
+      SELECT COUNT(*) AS count
+      FROM leads
+      ${query.whereSql}
+    `), query.values).first()
+  ]);
+  return {
+    ok: true,
+    leads: (rows.results || []).map(publicAdminLeadSummary),
+    page: query.page,
+    limit: query.limit,
+    offset: query.offset,
+    count: Number(countRow?.count || 0),
+    filters: query.filters,
+    meta: { version: API_VERSION }
+  };
+}
+
+async function getLead(env, hasDb, id) {
+  if (!hasDb) return { ok: false, error: "Leads database is not configured." };
+  await ensureCommercialSchema(env.DB);
+  const row = await env.DB.prepare(`
+    SELECT *
+    FROM leads
+    WHERE id = ?
+    LIMIT 1
+  `).bind(id).first();
+  if (!row) return { ok: false, error: "Lead not found." };
+  return { ok: true, lead: adminLeadShape(row), meta: { version: API_VERSION } };
+}
+
+async function updateLeadStatus(env, hasDb, request, id, body = {}) {
+  if (!hasDb) return { ok: false, error: "Leads database is not configured." };
+  await ensureCommercialSchema(env.DB);
+  const status = normalizeLeadStatus(body.status);
+  if (!status) return { ok: false, error: "Invalid lead status." };
+  const now = new Date().toISOString();
+  const result = await env.DB.prepare(`
+    UPDATE leads
+    SET status = ?, updated_at = ?
+    WHERE id = ?
+  `).bind(status, now, id).run();
+  if (!Number(result?.meta?.changes || 0)) return { ok: false, error: "Lead not found." };
+  await writeAdminAuditLog(env, request, {
+    action: "lead.status_updated",
+    targetType: "lead",
+    targetId: id,
+    metadata: { status }
+  });
+  return getLead(env, hasDb, id);
+}
+
+async function resendLeadAdminNotification(env, hasDb, request, id) {
+  if (!hasDb) return { ok: false, error: "Leads database is not configured.", httpStatus: 503 };
+  const detail = await getLead(env, hasDb, id);
+  if (!detail.ok) return { ...detail, httpStatus: 404 };
+  const lead = detail.lead;
+  const result = await sendAdminLeadNotification(env, {
+    ...lead,
+    adminUrl: buildAdminLeadUrl(env, request, lead.id)
+  });
+  const status = result.ok ? "notified" : "failed";
+  await updateLeadMailStatus(env.DB, id, status, result.ok ? "" : leadMailFailureReason(result));
+  await writeAdminAuditLog(env, request, {
+    action: "lead.notification_resent",
+    targetType: "lead",
+    targetId: id,
+    metadata: { emailSent: result.ok, reason: result.reason || "" }
+  });
+  return {
+    ok: true,
+    emailSent: result.ok,
+    emailSkipped: Boolean(result.skipped),
+    warning: result.ok ? "" : "Lead notification was not sent.",
+    httpStatus: result.ok ? 200 : 202,
+    meta: { version: API_VERSION }
+  };
+}
+
+async function unsubscribeNewsletter(env, body, request, hasDb, params = new URLSearchParams()) {
+  if (!hasDb) return { ok: false, error: "Newsletter database is not configured.", httpStatus: 503 };
+  const token = clean(body.token || params.get("token"));
+  if (!token) return { ok: false, error: "Unsubscribe token is required.", httpStatus: 400 };
+  await ensureCommercialSchema(env.DB);
+  const tokenHash = await hashSecretToken(token, env);
+  const now = new Date().toISOString();
+  await env.DB.prepare(`
+    UPDATE newsletter_subscribers
+    SET status = 'unsubscribed', updated_at = ?, unsubscribed_at = ?
+    WHERE unsubscribe_token_hash = ?
+  `).bind(now, now, tokenHash).run();
+  return {
+    ok: true,
+    unsubscribed: true,
+    message: "You have been unsubscribed from ChemVault updates.",
+    meta: { version: API_VERSION }
+  };
+}
+
+function leadListQuery(params) {
+  const limit = clamp(Number(params.get("limit") || 50), 1, 100);
+  const page = clamp(Number(params.get("page") || 1), 1, 100000);
+  const offset = clamp(Number(params.get("offset") || ((page - 1) * limit)), 0, 1000000);
+  const direction = clean(params.get("direction") || params.get("order")).toLowerCase() === "asc" ? "ASC" : "DESC";
+  const q = clean(params.get("q") || params.get("search")).slice(0, 120);
+  const rawStatus = clean(params.get("status"));
+  const rawType = clean(params.get("type"));
+  const status = rawStatus ? normalizeLeadStatus(rawStatus) : "";
+  const type = rawType ? normalizeLeadType(rawType) : "";
+  const where = [];
+  const values = [];
+  if (q) {
+    where.push("(email LIKE ? OR name LIKE ? OR message LIKE ? OR source LIKE ?)");
+    const like = `%${q}%`;
+    values.push(like, like, like, like);
+  }
+  if (status) {
+    where.push("status = ?");
+    values.push(status);
+  }
+  if (type) {
+    where.push("type = ?");
+    values.push(type);
+  }
+  return {
+    limit,
+    page,
+    offset,
+    direction,
+    whereSql: where.length ? `WHERE ${where.join(" AND ")}` : "",
+    values,
+    filters: { q, status: status || "", type: type || "", direction }
+  };
+}
+
+function normalizeLeadType(value) {
+  const text = clean(value || "newsletter").toLowerCase().replace(/[^a-z0-9_-]+/g, "_");
+  if (/enterprise|sales|institution|lab|team/.test(text)) return "enterprise";
+  if (/ai|paper|beta|waitlist|early/.test(text)) return "ai_beta";
+  return leadTypes.has(text) ? text : "newsletter";
+}
+
+function normalizeLeadStatus(value) {
+  const status = clean(value).toLowerCase();
+  return leadStatuses.has(status) ? status : "";
+}
+
+function leadStatusAfterMail(lead, results) {
+  const failed = results.some((result) => !result.ok && !result.skipped);
+  if (failed) return "failed";
+  if (lead.subscribe) return "subscribed";
+  if (results.some((result) => result.ok)) return "notified";
+  return "new";
+}
+
+function leadLastError(results) {
+  const failed = results.find((result) => !result.ok && !result.skipped);
+  if (failed) return leadMailFailureReason(failed);
+  if (results.length && results.every((result) => result.skipped)) return "Resend not configured";
+  return "";
+}
+
+function leadMailFailureReason(result = {}) {
+  return limitText(result.providerError || result.reason || `email_status_${result.status || "failed"}`, leadSubmitLimits.lastError);
+}
+
+function publicLeadShape(lead) {
+  return {
+    id: lead.id,
+    type: lead.type,
+    email: lead.email,
+    status: lead.status,
+    createdAt: lead.createdAt
+  };
+}
+
+function publicAdminLeadSummary(row) {
+  return {
+    id: row.id,
+    type: row.type,
+    email: row.email,
+    name: row.name || "",
+    source: row.source || row.page || "",
+    formId: row.form_id || "",
+    messagePreview: limitText(row.message || "", 180),
+    status: row.status || "new",
+    lastError: row.last_error || "",
+    createdAt: row.created_at,
+    updatedAt: row.updated_at || row.created_at
+  };
+}
+
+function adminLeadShape(row) {
+  return {
+    id: row.id,
+    type: row.type,
+    email: row.email,
+    name: row.name || "",
+    organization: row.organization || "",
+    role: row.role || "",
+    teamSize: row.team_size || "",
+    interests: safeJSON(row.interests_json, []),
+    message: row.message || "",
+    source: row.source || "",
+    page: row.page || "",
+    formId: row.form_id || "",
+    consent: Boolean(row.consent),
+    ipHash: row.ip_hash || "",
+    userAgent: row.user_agent || "",
+    userAgentSummary: summarizeUserAgent(row.user_agent || ""),
+    status: row.status || "new",
+    lastError: row.last_error || "",
+    createdAt: row.created_at,
+    updatedAt: row.updated_at || row.created_at,
+    notifiedAt: row.notified_at || "",
+    subscribedAt: row.subscribed_at || ""
+  };
+}
+
+function summarizeUserAgent(value) {
+  const text = clean(value);
+  if (!text) return "";
+  const browser = text.match(/(Chrome|Firefox|Safari|Edg|OPR)\/?[\d.]*/i)?.[0] || "Browser";
+  const platform = text.match(/\(([^)]+)\)/)?.[1]?.split(";").slice(0, 2).join("; ") || "";
+  return limitText(platform ? `${browser} on ${platform}` : browser, 180);
+}
+
+function buildAdminLeadUrl(env, request, id) {
+  const configuredOrigin = clean(env.PUBLIC_APP_URL || env.CHEMVAULT_SITE_ORIGIN).replace(/\/+$/, "");
+  const origin = configuredOrigin || new URL(request.url).origin;
+  return `${origin}/admin/leads/${encodeURIComponent(id)}`;
+}
+
+function buildUnsubscribeUrl(env, token) {
+  const origin = clean(env.PUBLIC_APP_URL || env.CHEMVAULT_SITE_ORIGIN || "https://chemvault.science").replace(/\/+$/, "");
+  return `${origin}/api/newsletter/unsubscribe?token=${encodeURIComponent(token)}`;
+}
+
+async function hashLeadIp(request, env = {}) {
+  const ip = getClientIp(request);
+  const salt = clean(env.LEADS_IP_HASH_SALT || env.FORMS_IP_HASH_SALT || "chemvault-leads");
+  return hashText(`${ip}:${salt}`);
+}
+
+async function hashSecretToken(token, env = {}) {
+  const salt = clean(env.LEADS_IP_HASH_SALT || env.FORMS_IP_HASH_SALT || "chemvault-leads");
+  return hashText(`${token}:${salt}`);
+}
+
+async function hashText(value) {
+  const subtle = globalThis.crypto?.subtle;
+  if (!subtle || !globalThis.TextEncoder) return "";
+  const input = new TextEncoder().encode(String(value || ""));
+  const digest = await subtle.digest("SHA-256", input);
+  return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+
+function createSecureToken(prefix) {
+  const random = globalThis.crypto?.randomUUID?.().replace(/-/g, "")
+    || `${Date.now().toString(36)}${Math.random().toString(36).slice(2)}`;
+  return `${prefix}_${random}`;
+}
+
+function parseConsentBoolean(value) {
+  if (typeof value === "boolean") return value;
+  if (typeof value === "number") return value === 1;
+  const text = clean(value).toLowerCase();
+  return ["1", "true", "yes", "on", "accepted", "consent"].includes(text);
 }
 
 async function createFeedbackCompatibilitySubmission(env, body, request, hasDb) {
@@ -1990,7 +2461,45 @@ async function ensureCommercialSchema(db) {
       team_size TEXT,
       interests_json TEXT NOT NULL DEFAULT '[]',
       message TEXT,
-      created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+      source TEXT,
+      page TEXT,
+      form_id TEXT,
+      consent INTEGER NOT NULL DEFAULT 0,
+      ip_hash TEXT,
+      user_agent TEXT,
+      status TEXT NOT NULL DEFAULT 'new',
+      last_error TEXT,
+      created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      notified_at TEXT,
+      subscribed_at TEXT
+    )
+  `).run();
+  await Promise.all([
+    safeAddColumn(db, "leads", "source", "TEXT"),
+    safeAddColumn(db, "leads", "page", "TEXT"),
+    safeAddColumn(db, "leads", "form_id", "TEXT"),
+    safeAddColumn(db, "leads", "consent", "INTEGER NOT NULL DEFAULT 0"),
+    safeAddColumn(db, "leads", "ip_hash", "TEXT"),
+    safeAddColumn(db, "leads", "user_agent", "TEXT"),
+    safeAddColumn(db, "leads", "status", "TEXT NOT NULL DEFAULT 'new'"),
+    safeAddColumn(db, "leads", "last_error", "TEXT"),
+    safeAddColumn(db, "leads", "updated_at", "TEXT"),
+    safeAddColumn(db, "leads", "notified_at", "TEXT"),
+    safeAddColumn(db, "leads", "subscribed_at", "TEXT")
+  ]);
+  await db.prepare(`
+    CREATE TABLE IF NOT EXISTS newsletter_subscribers (
+      id TEXT PRIMARY KEY,
+      email TEXT NOT NULL UNIQUE,
+      source TEXT,
+      consent INTEGER NOT NULL DEFAULT 0,
+      status TEXT NOT NULL DEFAULT 'active',
+      unsubscribe_token_hash TEXT,
+      created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      unsubscribed_at TEXT,
+      last_error TEXT
     )
   `).run();
   await db.prepare(`
@@ -2070,6 +2579,11 @@ async function ensureCommercialSchema(db) {
   await Promise.all([
     db.prepare("CREATE INDEX IF NOT EXISTS leads_type_idx ON leads (type)").run(),
     db.prepare("CREATE INDEX IF NOT EXISTS leads_email_idx ON leads (email)").run(),
+    db.prepare("CREATE INDEX IF NOT EXISTS leads_status_idx ON leads (status)").run(),
+    db.prepare("CREATE INDEX IF NOT EXISTS leads_created_idx ON leads (created_at)").run(),
+    db.prepare("CREATE INDEX IF NOT EXISTS newsletter_subscribers_email_idx ON newsletter_subscribers (email)").run(),
+    db.prepare("CREATE INDEX IF NOT EXISTS newsletter_subscribers_status_idx ON newsletter_subscribers (status)").run(),
+    db.prepare("CREATE INDEX IF NOT EXISTS newsletter_subscribers_token_idx ON newsletter_subscribers (unsubscribe_token_hash)").run(),
     db.prepare("CREATE INDEX IF NOT EXISTS subscriptions_plan_idx ON subscriptions (plan)").run(),
     db.prepare("CREATE INDEX IF NOT EXISTS usage_records_feature_idx ON usage_records (feature_key)").run(),
     db.prepare("CREATE INDEX IF NOT EXISTS account_deletion_requests_email_idx ON account_deletion_requests (email)").run(),
@@ -2079,6 +2593,16 @@ async function ensureCommercialSchema(db) {
     db.prepare("CREATE INDEX IF NOT EXISTS admin_audit_logs_action_idx ON admin_audit_logs (action)").run(),
     db.prepare("CREATE INDEX IF NOT EXISTS admin_audit_logs_target_idx ON admin_audit_logs (target_type, target_id)").run()
   ]);
+}
+
+async function safeAddColumn(db, table, column, definition) {
+  try {
+    await db.prepare(`ALTER TABLE ${table} ADD COLUMN ${column} ${definition}`).run();
+  } catch (error) {
+    const message = String(error?.message || error || "");
+    if (/duplicate column|already exists/i.test(message)) return;
+    throw error;
+  }
 }
 
 async function ensureFormsSchema(db) {
@@ -2319,36 +2843,7 @@ async function sendFormSubmissionNotification(env, submission, request) {
 }
 
 async function sendResendEmail(env, email) {
-  const apiKey = clean(env?.RESEND_API_KEY);
-  const recipients = Array.isArray(email.to) ? email.to.map(clean).filter(Boolean) : [clean(email.to)].filter(Boolean);
-  if (!apiKey || !recipients.length || typeof fetch !== "function") {
-    return { ok: false, skipped: true, reason: "not_configured" };
-  }
-  try {
-    const response = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        authorization: `Bearer ${apiKey}`,
-        "content-type": "application/json"
-      },
-      body: JSON.stringify({
-        from: email.from,
-        to: recipients,
-        subject: email.subject,
-        text: email.text
-      })
-    });
-    let payload = {};
-    try {
-      payload = await response.json();
-    } catch {
-      payload = {};
-    }
-    if (!response.ok) return { ok: false, status: response.status, reason: "provider_rejected" };
-    return { ok: true, providerMessageId: clean(payload.id) };
-  } catch {
-    return { ok: false, reason: "provider_unavailable" };
-  }
+  return sendResendEmailProvider(env, email);
 }
 
 function formsNotifyAddresses(env = {}) {

@@ -36,7 +36,31 @@ CREATE TABLE IF NOT EXISTS leads (
   team_size TEXT,
   interests_json TEXT NOT NULL DEFAULT '[]',
   message TEXT,
-  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+  source TEXT,
+  page TEXT,
+  form_id TEXT,
+  consent INTEGER NOT NULL DEFAULT 0,
+  ip_hash TEXT,
+  user_agent TEXT,
+  status TEXT NOT NULL DEFAULT 'new',
+  last_error TEXT,
+  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  notified_at TEXT,
+  subscribed_at TEXT
+);
+
+CREATE TABLE IF NOT EXISTS newsletter_subscribers (
+  id TEXT PRIMARY KEY,
+  email TEXT NOT NULL UNIQUE,
+  source TEXT,
+  consent INTEGER NOT NULL DEFAULT 0,
+  status TEXT NOT NULL DEFAULT 'active',
+  unsubscribe_token_hash TEXT,
+  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  unsubscribed_at TEXT,
+  last_error TEXT
 );
 
 CREATE TABLE IF NOT EXISTS organizations (
@@ -172,6 +196,11 @@ CREATE TABLE IF NOT EXISTS forms_replies (
 
 CREATE INDEX IF NOT EXISTS leads_type_idx ON leads (type);
 CREATE INDEX IF NOT EXISTS leads_email_idx ON leads (email);
+CREATE INDEX IF NOT EXISTS leads_status_idx ON leads (status);
+CREATE INDEX IF NOT EXISTS leads_created_idx ON leads (created_at);
+CREATE INDEX IF NOT EXISTS newsletter_subscribers_email_idx ON newsletter_subscribers (email);
+CREATE INDEX IF NOT EXISTS newsletter_subscribers_status_idx ON newsletter_subscribers (status);
+CREATE INDEX IF NOT EXISTS newsletter_subscribers_token_idx ON newsletter_subscribers (unsubscribe_token_hash);
 CREATE INDEX IF NOT EXISTS organizations_plan_idx ON organizations (plan);
 CREATE INDEX IF NOT EXISTS memberships_user_idx ON memberships (user_id);
 CREATE INDEX IF NOT EXISTS subscriptions_plan_idx ON subscriptions (plan);

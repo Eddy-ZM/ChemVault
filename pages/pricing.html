@@ -14,7 +14,7 @@
   <link rel="manifest" href="/site.webmanifest" />
   <link rel="stylesheet" href="../assets/styles.css?v=20260702b" />
   <link rel="stylesheet" href="../assets/portal.css?v=20260702b" />
-  <link rel="stylesheet" href="../assets/commercial.css?v=20260702c" />
+  <link rel="stylesheet" href="../assets/commercial.css?v=20260703a" />
   <script src="../data/chem-data.js?v=20260603a" defer></script>
   <script src="../data/reagent-extension.js?v=20260603a" defer></script>
   <script src="../data/research-data.js?v=20260603a" defer></script>
@@ -33,7 +33,7 @@
   <script src="../scripts/motion.js?v=20260618c" defer></script>
   <script src="../scripts/site-shell.js?v=20260702b" defer></script>
   <script src="../scripts/commercial-config.js?v=20260630a" defer></script>
-  <script src="../scripts/commercial-ui.js?v=20260702b" defer></script>
+  <script src="../scripts/commercial-ui.js?v=20260703a" defer></script>
 </head>
 <body class="page-shell" data-boot-label="Pricing">
   <a class="skip-link" href="#main">Skip to content</a>
@@ -135,7 +135,8 @@
           <span class="section-kicker">Enterprise / institution</span>
           <h2>Talk to us about lab, company, or institution workflows.</h2>
           <p>Use this form for Team/Lab procurement, custom onboarding, API access placeholders, SSO/SAML planning, or institution-wide access.</p>
-          <form data-lead-form data-lead-type="enterprise" class="cv-lead-form">
+          <form data-lead-form data-lead-type="enterprise" data-form-id="pricing-enterprise-lead" class="cv-lead-form">
+            <label class="cv-honeypot" aria-hidden="true">Website <input name="website" autocomplete="off" tabindex="-1" /></label>
             <div class="cv-form-grid">
               <label>Name <input name="name" autocomplete="name" required /></label>
               <label>Work email <input name="email" type="email" autocomplete="email" required /></label>
@@ -163,7 +164,8 @@
           <span class="section-kicker">Newsletter / AI beta</span>
           <h2>Get early access to AI paper organization.</h2>
           <p>Join the list for research workflow updates, compound search releases, and the AI Paper Search beta.</p>
-          <form data-lead-form data-lead-type="ai_beta" class="cv-lead-form">
+          <form data-lead-form data-lead-type="ai_beta" data-form-id="pricing-ai-beta" class="cv-lead-form">
+            <label class="cv-honeypot" aria-hidden="true">Website <input name="website" autocomplete="off" tabindex="-1" /></label>
             <label>Email <input name="email" type="email" autocomplete="email" required /></label>
             <label>Role <select name="role"><option>Researcher</option><option>Student</option><option>Lab manager</option><option>Developer</option><option>Institution buyer</option></select></label>
             <label>Interest area <select name="interestArea"><option>AI paper search</option><option>Compound search</option><option>Molecular modeling</option><option>File library</option><option>Team plan</option></select></label>

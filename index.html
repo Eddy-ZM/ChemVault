@@ -22,7 +22,7 @@
   <link rel="stylesheet" href="assets/styles.css?v=20260702b" />
   <link rel="stylesheet" href="assets/portal.css?v=20260702b" />
   <link rel="stylesheet" href="assets/academic.css?v=20260630b" />
-  <link rel="stylesheet" href="assets/commercial.css?v=20260702c" />
+  <link rel="stylesheet" href="assets/commercial.css?v=20260703a" />
   <script src="data/chem-data.js?v=20260603a" defer></script>
   <script src="data/reagent-extension.js?v=20260603a" defer></script>
   <script src="data/research-data.js?v=20260603a" defer></script>
@@ -41,7 +41,7 @@
   <script src="scripts/motion.js?v=20260618c" defer></script>
   <script src="scripts/home.js?v=20260624a" defer></script>
   <script src="scripts/commercial-config.js?v=20260630a" defer></script>
-  <script src="scripts/commercial-ui.js?v=20260702b" defer></script>
+  <script src="scripts/commercial-ui.js?v=20260703a" defer></script>
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -431,7 +431,8 @@
             <h2 id="updates-heading">Follow ChemVault workflow updates.</h2>
             <p>Get focused notes on compound search, molecular modeling, file library, AI paper search, and team plans.</p>
           </div>
-          <form data-lead-form data-lead-type="newsletter" class="cv-lead-form">
+          <form data-lead-form data-lead-type="newsletter" data-form-id="home-newsletter" class="cv-lead-form">
+            <label class="cv-honeypot" aria-hidden="true">Website <input name="website" autocomplete="off" tabindex="-1" /></label>
             <div class="cv-form-grid">
               <label>Email <input name="email" type="email" autocomplete="email" placeholder="you@lab.edu" required /></label>
               <label>Role <select name="role"><option>Researcher</option><option>Student</option><option>Lab manager</option><option>Developer</option><option>Institution buyer</option></select></label>
@@ -452,7 +453,8 @@
             <h2>Request early access to AI Paper Search.</h2>
             <p>Early requests help prioritize summaries, tags, collections, exports, and team paper libraries.</p>
           </div>
-          <form data-lead-form data-lead-type="ai_beta" class="cv-lead-form">
+          <form data-lead-form data-lead-type="ai_beta" data-form-id="home-ai-beta" class="cv-lead-form">
+            <label class="cv-honeypot" aria-hidden="true">Website <input name="website" autocomplete="off" tabindex="-1" /></label>
             <label>Email <input name="email" type="email" autocomplete="email" placeholder="you@lab.edu" required /></label>
             <label>Interest area <select name="interestArea"><option>AI paper search</option><option>AI summaries</option><option>Paper collections</option><option>Team notes</option></select></label>
             <label class="cv-check-row"><input type="checkbox" name="consent" required /> <span>Send me beta access updates.</span></label>

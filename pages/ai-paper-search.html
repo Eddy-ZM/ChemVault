@@ -14,7 +14,7 @@
   <link rel="manifest" href="/site.webmanifest" />
   <link rel="stylesheet" href="../assets/styles.css?v=20260702b" />
   <link rel="stylesheet" href="../assets/portal.css?v=20260702b" />
-  <link rel="stylesheet" href="../assets/commercial.css?v=20260702c" />
+  <link rel="stylesheet" href="../assets/commercial.css?v=20260703a" />
   <script src="../data/chem-data.js?v=20260603a" defer></script>
   <script src="../data/reagent-extension.js?v=20260603a" defer></script>
   <script src="../data/research-data.js?v=20260603a" defer></script>
@@ -33,7 +33,7 @@
   <script src="../scripts/motion.js?v=20260618c" defer></script>
   <script src="../scripts/site-shell.js?v=20260702b" defer></script>
   <script src="../scripts/commercial-config.js?v=20260630a" defer></script>
-  <script src="../scripts/commercial-ui.js?v=20260702b" defer></script>
+  <script src="../scripts/commercial-ui.js?v=20260703a" defer></script>
 </head>
 <body class="page-shell" data-boot-label="AI Paper Search">
   <a class="skip-link" href="#main">Skip to content</a>
@@ -112,7 +112,8 @@
           <span class="section-kicker">early access</span>
           <h2>Join the AI Paper Search beta list.</h2>
           <p>Tell us who you are and which research workflow matters most. This form stores to D1 when configured, otherwise it uses the mock API response.</p>
-          <form data-lead-form data-lead-type="ai_beta" class="cv-lead-form">
+          <form data-lead-form data-lead-type="ai_beta" data-form-id="ai-paper-search-beta" class="cv-lead-form">
+            <label class="cv-honeypot" aria-hidden="true">Website <input name="website" autocomplete="off" tabindex="-1" /></label>
             <div class="cv-form-grid">
               <label>Email <input name="email" type="email" autocomplete="email" required /></label>
               <label>Role <select name="role"><option>Researcher</option><option>Student</option><option>Lab manager</option><option>Developer</option><option>Institution buyer</option></select></label>

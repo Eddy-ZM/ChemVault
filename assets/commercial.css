@@ -800,6 +800,22 @@
   flex: 1 1 180px;
 }
 
+.cv-honeypot {
+  position: absolute !important;
+  overflow: hidden !important;
+  width: 1px !important;
+  height: 1px !important;
+  margin: -1px !important;
+  clip: rect(0 0 0 0) !important;
+  clip-path: inset(50%) !important;
+  white-space: nowrap !important;
+}
+
+.cv-lead-form button[disabled] {
+  cursor: progress;
+  opacity: 0.72;
+}
+
 .cv-interest-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));

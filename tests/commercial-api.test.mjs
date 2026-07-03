@@ -40,6 +40,7 @@ test("lead capture accepts valid payloads and rejects invalid email", async () =
       type: "newsletter",
       email: "researcher@example.com",
       role: "Researcher",
+      consent: true,
       interests: ["compound_search"]
     }
   });
@@ -52,7 +53,8 @@ test("lead capture accepts valid payloads and rejects invalid email", async () =
     method: "POST",
     body: {
       type: "newsletter",
-      email: "not-an-email"
+      email: "not-an-email",
+      consent: true
     }
   });
   assert.equal(invalid.response.status, 400);

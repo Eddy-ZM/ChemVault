@@ -139,9 +139,12 @@
 
   function wireLeadForms() {
     $$("[data-lead-form]").forEach((form) => {
+      ensureLeadHoneypot(form);
       form.addEventListener("submit", async (event) => {
         event.preventDefault();
+        if (form.dataset.submitting === "true") return;
         const status = $("[data-form-status]", form);
+        const submitter = form.querySelector("button[type='submit']");
         const payload = formPayload(form);
         const type = payload.type || form.dataset.leadType || "newsletter";
         if (!isEmail(payload.email)) {
@@ -153,12 +156,27 @@
           setStatus(status, "Consent is required before submitting.", "error");
           return;
         }
-        setStatus(status, "Submitting...");
+        form.dataset.submitting = "true";
+        form.setAttribute("aria-busy", "true");
+        if (submitter) {
+          submitter.disabled = true;
+          submitter.dataset.originalText = submitter.textContent;
+          submitter.textContent = "Submitting...";
+        }
+        setStatus(status, "Submitting...", "pending");
         try {
           const response = await fetch("/api/leads", {
             method: "POST",
             headers: { "content-type": "application/json" },
-            body: JSON.stringify({ ...payload, type })
+            body: JSON.stringify({
+              ...payload,
+              type,
+              consent: Boolean(consentBox?.checked),
+              subscribe: leadSubscribes(form, type),
+              formId: form.dataset.formId || form.id || `${type}-lead-form`,
+              source: location.href,
+              page: location.pathname
+            })
           });
           const result = await response.json().catch(() => ({}));
           if (!response.ok) throw new Error(result.error || "Submission failed.");
@@ -167,7 +185,14 @@
           commercial().trackEvent(eventNameForLead(type), { type, interests: payload.interests || payload.interestArea || "" });
         } catch (error) {
           saveLeadLocally({ ...payload, type });
-          setStatus(status, "Saved locally for this prototype. Configure D1 or a newsletter provider for persistence.", "success");
+          setStatus(status, error.message || "Submission could not be sent. Please try again.", "error");
+        } finally {
+          form.dataset.submitting = "false";
+          form.removeAttribute("aria-busy");
+          if (submitter) {
+            submitter.disabled = false;
+            submitter.textContent = submitter.dataset.originalText || submitter.textContent;
+          }
         }
       });
     });
@@ -650,6 +675,26 @@
     });
     payload.interests = $$("input[name='interests']:checked", form).map((input) => input.value);
     return payload;
+  }
+
+  function ensureLeadHoneypot(form) {
+    if (form.querySelector("input[name='website']")) return;
+    const label = document.createElement("label");
+    label.className = "cv-honeypot";
+    label.setAttribute("aria-hidden", "true");
+    label.textContent = "Website";
+    const input = document.createElement("input");
+    input.name = "website";
+    input.tabIndex = -1;
+    input.autocomplete = "off";
+    label.append(input);
+    form.prepend(label);
+  }
+
+  function leadSubscribes(form, type) {
+    const explicit = form.querySelector("input[name='subscribe']");
+    if (explicit) return explicit.checked;
+    return type === "newsletter" || /newsletter|updates|subscribe/i.test(form.dataset.leadType || form.dataset.formId || "");
   }
 
   function eventNameForLead(type) {
