@@ -99,6 +99,10 @@ Cloudflare Pages Functions now expose:
 
 - `GET /api/entitlements`
 - `POST /api/leads`
+- `POST /api/newsletter/unsubscribe`
+- `GET /api/admin/leads`
+- `GET /api/admin/leads/:id`
+- `POST /api/admin/leads/:id/status`
 - `POST /api/billing/checkout`
 - `POST /api/billing/portal`
 - `POST /api/export/compound`
@@ -117,7 +121,18 @@ Lead types:
 - `enterprise`
 - `ai_beta`
 
-When D1 is bound as `DB`, leads are stored in the `leads` table. Without D1, the API returns a mock accepted response.
+When D1 is bound as `DB`, leads are stored in the `leads` table with source page, form id, consent, hashed IP, user agent, status and last error fields. Without D1, the API returns a mock accepted response.
+
+Lead submission now also supports:
+
+- honeypot filtering through `website`;
+- D1-backed `newsletter_subscribers` upsert for newsletter/subscribe forms;
+- Resend administrator notification through `RESEND_API_KEY` plus `LEADS_NOTIFY_TO` or `FORMS_NOTIFY_TO`;
+- user confirmation email through `LEADS_FROM` or `FORMS_FROM`;
+- protected lead review through `/api/admin/leads` and `/admin/leads`;
+- token-based unsubscribe through `/api/newsletter/unsubscribe`.
+
+If Resend is not configured, `/api/leads` still writes to D1 and returns success. The API logs `Resend not configured` without printing secrets and records the skipped mail state in the lead row.
 
 ## Payment Placeholder
 
@@ -149,6 +164,11 @@ Do not hardcode provider keys or price IDs. Use:
 - `PUBLIC_APP_URL`
 - `ENTERPRISE_LEAD_EMAIL`
 - `NEWSLETTER_PROVIDER`
+- `RESEND_API_KEY`
+- `LEADS_NOTIFY_TO`
+- `LEADS_FROM`
+- `LEADS_IP_HASH_SALT`
+- `CHEMVAULT_ADMIN_TOKEN`
 - `DEFAULT_USER_PLAN`
 
 `DEFAULT_USER_PLAN` is a local/staging placeholder only. It exists so API entitlement checks can be exercised before real auth, organization membership and subscription state are wired in.
@@ -177,9 +197,17 @@ npx wrangler d1 execute chemvault-production --remote --file=schema.sql
 
 Use a separate staging D1 database such as `chemvault-staging` and bind it as `DB` in the Cloudflare Pages Preview/Staging environment. Apply `schema.sql` to the target environment before testing lead capture or commercial placeholders.
 
+Existing databases created before lead email notifications should also apply:
+
+```bash
+npx wrangler d1 execute chemvault-staging --remote --file=migrations/0003_leads_email_notifications.sql
+npx wrangler d1 execute chemvault-production --remote --file=migrations/0003_leads_email_notifications.sql
+```
+
 Commercial table usage:
 
-- `leads`: newsletter, enterprise and AI beta interest records.
+- `leads`: newsletter, enterprise and AI beta interest records, mail notification state and source metadata.
+- `newsletter_subscribers`: active/unsubscribed newsletter addresses with hashed unsubscribe tokens.
 - `organizations` and `memberships`: future team/lab account model placeholders.
 - `subscriptions`: schema placeholder only; it does not mean live payment is connected.
 - `feature_entitlements`: future database-backed entitlement overrides. Current MVP entitlements are code-defined plus server guard logic.
@@ -198,6 +226,7 @@ Do not open real paid features in production until auth/session and subscription
 - `feature_entitlements`
 - `usage_records`
 - `leads`
+- `newsletter_subscribers`
 - `resources`
 
 These are intentionally simple D1 tables. If the user system becomes the source of truth, migrate plan and membership reads to that service and keep this site as the presentation layer.

@@ -354,7 +354,7 @@ test("newsletter subscriber is upserted once and can unsubscribe by token", asyn
     assert.equal(subscriber.source, "pricing");
     assert.equal(subscriber.status, "active");
 
-    const newsletterEmail = resend.calls.find((call) => /subscription is active/i.test(call.text));
+    const newsletterEmail = resend.calls.filter((call) => /subscription is active/i.test(call.text)).at(-1);
     const token = newsletterEmail.text.match(/token=([A-Za-z0-9_]+)/)?.[1];
     assert(token);
 

@@ -133,7 +133,7 @@ test("commercial schema, env docs and implementation remain aligned", () => {
   const stagingDocs = read("docs/staging-deployment.md");
   const readme = read("README.md");
 
-  for (const table of ["leads", "organizations", "memberships", "subscriptions", "feature_entitlements", "usage_records", "resources"]) {
+  for (const table of ["leads", "newsletter_subscribers", "organizations", "memberships", "subscriptions", "feature_entitlements", "usage_records", "resources"]) {
     assert.match(schema, new RegExp(`CREATE TABLE IF NOT EXISTS ${table}`), `schema defines ${table}`);
     assert.match(commercialDocs, new RegExp(table), `commercial docs mention ${table}`);
   }
@@ -153,6 +153,10 @@ test("commercial schema, env docs and implementation remain aligned", () => {
     "PUBLIC_APP_URL",
     "ENTERPRISE_LEAD_EMAIL",
     "NEWSLETTER_PROVIDER",
+    "RESEND_API_KEY",
+    "LEADS_NOTIFY_TO",
+    "LEADS_FROM",
+    "LEADS_IP_HASH_SALT",
     "DEFAULT_USER_PLAN"
   ]) {
     assert.match(envExample, new RegExp(`${variable}=`), `.env.example contains ${variable}`);
@@ -168,6 +172,8 @@ test("commercial schema, env docs and implementation remain aligned", () => {
   assert.match(deploymentChecklist, /npx wrangler d1 execute chemvault-staging --remote --file=schema\.sql/, "deployment checklist documents staging D1 schema application");
   assert.match(deploymentChecklist, /npx wrangler d1 execute chemvault-production --remote --file=schema\.sql/, "deployment checklist documents production D1 schema application");
   assert.match(deploymentChecklist, /POST \/api\/export\/compound.*HTTP 402/, "deployment checklist verifies export gating");
+  assert.match(deploymentChecklist, /migrations\/0003_leads_email_notifications\.sql/, "deployment checklist includes the leads email migration");
+  assert.match(deploymentChecklist, /GET \/api\/admin\/leads/, "deployment checklist covers protected lead admin smoke checks");
   assert.match(stagingDocs, /pages_build_output_dir|Static build output:\s*`dist`/, "staging docs identify the Pages build output");
   assert.match(stagingDocs, /D1 binding name used by code:\s*`DB`/, "staging docs preserve the DB binding contract");
   for (const database of ["chemvault-dev", "chemvault-staging", "chemvault-production"]) {
@@ -186,6 +192,7 @@ test("commercial schema, env docs and implementation remain aligned", () => {
     "/api/health",
     "/api/entitlements",
     "/api/leads",
+    "/api/newsletter/unsubscribe",
     "/api/billing/checkout",
     "/api/billing/portal",
     "/api/export/compound"

@@ -23,7 +23,7 @@ The website now includes the first commercial platform layer for turning ChemVau
 - Shared product module config and feature entitlement helpers.
 - Reusable premium gates, upgrade CTA components, plan badges, pricing cards and comparison tables.
 - Dashboard/workbench commercial entry page with safe empty states and quota placeholders.
-- Newsletter, AI Paper Search beta and Enterprise lead collection forms.
+- D1-backed newsletter, AI Paper Search beta and Enterprise lead collection forms with Resend notifications, user confirmations, unsubscribe-token support and protected admin review.
 - Payment provider placeholder routes for future Stripe or equivalent checkout integration.
 
 Commercial implementation details are documented in [docs/commercial-mvp.md](./docs/commercial-mvp.md). Deployment and staging safety checks are documented in [docs/deployment-checklist.md](./docs/deployment-checklist.md).

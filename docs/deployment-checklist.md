@@ -53,6 +53,8 @@ Recommended Preview/Staging variables:
 - `PUBLIC_APP_URL=<Cloudflare Preview URL>`
 - `FORMS_NOTIFY_TO=forms@chemvault.science`
 - `FORMS_FROM=forms@chemvault.science`
+- `LEADS_NOTIFY_TO=forms@chemvault.science` (optional override; otherwise `FORMS_NOTIFY_TO` is used)
+- `LEADS_FROM=ChemVault <forms@chemvault.science>` (optional override; otherwise `FORMS_FROM` is used)
 
 Recommended Production variables:
 
@@ -65,6 +67,8 @@ Recommended Production variables:
 - `PUBLIC_APP_URL=https://chemvault.science`
 - `FORMS_NOTIFY_TO=forms@chemvault.science`
 - `FORMS_FROM=forms@chemvault.science`
+- `LEADS_NOTIFY_TO=forms@chemvault.science`
+- `LEADS_FROM=ChemVault <forms@chemvault.science>`
 
 - Configure `ENVIRONMENT=staging` and `COMMERCIAL_MODE=staging` for staging/preview.
 - Configure `ENVIRONMENT=production` and `COMMERCIAL_MODE=production` for production.
@@ -72,9 +76,10 @@ Recommended Production variables:
 - Set `ENABLE_MOCK_AUTH=false` in production.
 - Do not set `DEFAULT_USER_PLAN` above `free` in production; production ignores it for entitlement elevation.
 - Configure `PUBLIC_APP_URL` for the target environment.
-- Configure `RESEND_API_KEY` only as a Cloudflare secret if Forms email notifications or replies are enabled.
+- Configure `RESEND_API_KEY` only as a Cloudflare secret if lead, newsletter or Forms email notifications are enabled.
 - Configure `CHEMVAULT_ADMIN_TOKEN` only as a Cloudflare secret until real admin sessions replace the placeholder.
 - Configure `FORMS_IP_HASH_SALT` as a Cloudflare secret before production Forms launch.
+- Configure `LEADS_IP_HASH_SALT` as a Cloudflare secret before production lead/newsletter launch, or let leads reuse `FORMS_IP_HASH_SALT`.
 - Configure `GITHUB_FEEDBACK_TOKEN` only if non-security `/api/feedback` fallback issue creation is required.
 - Keep payment secrets only in Cloudflare environment variables/secrets.
 - Do not expose `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, provider customer IDs or subscription IDs in frontend code.
@@ -112,6 +117,7 @@ npx wrangler d1 execute chemvault-production --remote --file=schema.sql
 - Never bind Preview/Staging directly to the production D1 database.
 - Apply `schema.sql` before testing `/api/leads`.
 - Apply `migrations/0002_add_forms_management.sql` before testing `/api/forms/submit` or `/admin/forms`.
+- Apply `migrations/0003_leads_email_notifications.sql` before testing `/api/leads`, `/api/admin/leads` or newsletter unsubscribe on an existing D1 database.
 - `schema.sql` is currently the initialization path for staging D1. Before formal production launch, migrate ongoing schema changes to Cloudflare D1 migrations.
 - `subscriptions` is only a placeholder schema until real checkout/webhooks are implemented.
 - `usage_records` is only a quota placeholder until real usage tracking is implemented.
@@ -121,6 +127,9 @@ npx wrangler d1 execute chemvault-production --remote --file=schema.sql
 - `GET /api/health` returns `ok: true`.
 - `GET /api/entitlements` returns plan, feature map and auth mode.
 - `POST /api/leads` accepts a valid lead and rejects an invalid email.
+- `POST /api/leads` writes a D1 lead, upserts `newsletter_subscribers` for newsletter forms, sends Resend notifications when configured, and still returns success if Resend is missing or temporarily fails.
+- `POST /api/newsletter/unsubscribe` updates subscriber status when given a valid token.
+- `GET /api/admin/leads` returns 403 without an admin bearer token and lead rows with a valid token.
 - `POST /api/forms/submit` saves a feedback submission and returns a tracking ID.
 - `POST /api/forms/submit` with `type=security` saves privately and does not use public GitHub Issue fallback.
 - `GET /api/admin/forms` returns 403 without an admin bearer token.
@@ -143,6 +152,18 @@ Manual API targets after Preview deployment:
 - `POST <preview-url>/api/billing/checkout`
 - `POST <preview-url>/api/billing/portal`
 - `POST <preview-url>/api/export/compound`
+
+## Lead Email And Newsletter Deployment
+
+After deployment:
+
+1. Configure the Cloudflare Pages / Workers D1 binding named `DB`.
+2. Execute `migrations/0003_leads_email_notifications.sql` against the target D1 database if it already existed before this release.
+3. Configure `RESEND_API_KEY` as a secret.
+4. Verify the sending domain in Resend, then set `LEADS_FROM` or `FORMS_FROM` to an allowed address.
+5. Configure `LEADS_NOTIFY_TO` or `FORMS_NOTIFY_TO` for the administrator inbox.
+6. Configure `CHEMVAULT_ADMIN_TOKEN` for `/api/admin/leads` and `/admin/leads`.
+7. Submit a real lead from the frontend and verify D1 insertion, admin notification email, user confirmation email, newsletter subscriber upsert when applicable, and visibility in `/admin/leads`.
 
 ## Product Smoke Checks
 

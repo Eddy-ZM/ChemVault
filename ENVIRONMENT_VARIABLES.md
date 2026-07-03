@@ -26,9 +26,12 @@ Last reviewed: July 2, 2026
 | `STRIPE_PRO_YEARLY_PRICE_ID` | Stripe Pro yearly price identifier | No | If Stripe enabled | Low | `your_stripe_pro_yearly_price_id_here` | Operational config, not a secret. |
 | `STRIPE_TEAM_MONTHLY_PRICE_ID` | Stripe Team monthly price identifier | No | If Stripe enabled | Low | `your_stripe_team_monthly_price_id_here` | Operational config, not a secret. |
 | `STRIPE_TEAM_YEARLY_PRICE_ID` | Stripe Team yearly price identifier | No | If Stripe enabled | Low | `your_stripe_team_yearly_price_id_here` | Operational config, not a secret. |
-| `ENTERPRISE_LEAD_EMAIL` | Lead notification destination | No | If enabled | Moderate | `support@example.com` | Use a confirmed official address. |
-| `NEWSLETTER_PROVIDER` | Newsletter provider selector | No | If enabled | No | `placeholder` | Marketing email must have consent/unsubscribe. |
-| `RESEND_API_KEY` | Resend email API key | No | If Resend enabled | Yes | `your_resend_api_key_here` | Store as provider secret. |
+| `ENTERPRISE_LEAD_EMAIL` | Legacy lead notification destination | No | Optional | Moderate | `support@example.com` | Kept for compatibility; `/api/leads` mail now uses `LEADS_NOTIFY_TO` or `FORMS_NOTIFY_TO`. |
+| `NEWSLETTER_PROVIDER` | Newsletter provider selector | No | Optional | No | `placeholder` | Newsletter storage is D1-backed; bulk sending is not enabled yet. |
+| `RESEND_API_KEY` | Resend email API key | No | If lead/forms mail enabled | Yes | `your_resend_api_key_here` | Store as provider secret. Missing Resend config does not block D1 lead submission. |
+| `LEADS_NOTIFY_TO` | Lead notification recipient override | No | If separate lead inbox needed | Moderate | `forms@chemvault.science` | Optional. Falls back to `FORMS_NOTIFY_TO`. Comma-separated recipients allowed. |
+| `LEADS_FROM` | Lead email sender override | No | If separate sender needed | Moderate | `ChemVault <forms@chemvault.science>` | Optional. Falls back to `FORMS_FROM`. Must be verified in Resend. |
+| `LEADS_IP_HASH_SALT` | Optional salt for lead `ip_hash` and unsubscribe-token hashes | No | Recommended | Yes | `replace_with_leads_hash_salt` | Optional. Falls back to `FORMS_IP_HASH_SALT`; raw IP is not stored. |
 | `FORMS_NOTIFY_TO` | Forms notification recipient | No | Yes for Forms mail | Moderate | `forms@chemvault.science` | Receives new submission notifications. |
 | `FORMS_FROM` | Forms sender address | No | Yes for Forms mail | Moderate | `forms@chemvault.science` | Must be allowed by the verified Resend sending domain. |
 | `FORMS_IP_HASH_SALT` | Optional salt for Forms `ip_hash` | No | Recommended | Yes | `replace_with_forms_hash_salt` | Used only to hash client IPs before storage; raw IP is not stored in Forms tables. |

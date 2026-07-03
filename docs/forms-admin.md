@@ -4,6 +4,8 @@ Last reviewed: July 2, 2026
 
 ChemVault Forms replaces the old public GitHub-Issue-only feedback path with a private D1-backed intake and admin workflow. The compatibility `/api/feedback` endpoint remains available, but security reports must never fall back to public GitHub Issues.
 
+Commercial leads use the same protected admin-token pattern at `/admin/leads` and `/api/admin/leads`. Lead email notifications reuse `RESEND_API_KEY`, `FORMS_NOTIFY_TO` and `FORMS_FROM` unless `LEADS_NOTIFY_TO` or `LEADS_FROM` are configured.
+
 Official references:
 
 - Cloudflare D1 databases and Wrangler: https://developers.cloudflare.com/d1/

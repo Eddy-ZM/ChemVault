@@ -19,7 +19,8 @@
     "d1:schema": "wrangler d1 execute chemvault --file=schema.sql",
     "d1:seed": "npm run seed:build && wrangler d1 execute chemvault --file=seed.sql",
     "d1:migrate:images": "wrangler d1 execute chemvault --file=migrations/0001_add_record_images.sql",
-    "d1:migrate:forms": "wrangler d1 execute chemvault --file=migrations/0002_add_forms_management.sql"
+    "d1:migrate:forms": "wrangler d1 execute chemvault --file=migrations/0002_add_forms_management.sql",
+    "d1:migrate:leads": "wrangler d1 execute chemvault --file=migrations/0003_leads_email_notifications.sql"
   },
   "devDependencies": {
     "typescript": "^6.0.3",
