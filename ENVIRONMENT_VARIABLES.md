@@ -2,7 +2,7 @@
 
 Do not commit real keys, tokens, private keys, certificates, provisioning profiles, or `.env` files. Store production secrets in Cloudflare, GitHub Actions, Xcode Cloud, App Store Connect, Resend, Stripe, or the relevant provider secret store.
 
-Last reviewed: July 2, 2026
+Last reviewed: July 3, 2026
 
 | Variable | Purpose | Required locally | Required in production | Sensitive | Example placeholder | Notes |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -12,7 +12,10 @@ Last reviewed: July 2, 2026
 | `ENABLE_MOCK_BILLING` | Allows placeholder billing routes | Yes | No | No | `false` | Must be false in production. |
 | `ENABLE_MOCK_AUTH` | Allows placeholder auth/admin routes | Yes | No | No | `false` | Must be false in production. |
 | `DEFAULT_USER_PLAN` | Local/staging plan placeholder | No | No | No | `free` | Do not use for production entitlement logic. |
-| `CHEMVAULT_ADMIN_TOKEN` | Main API placeholder admin token | No | Avoid | Yes | `replace_with_secure_token` | Store only as a Cloudflare secret; replace with real auth before broad admin use. |
+| `CHEMVAULT_ADMIN_EMAILS` | Allowed main-site administrator emails | No | Yes for `/admin/*` | Moderate | `ziwen.mu@chemvault.science,admin@chemvault.science` | Used after Cloudflare Access or ChemVault User authentication. Email is not enough by itself; the request must also be authenticated. |
+| `USER_SYSTEM_ORIGIN` | ChemVault User Center origin for permission checks | No | Recommended | No | `https://user.chemvault.science` | Main site calls `/api/access/check` with the user session cookie when available. |
+| `CHEMVAULT_ADMIN_TOKEN` | Legacy main admin fallback token | No | Emergency fallback only | Yes | `replace_with_secure_token` | Store only as a Cloudflare secret. Prefer Cloudflare Access or ChemVault User permissions. |
+| `CHEMVAULT_ADMIN_TOKEN_FALLBACK` | Enables legacy admin-token fallback | No | Optional | No | `true` | Set `false` after Cloudflare Access/User Center admin login is fully confirmed. |
 | `CLOUDFLARE_API_TOKEN` | Cloudflare deployment/API access | No | Yes for deploy | Yes | `your_cloudflare_api_token_here` | Store in GitHub Secrets or Cloudflare. Rotate if exposed. |
 | `CLOUDFLARE_ACCOUNT_ID` | Cloudflare account id | No | Yes for deploy | Low | `your_cloudflare_account_id_here` | Not a secret alone, but treat as operational config. |
 | `CLOUDFLARE_ZONE_ID` | Cloudflare zone id | No | If used | Low | `your_cloudflare_zone_id_here` | Needed by some deploy workflows. |

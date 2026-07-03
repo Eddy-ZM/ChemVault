@@ -4,6 +4,15 @@ import {
   sendResendEmail as sendResendEmailProvider,
   sendUserLeadConfirmation
 } from "../../lib/email/resend.js";
+import {
+  ADMIN_ACCESS_PERMISSION,
+  adminActorFromRequest,
+  adminRequirementForSegments,
+  adminSessionCookie,
+  clearAdminSessionCookie,
+  legacyAdminTokenEnabled,
+  requireAdminAccess
+} from "../_shared/admin-auth.js";
 
 const API_VERSION = "0.5.0";
 let schemaReady = false;
@@ -121,8 +130,8 @@ const fallbackRecords = [
 
 const jsonHeaders = {
   "access-control-allow-origin": "*",
-  "access-control-allow-methods": "GET, POST, PATCH, OPTIONS",
-  "access-control-allow-headers": "content-type, authorization",
+  "access-control-allow-methods": "GET, POST, PATCH, DELETE, OPTIONS",
+  "access-control-allow-headers": "content-type, authorization, x-admin-user, x-chemvault-user-email",
   "cache-control": "no-store",
   "content-type": "application/json; charset=utf-8"
 };
@@ -341,8 +350,13 @@ export async function onRequest(context) {
       return json({ error: "Not found", routes: ["/api/account/deletion-request", "/api/account/export-request"] }, 404);
     }
 
+    if (segments[0] === "admin" && segments[1] === "session") {
+      const result = await handleAdminSessionRequest(request, env);
+      return result;
+    }
+
     if (segments[0] === "admin") {
-      const admin = requireAdminAccess(request, env);
+      const admin = await requireAdminAccess(request, env, adminRequirementForSegments(segments, request.method));
       if (!admin.ok) return json(admin, 403);
       const limited = checkRateLimit(
         request,
@@ -363,15 +377,15 @@ export async function onRequest(context) {
           return json(result, result.ok ? 200 : 503);
         }
         if (request.method === "PATCH" && segments[2]) {
-          const result = await updateFormSubmission(env, hasDb, request, segments[2], await readJSONBody(request));
+          const result = await updateFormSubmission(env, hasDb, request, segments[2], await readJSONBody(request), admin.identity);
           return json(result, result.ok ? 200 : 400);
         }
         if (request.method === "PATCH") {
-          const result = await bulkUpdateFormSubmissions(env, hasDb, request, await readJSONBody(request));
+          const result = await bulkUpdateFormSubmissions(env, hasDb, request, await readJSONBody(request), admin.identity);
           return json(result, result.ok ? 200 : 400);
         }
         if (request.method === "POST" && segments[2] && segments[3] === "reply") {
-          const result = await createFormReply(env, hasDb, request, segments[2], await readJSONBody(request));
+          const result = await createFormReply(env, hasDb, request, segments[2], await readJSONBody(request), admin.identity);
           return json(stripHttpStatus(result), result.httpStatus || (result.ok ? 201 : 400));
         }
       }
@@ -385,25 +399,25 @@ export async function onRequest(context) {
           return json(result, result.ok ? 200 : 503);
         }
         if (request.method === "POST" && segments[2] && segments[3] === "status") {
-          const result = await updateLeadStatus(env, hasDb, request, segments[2], await readJSONBody(request));
+          const result = await updateLeadStatus(env, hasDb, request, segments[2], await readJSONBody(request), admin.identity);
           return json(result, result.ok ? 200 : 400);
         }
         if (request.method === "POST" && segments[2] && segments[3] === "notify") {
-          const result = await resendLeadAdminNotification(env, hasDb, request, segments[2]);
+          const result = await resendLeadAdminNotification(env, hasDb, request, segments[2], admin.identity);
           return json(stripHttpStatus(result), result.httpStatus || (result.ok ? 200 : 400));
         }
       }
       if (segments[1] === "deletion-requests") {
         if (request.method === "GET") return json(await listRequestRows(env, hasDb, "account_deletion_requests"));
         if (request.method === "PATCH" && segments[2]) {
-          const result = await updateRequestStatus(env, hasDb, request, "account_deletion_requests", segments[2], await readJSONBody(request), "account_deletion_request");
+          const result = await updateRequestStatus(env, hasDb, request, "account_deletion_requests", segments[2], await readJSONBody(request), "account_deletion_request", admin.identity);
           return json(result, result.ok ? 200 : 400);
         }
       }
       if (segments[1] === "export-requests") {
         if (request.method === "GET") return json(await listRequestRows(env, hasDb, "data_export_requests"));
         if (request.method === "PATCH" && segments[2]) {
-          const result = await updateRequestStatus(env, hasDb, request, "data_export_requests", segments[2], await readJSONBody(request), "data_export_request");
+          const result = await updateRequestStatus(env, hasDb, request, "data_export_requests", segments[2], await readJSONBody(request), "data_export_request", admin.identity);
           return json(result, result.ok ? 200 : 400);
         }
       }
@@ -767,7 +781,7 @@ async function getLead(env, hasDb, id) {
   return { ok: true, lead: adminLeadShape(row), meta: { version: API_VERSION } };
 }
 
-async function updateLeadStatus(env, hasDb, request, id, body = {}) {
+async function updateLeadStatus(env, hasDb, request, id, body = {}, adminIdentity = null) {
   if (!hasDb) return { ok: false, error: "Leads database is not configured." };
   await ensureCommercialSchema(env.DB);
   const status = normalizeLeadStatus(body.status);
@@ -780,6 +794,7 @@ async function updateLeadStatus(env, hasDb, request, id, body = {}) {
   `).bind(status, now, id).run();
   if (!Number(result?.meta?.changes || 0)) return { ok: false, error: "Lead not found." };
   await writeAdminAuditLog(env, request, {
+    actorEmail: adminActorFromRequest(request, adminIdentity),
     action: "lead.status_updated",
     targetType: "lead",
     targetId: id,
@@ -788,7 +803,7 @@ async function updateLeadStatus(env, hasDb, request, id, body = {}) {
   return getLead(env, hasDb, id);
 }
 
-async function resendLeadAdminNotification(env, hasDb, request, id) {
+async function resendLeadAdminNotification(env, hasDb, request, id, adminIdentity = null) {
   if (!hasDb) return { ok: false, error: "Leads database is not configured.", httpStatus: 503 };
   const detail = await getLead(env, hasDb, id);
   if (!detail.ok) return { ...detail, httpStatus: 404 };
@@ -800,6 +815,7 @@ async function resendLeadAdminNotification(env, hasDb, request, id) {
   const status = result.ok ? "notified" : "failed";
   await updateLeadMailStatus(env.DB, id, status, result.ok ? "" : leadMailFailureReason(result));
   await writeAdminAuditLog(env, request, {
+    actorEmail: adminActorFromRequest(request, adminIdentity),
     action: "lead.notification_resent",
     targetType: "lead",
     targetId: id,
@@ -1256,7 +1272,7 @@ async function getFormSubmission(env, hasDb, id) {
   };
 }
 
-async function updateFormSubmission(env, hasDb, request, id, body = {}) {
+async function updateFormSubmission(env, hasDb, request, id, body = {}, adminIdentity = null) {
   if (!hasDb) return { ok: false, error: "Forms database is not configured." };
   await ensureFormsSchema(env.DB);
   const existing = await env.DB.prepare("SELECT id FROM forms_submissions WHERE id = ? OR public_tracking_id = ? LIMIT 1").bind(id, id).first();
@@ -1295,6 +1311,7 @@ async function updateFormSubmission(env, hasDb, request, id, body = {}) {
     WHERE id = ?
   `).bind(...values).run();
   await writeAdminAuditLog(env, request, {
+    actorEmail: adminActorFromRequest(request, adminIdentity),
     action: "form_submission.updated",
     targetType: "form_submission",
     targetId: existing.id,
@@ -1303,7 +1320,7 @@ async function updateFormSubmission(env, hasDb, request, id, body = {}) {
   return getFormSubmission(env, hasDb, existing.id);
 }
 
-async function bulkUpdateFormSubmissions(env, hasDb, request, body = {}) {
+async function bulkUpdateFormSubmissions(env, hasDb, request, body = {}, adminIdentity = null) {
   if (!hasDb) return { ok: false, error: "Forms database is not configured." };
   const ids = Array.isArray(body.ids) ? body.ids.map(clean).filter(Boolean).slice(0, 100) : [];
   const status = normalizeFormStatus(body.status);
@@ -1321,6 +1338,7 @@ async function bulkUpdateFormSubmissions(env, hasDb, request, body = {}) {
     updated += Number(result?.meta?.changes || 0);
   }
   await writeAdminAuditLog(env, request, {
+    actorEmail: adminActorFromRequest(request, adminIdentity),
     action: "form_submission.bulk_status_updated",
     targetType: "form_submission",
     targetId: ids.join(",").slice(0, 500),
@@ -1329,7 +1347,7 @@ async function bulkUpdateFormSubmissions(env, hasDb, request, body = {}) {
   return { ok: true, updated, status, meta: { version: API_VERSION } };
 }
 
-async function createFormReply(env, hasDb, request, id, body = {}) {
+async function createFormReply(env, hasDb, request, id, body = {}, adminIdentity = null) {
   if (!hasDb) return { ok: false, error: "Forms database is not configured." };
   await ensureFormsSchema(env.DB);
   const submission = await env.DB.prepare(`
@@ -1355,7 +1373,7 @@ async function createFormReply(env, hasDb, request, id, body = {}) {
     id: randomId("reply"),
     submissionId: submission.id,
     createdAt: new Date().toISOString(),
-    adminUser: limitText(body.admin_user || body.adminUser || adminActorFromRequest(request), 120),
+    adminUser: limitText(body.admin_user || body.adminUser || adminActorFromRequest(request, adminIdentity), 120),
     toEmail,
     subject: replySubject,
     body: replyBody,
@@ -1381,6 +1399,7 @@ async function createFormReply(env, hasDb, request, id, body = {}) {
     .bind("waiting_user", new Date().toISOString(), submission.id)
     .run();
   await writeAdminAuditLog(env, request, {
+    actorEmail: adminActorFromRequest(request, adminIdentity),
     action: "form_reply.created",
     targetType: "form_submission",
     targetId: submission.id,
@@ -1576,7 +1595,7 @@ async function listRequestRows(env, hasDb, tableName) {
   };
 }
 
-async function updateRequestStatus(env, hasDb, request, tableName, id, body, targetType) {
+async function updateRequestStatus(env, hasDb, request, tableName, id, body, targetType, adminIdentity = null) {
   const status = clean(body.status);
   if (!["pending", "verified", "processing", "completed", "rejected"].includes(status)) {
     return { ok: false, error: "Unsupported status." };
@@ -1601,6 +1620,7 @@ async function updateRequestStatus(env, hasDb, request, tableName, id, body, tar
   `).bind(status, adminNotes, completedAt, clean(id)).run();
 
   await writeAdminAuditLog(env, request, {
+    actorEmail: adminActorFromRequest(request, adminIdentity),
     action: `${targetType}.status_updated`,
     targetType,
     targetId: clean(id),
@@ -2862,14 +2882,6 @@ function buildAdminFormUrl(env, request, id) {
   return `${origin}/admin/forms/${encodeURIComponent(id)}`;
 }
 
-function adminActorFromRequest(request) {
-  return clean(
-    request.headers.get("x-admin-user")
-      || request.headers.get("cf-access-authenticated-user-email")
-      || "chemvault-admin"
-  );
-}
-
 async function hashClientIp(request, env = {}) {
   const ip = getClientIp(request);
   const salt = clean(env.FORMS_IP_HASH_SALT || "chemvault-forms");
@@ -2939,6 +2951,61 @@ async function createGitHubIssueFallback(env, submission) {
   return { ok: true, issueUrl: clean(payload.html_url) };
 }
 
+async function handleAdminSessionRequest(request, env = {}) {
+  if (request.method === "GET") {
+    const admin = await requireAdminAccess(request, env, { permission: ADMIN_ACCESS_PERMISSION, label: "Admin session" });
+    if (!admin.ok) return json(admin, 403);
+    return json({
+      ok: true,
+      identity: publicAdminIdentity(admin.identity),
+      legacyTokenEnabled: legacyAdminTokenEnabled(env),
+      meta: { version: API_VERSION }
+    });
+  }
+
+  if (request.method === "POST") {
+    if (!legacyAdminTokenEnabled(env)) {
+      return json({ ok: false, error: "Legacy admin token login is disabled." }, 403);
+    }
+    const body = await readJSONBody(request);
+    const token = clean(body.token);
+    const expected = clean(env.CHEMVAULT_ADMIN_TOKEN);
+    if (!expected || token !== expected) {
+      return json({ ok: false, error: "Admin access required." }, 403);
+    }
+    return json({
+      ok: true,
+      identity: publicAdminIdentity({
+        email: "",
+        source: "legacy_admin_token",
+        authMode: "legacy_admin_token",
+        permission: ADMIN_ACCESS_PERMISSION,
+        warning: "Legacy token fallback is enabled. Prefer Cloudflare Access or ChemVault User permissions."
+      }),
+      legacyTokenEnabled: true,
+      meta: { version: API_VERSION }
+    }, 200, { "set-cookie": adminSessionCookie(env, request, expected) });
+  }
+
+  if (request.method === "DELETE") {
+    return json({ ok: true, signedOut: true }, 200, { "set-cookie": clearAdminSessionCookie(env, request) });
+  }
+
+  return json({ error: "Method not allowed" }, 405);
+}
+
+function publicAdminIdentity(identity = {}) {
+  return {
+    email: identity.email || "",
+    source: identity.source || "",
+    authMode: identity.authMode || "",
+    permission: identity.permission || "",
+    permissions: identity.permissions || [],
+    systemRole: identity.systemRole || "",
+    warning: identity.warning || ""
+  };
+}
+
 async function writeAdminAuditLog(env, request, event) {
   if (!env?.DB?.prepare) return;
   const metadata = redactMetadata(event.metadata || {});
@@ -2958,19 +3025,6 @@ async function writeAdminAuditLog(env, request, event) {
     JSON.stringify(metadata),
     new Date().toISOString()
   ).run();
-}
-
-function requireAdminAccess(request, env) {
-  const auth = request.headers.get("authorization") || "";
-  const token = clean(env.CHEMVAULT_ADMIN_TOKEN);
-  if (token && auth === `Bearer ${token}`) return { ok: true };
-  const plan = resolveServerPlan(request, env);
-  if (plan === "admin") return { ok: true };
-  return {
-    ok: false,
-    error: "Admin access required.",
-    message: "This placeholder admin endpoint requires the configured admin bearer token outside production. Replace with ChemVault User roles before production use."
-  };
 }
 
 function checkRateLimit(request, scope, policy) {
@@ -3182,6 +3236,6 @@ function safeJSON(value, fallback) {
   }
 }
 
-function json(payload, status = 200) {
-  return new Response(JSON.stringify(payload, null, 2), { status, headers: jsonHeaders });
+function json(payload, status = 200, headers = {}) {
+  return new Response(JSON.stringify(payload, null, 2), { status, headers: { ...jsonHeaders, ...headers } });
 }

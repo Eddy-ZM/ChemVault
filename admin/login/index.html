@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Sign In | ChemVault</title>
+  <meta name="robots" content="noindex,nofollow" />
+  <meta name="theme-color" content="#f5f5f7" />
+  <script src="/scripts/boot.js?v=20260618c"></script>
+  <link rel="icon" href="/favicon.ico?v=20260628a" sizes="any" />
+  <link rel="icon" href="/assets/chemvault-logo-mark.png?v=20260628a" type="image/png" sizes="512x512" />
+  <link rel="apple-touch-icon" href="/assets/chemvault-apple-touch-icon.png?v=20260628a" />
+  <link rel="stylesheet" href="/assets/styles.css?v=20260702b" />
+  <link rel="stylesheet" href="/assets/forms-admin.css?v=20260703b" />
+  <script src="/scripts/admin-login.js?v=20260703a" defer></script>
+</head>
+<body class="page-shell forms-admin-shell" data-boot-label="Admin Sign In">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <main id="main" class="forms-admin-main">
+    <div class="container">
+      <div class="forms-admin-header">
+        <div>
+          <span class="section-kicker">ChemVault Admin</span>
+          <h1>Admin sign in</h1>
+          <p data-admin-login-summary>Checking existing administrator identity...</p>
+        </div>
+        <a class="forms-button forms-button--ghost" href="/index.html">Main site</a>
+      </div>
+
+      <section class="forms-panel">
+        <div class="forms-panel__header">
+          <div>
+            <h2>Administrator access</h2>
+            <p>Access is limited to approved ChemVault administrator identities.</p>
+          </div>
+        </div>
+        <div class="forms-form">
+          <div class="forms-field">
+            <span>Preferred sign in</span>
+            <div class="forms-detail-message">
+              Use Cloudflare Access or a ChemVault User account with the main-site admin permissions. Approved emails are managed by CHEMVAULT_ADMIN_EMAILS.
+            </div>
+          </div>
+          <div class="forms-field">
+            <label for="adminToken">Fallback admin token</label>
+            <input id="adminToken" class="forms-token" type="password" autocomplete="off" data-admin-token placeholder="Only for emergency fallback" />
+          </div>
+          <div class="forms-actions">
+            <button class="forms-button" type="button" data-admin-token-save>Use fallback token</button>
+            <a class="forms-button forms-button--quiet" href="https://user.chemvault.science/login">Open User Center</a>
+          </div>
+          <p class="forms-status" data-admin-login-status aria-live="polite"></p>
+        </div>
+      </section>
+    </div>
+  </main>
+</body>
+</html>

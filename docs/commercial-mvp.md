@@ -168,7 +168,10 @@ Do not hardcode provider keys or price IDs. Use:
 - `LEADS_NOTIFY_TO`
 - `LEADS_FROM`
 - `LEADS_IP_HASH_SALT`
+- `CHEMVAULT_ADMIN_EMAILS`
+- `USER_SYSTEM_ORIGIN`
 - `CHEMVAULT_ADMIN_TOKEN`
+- `CHEMVAULT_ADMIN_TOKEN_FALLBACK`
 - `DEFAULT_USER_PLAN`
 
 `DEFAULT_USER_PLAN` is a local/staging placeholder only. It exists so API entitlement checks can be exercised before real auth, organization membership and subscription state are wired in.

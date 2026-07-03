@@ -296,6 +296,85 @@ test("admin forms API rejects missing bearer token", async () => {
   assert.match(payload.error, /Admin access/i);
 });
 
+test("admin forms API accepts approved Cloudflare Access email", async () => {
+  const db = new FormsD1Mock();
+  const { response, payload } = await callApi("admin/forms", {
+    env: { DB: db },
+    headers: {
+      "cf-access-authenticated-user-email": "ziwen.mu@chemvault.science"
+    }
+  });
+  assert.equal(response.status, 200);
+  assert.equal(payload.ok, true);
+  assert.equal(payload.count, 0);
+});
+
+test("admin forms API rejects authenticated but unapproved admin email", async () => {
+  const db = new FormsD1Mock();
+  const { response, payload } = await callApi("admin/forms", {
+    env: { DB: db },
+    headers: {
+      "cf-access-authenticated-user-email": "not-admin@chemvault.science"
+    }
+  });
+  assert.equal(response.status, 403);
+  assert.equal(payload.ok, false);
+  assert.match(payload.message, /not-admin@chemvault\.science/);
+});
+
+test("admin session can use legacy token fallback cookie", async () => {
+  const env = {
+    CHEMVAULT_ADMIN_TOKEN: "admin_test_token"
+  };
+  const login = await callApi("admin/session", {
+    method: "POST",
+    env,
+    body: { token: "admin_test_token" }
+  });
+  assert.equal(login.response.status, 200);
+  assert.equal(login.payload.ok, true);
+  assert.match(login.response.headers.get("set-cookie") || "", /chemvault_admin_session=/);
+
+  const db = new FormsD1Mock();
+  const listed = await callApi("admin/forms", {
+    env: { ...env, DB: db },
+    headers: {
+      cookie: "chemvault_admin_session=admin_test_token"
+    }
+  });
+  assert.equal(listed.response.status, 200);
+  assert.equal(listed.payload.ok, true);
+});
+
+test("admin forms API accepts User Center permission plus approved email", async () => {
+  const originalFetch = globalThis.fetch;
+  const db = new FormsD1Mock();
+  globalThis.fetch = async (url) => {
+    assert.match(String(url), /permission=main_admin%3Aforms%3Aread/);
+    return new Response(JSON.stringify({
+      allowed: true,
+      reason: "allowed_by_role_permission",
+      user: {
+        id: "user_admin",
+        email: "admin@chemvault.science",
+        systemRole: "admin"
+      }
+    }), { status: 200, headers: { "content-type": "application/json" } });
+  };
+  try {
+    const { response, payload } = await callApi("admin/forms", {
+      env: { DB: db, USER_SYSTEM_ORIGIN: "https://user.chemvault.test" },
+      headers: {
+        cookie: "chemvault_session=session_test"
+      }
+    });
+    assert.equal(response.status, 200);
+    assert.equal(payload.ok, true);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
 test("admin can update submission status and save reply", async () => {
   const originalFetch = globalThis.fetch;
   const db = new FormsD1Mock();

@@ -2,14 +2,8 @@
   const tokenKey = "chemvault_admin_token";
   const tokenInput = document.querySelector("[data-admin-token]");
   const tokenSave = document.querySelector("[data-admin-token-save]");
-  const savedToken = sessionStorage.getItem(tokenKey) || "";
 
-  if (tokenInput) tokenInput.value = savedToken;
-  tokenSave?.addEventListener("click", () => {
-    sessionStorage.setItem(tokenKey, tokenInput?.value.trim() || "");
-    if (document.body.matches("[data-admin-forms-list]")) loadList();
-    if (document.body.matches("[data-admin-form-detail]")) loadDetail();
-  });
+  tokenSave?.addEventListener("click", loginWithToken);
 
   let listState = {
     page: 1,
@@ -20,8 +14,53 @@
     submission: null
   };
 
+  initAdminSession();
   if (document.body.matches("[data-admin-forms-list]")) initList();
   if (document.body.matches("[data-admin-form-detail]")) initDetail();
+
+  async function initAdminSession() {
+    const result = await apiJSON("/api/admin/session");
+    renderAdminSession(result);
+  }
+
+  async function loginWithToken() {
+    const token = tokenInput?.value.trim() || "";
+    if (!token) {
+      renderAdminSession({ ok: false, status: 403, payload: { error: "Enter the fallback admin token." } });
+      return;
+    }
+    const result = await apiJSON("/api/admin/session", {
+      method: "POST",
+      body: { token },
+      skipAuth: true
+    });
+    if (result.ok) {
+      if (tokenInput) tokenInput.value = "";
+      sessionStorage.removeItem(tokenKey);
+      renderAdminSession(result);
+      if (document.body.matches("[data-admin-forms-list]")) loadList();
+      if (document.body.matches("[data-admin-form-detail]")) loadDetail();
+      return;
+    }
+    renderAdminSession(result);
+  }
+
+  function renderAdminSession(result) {
+    const label = document.querySelector("[data-admin-session-label]");
+    const detail = document.querySelector("[data-admin-session-detail]");
+    const panel = document.querySelector("[data-admin-token-panel]");
+    const identity = result.payload?.identity || {};
+    if (result.ok) {
+      const actor = identity.email || "Legacy admin token";
+      if (label) label.textContent = `Signed in: ${actor}`;
+      if (detail) detail.textContent = `${identity.authMode || "admin"} access active${identity.permission ? ` / ${identity.permission}` : ""}.`;
+      if (panel) panel.hidden = identity.authMode !== "legacy_admin_token";
+      return;
+    }
+    if (label) label.textContent = "Admin sign-in required";
+    if (detail) detail.textContent = result.payload?.message || result.payload?.error || "Use Cloudflare Access, ChemVault User permissions, or the fallback token.";
+    if (panel) panel.hidden = false;
+  }
 
   function initList() {
     const controls = [
@@ -273,9 +312,10 @@
       const response = await fetch(path, {
         method: options.method || "GET",
         headers: {
-          ...authHeaders(),
+          ...(options.skipAuth ? {} : authHeaders()),
           ...(options.body ? { "content-type": "application/json" } : {})
         },
+        credentials: "same-origin",
         body: options.body ? JSON.stringify(options.body) : undefined
       });
       let payload = {};
@@ -291,7 +331,7 @@
   }
 
   function authHeaders() {
-    const token = tokenInput?.value.trim() || sessionStorage.getItem(tokenKey) || "";
+    const token = tokenInput?.value.trim() || "";
     return token ? { authorization: `Bearer ${token}` } : {};
   }
 

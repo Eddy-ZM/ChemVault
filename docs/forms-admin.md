@@ -4,7 +4,7 @@ Last reviewed: July 2, 2026
 
 ChemVault Forms replaces the old public GitHub-Issue-only feedback path with a private D1-backed intake and admin workflow. The compatibility `/api/feedback` endpoint remains available, but security reports must never fall back to public GitHub Issues.
 
-Commercial leads use the same protected admin-token pattern at `/admin/leads` and `/api/admin/leads`. Lead email notifications reuse `RESEND_API_KEY`, `FORMS_NOTIFY_TO` and `FORMS_FROM` unless `LEADS_NOTIFY_TO` or `LEADS_FROM` are configured.
+Commercial leads use the same protected administrator workflow at `/admin/leads` and `/api/admin/leads`. Lead email notifications reuse `RESEND_API_KEY`, `FORMS_NOTIFY_TO` and `FORMS_FROM` unless `LEADS_NOTIFY_TO` or `LEADS_FROM` are configured.
 
 Official references:
 
@@ -67,7 +67,10 @@ Configure these in Cloudflare Pages for the target environment. Do not commit re
 | `FORMS_NOTIFY_TO` | Yes for mail | Notification inbox, normally `forms@chemvault.science`. |
 | `FORMS_FROM` | Yes for mail | Sender, normally `forms@chemvault.science` or `noreply@chemvault.science`. |
 | `FORMS_IP_HASH_SALT` | Recommended | Salt used before hashing client IPs for `ip_hash`. |
-| `CHEMVAULT_ADMIN_TOKEN` | Required until real auth exists | Bearer token for admin APIs and admin pages. |
+| `CHEMVAULT_ADMIN_EMAILS` | Yes | Comma-separated allow-list for authenticated admin emails. Default production values are `ziwen.mu@chemvault.science,admin@chemvault.science`. |
+| `USER_SYSTEM_ORIGIN` | Recommended | ChemVault User Center origin used for `/api/access/check` permission validation. |
+| `CHEMVAULT_ADMIN_TOKEN` | Emergency fallback | Legacy fallback token. Store only as a Cloudflare secret. |
+| `CHEMVAULT_ADMIN_TOKEN_FALLBACK` | Optional | Set `false` after Cloudflare Access/User Center login is confirmed. |
 | `PUBLIC_APP_URL` | Recommended | Used to generate admin links inside notification emails. |
 | `GITHUB_FEEDBACK_TOKEN` | Optional | Non-security compatibility fallback only. |
 | `GITHUB_FEEDBACK_REPO` | Optional | Fallback repo, default `Eddy-ZM/chemvault`. |
@@ -85,13 +88,20 @@ If email sending fails or Resend is not configured, the submission still saves t
 
 ## Admin access
 
-The admin APIs require authorization. Until ChemVault User roles are connected, use:
+The admin APIs and `/admin/*` pages require an authenticated administrator identity. The accepted production identities are:
 
-```text
-Authorization: Bearer <CHEMVAULT_ADMIN_TOKEN>
-```
+- Cloudflare Access authenticated email in `CHEMVAULT_ADMIN_EMAILS`;
+- ChemVault User Center account with the required `main_admin:*` permission and an email in `CHEMVAULT_ADMIN_EMAILS`;
+- legacy `CHEMVAULT_ADMIN_TOKEN` only when `CHEMVAULT_ADMIN_TOKEN_FALLBACK` is not disabled.
 
-The admin UI at `/admin/forms` stores the token only in browser `sessionStorage` for that session. Replace the token placeholder flow with real admin sessions or Cloudflare Access before broad production use.
+Configure Cloudflare Access for `/admin/*` and `/api/admin/*` with an include policy for:
+
+- `ziwen.mu@chemvault.science`
+- `admin@chemvault.science`
+
+ChemVault User Center must include the permissions from `db/migrations/008_main_site_admin_permissions.sql` in the User Center repository. The main site still checks `CHEMVAULT_ADMIN_EMAILS`, so granting a permission to another User Center account is not sufficient unless that email is also allow-listed.
+
+The admin UI at `/admin/login/` can use the fallback token to set an HttpOnly `chemvault_admin_session` cookie. Do not distribute this fallback token; disable it once Cloudflare Access/User Center admin login is verified.
 
 ## Security report handling
 

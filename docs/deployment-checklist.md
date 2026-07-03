@@ -53,6 +53,8 @@ Recommended Preview/Staging variables:
 - `PUBLIC_APP_URL=<Cloudflare Preview URL>`
 - `FORMS_NOTIFY_TO=forms@chemvault.science`
 - `FORMS_FROM=forms@chemvault.science`
+- `CHEMVAULT_ADMIN_EMAILS=ziwen.mu@chemvault.science,admin@chemvault.science`
+- `USER_SYSTEM_ORIGIN=https://user.chemvault.science`
 - `LEADS_NOTIFY_TO=forms@chemvault.science` (optional override; otherwise `FORMS_NOTIFY_TO` is used)
 - `LEADS_FROM=ChemVault <forms@chemvault.science>` (optional override; otherwise `FORMS_FROM` is used)
 
@@ -67,6 +69,8 @@ Recommended Production variables:
 - `PUBLIC_APP_URL=https://chemvault.science`
 - `FORMS_NOTIFY_TO=forms@chemvault.science`
 - `FORMS_FROM=forms@chemvault.science`
+- `CHEMVAULT_ADMIN_EMAILS=ziwen.mu@chemvault.science,admin@chemvault.science`
+- `USER_SYSTEM_ORIGIN=https://user.chemvault.science`
 - `LEADS_NOTIFY_TO=forms@chemvault.science`
 - `LEADS_FROM=ChemVault <forms@chemvault.science>`
 
@@ -77,7 +81,10 @@ Recommended Production variables:
 - Do not set `DEFAULT_USER_PLAN` above `free` in production; production ignores it for entitlement elevation.
 - Configure `PUBLIC_APP_URL` for the target environment.
 - Configure `RESEND_API_KEY` only as a Cloudflare secret if lead, newsletter or Forms email notifications are enabled.
-- Configure `CHEMVAULT_ADMIN_TOKEN` only as a Cloudflare secret until real admin sessions replace the placeholder.
+- Configure `CHEMVAULT_ADMIN_EMAILS` for the authenticated administrator allow-list.
+- Configure Cloudflare Access for `/admin/*` and `/api/admin/*` with the same allowed emails.
+- Configure `USER_SYSTEM_ORIGIN` if ChemVault User Center permission checks should authorize main-site admin access.
+- Configure `CHEMVAULT_ADMIN_TOKEN` only as an emergency fallback secret, and set `CHEMVAULT_ADMIN_TOKEN_FALLBACK=false` after Cloudflare Access/User Center login is verified.
 - Configure `FORMS_IP_HASH_SALT` as a Cloudflare secret before production Forms launch.
 - Configure `LEADS_IP_HASH_SALT` as a Cloudflare secret before production lead/newsletter launch, or let leads reuse `FORMS_IP_HASH_SALT`.
 - Configure `GITHUB_FEEDBACK_TOKEN` only if non-security `/api/feedback` fallback issue creation is required.
@@ -177,7 +184,8 @@ After deployment:
 - `/pages/molecular-modeling`
 - `/pages/mail`
 - `/feedback`
-- `/admin/forms` with admin token
+- `/admin/login` redirects authenticated admins or accepts the emergency fallback token.
+- `/admin/forms` with Cloudflare Access or ChemVault User admin permission.
 - `/404.html`
 - Pricing page is accessible.
 - Four plans are visible: Free, Pro, Team/Lab and Enterprise.
@@ -205,7 +213,7 @@ After deployment:
 Do not present the platform as having live paid access until these are implemented:
 
 - Real auth/session.
-- Real admin roles or Cloudflare Access in front of `/admin/forms`.
+- Full cross-service SSO rollout and least-privilege admin review beyond the current Forms/Leads admin permissions.
 - Real subscription state.
 - Real payment checkout, webhook handling and billing portal.
 - Real file library backend.

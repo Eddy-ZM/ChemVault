@@ -69,6 +69,27 @@
   box-shadow: var(--shadow);
 }
 
+.forms-admin-session {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: center;
+  padding: 16px 18px;
+}
+
+.forms-admin-session strong {
+  display: block;
+}
+
+.forms-admin-session p {
+  margin: 4px 0 0;
+  color: var(--muted);
+}
+
+.forms-admin-session [hidden] {
+  display: none;
+}
+
 .forms-panel__header {
   display: flex;
   justify-content: space-between;
@@ -507,7 +528,8 @@
   }
 
   .forms-admin-header,
-  .forms-panel__header {
+  .forms-panel__header,
+  .forms-admin-session {
     display: grid;
   }
 }
