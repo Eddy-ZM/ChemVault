@@ -6,7 +6,7 @@
   <title>ChemVault - Chemistry Knowledge Infrastructure for the AI Era</title>
   <meta name="description" content="ChemVault is an academic technology initiative for compound search, chemistry data, scientific document understanding, and AI-assisted research workflows." />
   <meta name="keywords" content="ChemVault, chemistry, compound search, chemical data, AI for Science, scientific data extraction, research intelligence, chemical knowledge infrastructure, academic technology" />
-  <meta name="theme-color" content="#07111f" />
+  <meta name="theme-color" content="#f4fbff" />
   <script src="/scripts/boot.js?v=20260618c"></script>
   <meta property="og:title" content="ChemVault - Chemistry Knowledge Infrastructure for the AI Era" />
   <meta property="og:description" content="Academic technology infrastructure for compound search, molecular data, scientific document understanding and AI-assisted research workflows." />
@@ -21,7 +21,7 @@
   <link rel="manifest" href="/site.webmanifest" />
   <link rel="stylesheet" href="assets/styles.css?v=20260702b" />
   <link rel="stylesheet" href="assets/portal.css?v=20260702b" />
-  <link rel="stylesheet" href="assets/academic.css?v=20260630b" />
+  <link rel="stylesheet" href="assets/academic.css?v=20260703c" />
   <link rel="stylesheet" href="assets/commercial.css?v=20260703a" />
   <script src="data/chem-data.js?v=20260603a" defer></script>
   <script src="data/reagent-extension.js?v=20260603a" defer></script>
@@ -71,6 +71,16 @@
   </script>
 </head>
 <body class="academic-site academic-home" data-boot-label="Home">
+  <svg class="liquid-glass-defs" width="0" height="0" aria-hidden="true" focusable="false">
+    <defs>
+      <filter id="cvLiquidGlassEdge" x="-24%" y="-24%" width="148%" height="148%" color-interpolation-filters="sRGB">
+        <feTurbulence type="fractalNoise" baseFrequency="0.012 0.018" numOctaves="2" seed="17" result="cv-glass-noise" />
+        <feDisplacementMap in="SourceGraphic" in2="cv-glass-noise" scale="5" xChannelSelector="R" yChannelSelector="G" result="cv-glass-warp" />
+        <feColorMatrix in="cv-glass-warp" type="matrix" values="1.05 0 0 0 0  0 1.02 0 0 0  0 0 1.08 0 0  0 0 0 1 0" result="cv-glass-color" />
+        <feGaussianBlur in="cv-glass-color" stdDeviation="0.12" />
+      </filter>
+    </defs>
+  </svg>
   <a class="skip-link" href="#main">Skip to content</a>
 
   <header class="site-header">
@@ -574,6 +584,7 @@
       </div>
     </div>
   </footer>
+    <script src="/scripts/liquid-glass-home.js?v=20260703a" defer></script>
     <script src="/scripts/visual-effects.js?v=20260702c" defer></script>
   </body>
 </html>
