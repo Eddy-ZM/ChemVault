@@ -357,7 +357,7 @@
     if (document.querySelector("link[href*='commercial.css']")) return;
     const link = document.createElement("link");
     link.rel = "stylesheet";
-    link.href = "/assets/commercial.css?v=20260629a";
+    link.href = "/assets/commercial.css?v=20260703b";
     document.head.appendChild(link);
   }
 

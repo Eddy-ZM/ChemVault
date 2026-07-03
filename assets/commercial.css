@@ -855,6 +855,11 @@
   font-size: 13px;
   font-weight: 800;
   list-style: none;
+  transition:
+    border-color 160ms ease,
+    background-color 160ms ease,
+    color 160ms ease,
+    box-shadow 160ms ease;
 }
 
 .cv-app-switcher > summary::-webkit-details-marker {
@@ -923,6 +928,21 @@ html.dark-mode .cv-team-home-panel,
 html.dark-mode .cv-table-wrap {
   background: rgba(19, 33, 52, 0.96);
   color: #f5f7fb;
+}
+
+html.dark-mode .cv-app-switcher > summary {
+  border-color: rgba(184, 195, 212, 0.24);
+  background: rgba(19, 33, 52, 0.92);
+  color: #f5f7fb;
+}
+
+html.dark-mode .cv-app-switcher > summary:hover,
+html.dark-mode .cv-app-switcher > summary:focus-visible,
+html.dark-mode .cv-app-switcher[open] > summary {
+  border-color: rgba(125, 211, 252, 0.42);
+  background: rgba(30, 47, 71, 0.96);
+  color: #fff;
+  box-shadow: 0 0 0 4px rgba(125, 211, 252, 0.12);
 }
 
 html.dark-mode .cv-commercial-hero,
@@ -1000,6 +1020,13 @@ html.dark-mode .cv-lead-panel {
 
 html.dark-mode .cv-lead-panel h2 {
   color: #f5f7fb;
+}
+
+html.dark-mode .cv-form-grid > label,
+html.dark-mode .cv-lead-panel label,
+html.dark-mode .cv-lead-form label,
+html.dark-mode .cv-form-status {
+  color: #e5edf8;
 }
 
 html.dark-mode .cv-lead-form,
