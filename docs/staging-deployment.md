@@ -187,7 +187,19 @@ Invoke-RestMethod -Method GET "<preview-url>/api/entitlements"
 Lead capture:
 
 ```powershell
-Invoke-RestMethod -Method POST "<preview-url>/api/leads" -ContentType "application/json" -Body '{"type":"ai_beta","email":"preview@example.com","role":"Researcher","interests":["ai_paper_search"]}'
+Invoke-RestMethod -Method POST "<preview-url>/api/leads" -ContentType "application/json" -Body '{"type":"ai_beta","email":"preview@example.com","role":"Researcher","interests":["ai_paper_search"],"source":"staging-manual","formId":"staging-lead-check","consent":true,"subscribe":false,"website":""}'
+```
+
+Newsletter unsubscribe:
+
+```powershell
+Invoke-RestMethod -Method POST "<preview-url>/api/newsletter/unsubscribe" -ContentType "application/json" -Body '{"token":"<token-from-confirmation-email-or-d1>"}'
+```
+
+Admin leads protection:
+
+```powershell
+Invoke-WebRequest -Method GET "<preview-url>/api/admin/leads"
 ```
 
 Checkout placeholder:
@@ -213,6 +225,8 @@ Expected API behavior:
 - `/api/health` returns `ok: true`.
 - `/api/entitlements` returns `commercialMode: staging` and `authMode: placeholder`.
 - `/api/leads` stores to D1 when `DB` is bound, or returns a clear mock acceptance when no D1 binding is present.
+- `/api/newsletter/unsubscribe` updates subscriber status when a valid token is provided.
+- `/api/admin/leads` returns HTTP 403 without `CHEMVAULT_ADMIN_TOKEN`.
 - `/api/billing/checkout` returns `placeholder_checkout` in staging and states that no payment will be processed.
 - `/api/billing/portal` returns `placeholder_portal` in staging or `payment_not_configured` if mock billing is disabled.
 - `/api/export/compound` returns HTTP 402 for Free/default users.
