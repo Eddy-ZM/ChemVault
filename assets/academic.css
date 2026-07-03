@@ -6578,3 +6578,270 @@ body.academic-home .academic-hero :is(.academic-button, .quick-searches button):
     background: transparent !important;
   }
 }
+
+/* Homepage interaction smoothing and mobile alignment. */
+body.academic-home .liquid-glass-surface,
+body.academic-home .command-search,
+body.academic-home .lab-console,
+body.academic-home .console-panel {
+  backface-visibility: hidden;
+  contain: paint;
+  transform: translate3d(0, 0, 0);
+}
+
+body.academic-home .liquid-glass-surface::after,
+body.academic-home .command-search::after,
+body.academic-home .lab-console::before,
+body.academic-home .console-panel::after,
+body.academic-home .hero-proof-row span::after {
+  transition:
+    opacity 260ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 420ms cubic-bezier(0.16, 1, 0.3, 1) !important;
+  will-change: opacity;
+}
+
+body.academic-home .academic-hero :is(.compound-search-panel, .command-search, .lab-console, .console-panel),
+html.light-mode body.academic-home .academic-hero :is(.compound-search-panel, .command-search, .lab-console, .console-panel),
+html:not(.dark-mode) body.academic-home .academic-hero :is(.compound-search-panel, .command-search, .lab-console, .console-panel),
+html.dark-mode body.academic-home .academic-hero :is(.compound-search-panel, .command-search, .lab-console, .console-panel) {
+  backdrop-filter: blur(22px) saturate(1.5) contrast(1.01) !important;
+}
+
+body.academic-home .cv-reveal {
+  --cv-reveal-duration: 500ms;
+  filter: blur(4px);
+  transform: translate3d(0, 18px, 0) scale(0.996);
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+body.academic-home .cv-reveal.is-visible {
+  filter: blur(0);
+  transform: translate3d(0, 0, 0) scale(1);
+  will-change: auto;
+}
+
+body.academic-home .academic-hero .academic-hero-content::before,
+body.academic-home .academic-hero .academic-hero-content::after {
+  z-index: 0 !important;
+}
+
+body.academic-home .academic-hero .academic-hero-content > * {
+  position: relative;
+  z-index: 2;
+}
+
+@media (hover: none), (pointer: coarse) {
+  body.academic-home .academic-hero :is(.academic-button, .quick-searches button):hover {
+    transform: none !important;
+  }
+}
+
+@media (max-width: 900px) {
+  body.academic-home .nav-shell {
+    grid-template-columns: minmax(0, 1fr) auto auto !important;
+  }
+
+  body.academic-home .brand {
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+  }
+
+  body.academic-home .header-actions {
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+    display: inline-flex !important;
+    justify-self: end !important;
+    width: auto !important;
+    min-width: 0 !important;
+  }
+
+  body.academic-home .header-actions .search-shell {
+    display: none !important;
+  }
+
+  body.academic-home .menu-toggle {
+    grid-column: 3 !important;
+    grid-row: 1 !important;
+    justify-self: end !important;
+  }
+
+  body.academic-home .theme-toggle {
+    width: 52px !important;
+    min-width: 52px !important;
+    height: 38px !important;
+    padding: 4px !important;
+    overflow: hidden !important;
+  }
+
+  body.academic-home .theme-toggle__icon {
+    width: 28px !important;
+    height: 28px !important;
+    transform: translateX(0) !important;
+  }
+
+  body.academic-home .theme-toggle[data-theme-state="dark"] .theme-toggle__icon {
+    transform: translateX(16px) !important;
+  }
+
+  body.academic-home .academic-hero-grid {
+    gap: 18px !important;
+    padding-top: 24px !important;
+    padding-bottom: 36px !important;
+  }
+
+  body.academic-home .academic-hero .academic-hero-content {
+    order: 1;
+    padding: 14px !important;
+  }
+
+  body.academic-home .academic-hero .academic-hero-content::before {
+    inset: -8px !important;
+    border-radius: 24px !important;
+    backdrop-filter: blur(16px) saturate(1.35) !important;
+  }
+
+  body.academic-home .academic-hero .hero-title {
+    font-size: clamp(40px, 13vw, 56px) !important;
+    line-height: 0.96 !important;
+  }
+
+  body.academic-home .academic-hero .hero-subtitle {
+    margin-top: 10px !important;
+    font-size: clamp(24px, 7.6vw, 36px) !important;
+    line-height: 1.08 !important;
+  }
+
+  body.academic-home .academic-hero .hero-lead {
+    margin-top: 14px !important;
+    font-size: 15px !important;
+    line-height: 1.52 !important;
+  }
+
+  body.academic-home .academic-hero .hero-proof-row {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+  }
+
+  body.academic-home .academic-hero .hero-proof-row span {
+    min-height: 40px !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+  }
+
+  body.academic-home .academic-hero .hero-actions {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 10px !important;
+  }
+
+  body.academic-home .academic-hero .hero-actions .academic-button {
+    width: 100% !important;
+    min-height: 48px !important;
+    flex: none !important;
+    justify-content: center !important;
+    padding: 10px 12px !important;
+    font-size: 14px !important;
+    text-align: center !important;
+  }
+
+  body.academic-home .academic-hero .hero-actions .academic-button.primary {
+    grid-column: 1 / -1 !important;
+  }
+
+  body.academic-home .academic-hero .hero-actions .academic-button:last-child {
+    grid-column: 1 / -1 !important;
+  }
+
+  body.academic-home .hero-instrument,
+  body.academic-home .template-stage {
+    order: 2;
+    display: grid !important;
+    gap: 14px !important;
+  }
+
+  body.academic-home .command-search {
+    order: 1;
+  }
+
+  body.academic-home .lab-console {
+    order: 2;
+  }
+
+  body.academic-home .hero-beam-field,
+  body.academic-home .chem-orbit-shell {
+    display: none !important;
+  }
+
+  body.academic-home .stage-glow {
+    filter: blur(16px) saturate(1.05) !important;
+    opacity: 0.62 !important;
+  }
+
+  body.academic-home .academic-hero :is(.compound-search-panel, .command-search, .lab-console, .console-panel),
+  html.light-mode body.academic-home .academic-hero :is(.compound-search-panel, .command-search, .lab-console, .console-panel),
+  html:not(.dark-mode) body.academic-home .academic-hero :is(.compound-search-panel, .command-search, .lab-console, .console-panel),
+  html.dark-mode body.academic-home .academic-hero :is(.compound-search-panel, .command-search, .lab-console, .console-panel) {
+    backdrop-filter: blur(14px) saturate(1.32) !important;
+  }
+
+  body.academic-home .liquid-glass-static .liquid-glass-surface::after,
+  body.academic-home .liquid-glass-static .command-search::after,
+  body.academic-home .liquid-glass-static .lab-console::before,
+  body.academic-home .liquid-glass-static .console-panel::after,
+  body.academic-home .liquid-glass-static .hero-proof-row span::after {
+    filter: none !important;
+    opacity: 0.24 !important;
+    transition: none !important;
+  }
+
+  body.academic-home .hero-signal-strip {
+    display: none !important;
+  }
+
+  body.academic-home .cv-reveal {
+    --cv-reveal-duration: 420ms;
+    filter: none !important;
+    transform: translate3d(0, 16px, 0) scale(0.996);
+  }
+}
+
+@media (max-width: 520px) {
+  body.academic-home .theme-toggle {
+    width: 46px !important;
+    min-width: 46px !important;
+    height: 40px !important;
+  }
+
+  body.academic-home .theme-toggle__icon {
+    width: 24px !important;
+    height: 24px !important;
+  }
+
+  body.academic-home .theme-toggle[data-theme-state="dark"] .theme-toggle__icon {
+    transform: translateX(14px) !important;
+  }
+
+  body.academic-home .academic-hero-grid {
+    padding-top: 20px !important;
+  }
+
+  body.academic-home .academic-hero .hero-title {
+    font-size: clamp(36px, 13.5vw, 50px) !important;
+  }
+
+  body.academic-home .academic-hero .hero-subtitle {
+    font-size: clamp(22px, 7.4vw, 32px) !important;
+  }
+
+  body.academic-home .academic-hero .hero-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  body.academic-home .academic-hero .hero-actions .academic-button {
+    min-height: 46px !important;
+    font-size: 13px !important;
+  }
+}
