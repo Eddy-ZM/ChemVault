@@ -6845,3 +6845,77 @@ body.academic-home .academic-hero .academic-hero-content > * {
     font-size: 13px !important;
   }
 }
+
+/* Static liquid glass mode: keep the material, remove live motion. */
+body.academic-home .academic-hero,
+html.light-mode body.academic-home .academic-hero,
+html:not(.dark-mode) body.academic-home .academic-hero,
+html.dark-mode body.academic-home .academic-hero {
+  --lg-mouse-x: 60%;
+  --lg-mouse-y: 24%;
+  --lg-local-x: 38%;
+  --lg-local-y: 22%;
+  --lg-tilt-x: 0deg;
+  --lg-tilt-y: 0deg;
+}
+
+body.academic-home .liquid-glass-home .cv-reveal,
+body.academic-home .liquid-glass-home .cv-reveal.is-visible {
+  opacity: 1 !important;
+  filter: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+body.academic-home .liquid-glass-home .template-stage,
+body.academic-home .liquid-glass-home .stage-glow,
+body.academic-home .liquid-glass-home .lab-console,
+body.academic-home .liquid-glass-home .hero-signal-strip span,
+body.academic-home .liquid-glass-home .hero-beam-field span,
+body.academic-home .liquid-glass-home .chem-orbit-shell,
+body.academic-home .liquid-glass-home .chem-orbit-shell span,
+body.academic-home .liquid-glass-home .pipeline-row i::after,
+body.academic-home .liquid-glass-home .mini-graph-panel line,
+body.academic-home .liquid-glass-home .mini-graph-panel circle {
+  animation: none !important;
+}
+
+body.academic-home .liquid-glass-home.cv-hero-parallax,
+body.academic-home .liquid-glass-home .cv-tilt,
+body.academic-home .liquid-glass-home .template-stage {
+  transform: none !important;
+}
+
+body.academic-home .liquid-glass-home .template-stage::before,
+body.academic-home .liquid-glass-home .template-stage::after,
+body.academic-home .liquid-glass-home .compound-search-panel::before,
+body.academic-home .liquid-glass-home .compound-search-panel::after,
+body.academic-home .liquid-glass-home .lab-console::before,
+body.academic-home .liquid-glass-home .lab-console::after,
+body.academic-home .liquid-glass-home .console-panel::before,
+body.academic-home .liquid-glass-home .console-panel::after,
+body.academic-home .liquid-glass-home .chem-orbit-shell::before,
+body.academic-home .liquid-glass-home .chem-orbit-shell::after {
+  animation: none !important;
+}
+
+body.academic-home .liquid-glass-home .liquid-glass-surface::after,
+body.academic-home .liquid-glass-home .command-search::after,
+body.academic-home .liquid-glass-home .lab-console::before,
+body.academic-home .liquid-glass-home .console-panel::after,
+body.academic-home .liquid-glass-home .hero-proof-row span::after {
+  opacity: 0.32 !important;
+  transition: none !important;
+}
+
+body.academic-home .liquid-glass-home .liquid-glass-surface:hover::after,
+body.academic-home .liquid-glass-home .command-search:hover::after,
+body.academic-home .liquid-glass-home .lab-console:hover::before,
+body.academic-home .liquid-glass-home .console-panel:hover::after,
+body.academic-home .liquid-glass-home .hero-proof-row span:hover::after {
+  opacity: 0.32 !important;
+}
+
+body.academic-home .liquid-glass-home :is(.academic-button, .quick-searches button):hover {
+  transform: none !important;
+}
