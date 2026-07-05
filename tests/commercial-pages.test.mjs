@@ -114,12 +114,14 @@ test("home modules are categorized and Team workspace is visible", () => {
   const commercialStyles = read("assets/commercial.css");
 
   assert.match(home, /data-render="app-modules" data-module-layout="categorized"/, "home asks the shared UI to render categorized modules");
-  assert.match(home, /pages\/team\.html/, "home links back to the Team surface");
+  assert.match(home, /pages\/dashboard\.html#team-workspace/, "home Teams CTA links to the workspace preview instead of the people page");
   assert.match(config, /id:\s*"team_workspace"/, "commercial config exposes the Team/Lab Workspace module");
+  assert.match(config, /route:\s*"\/pages\/dashboard\.html#team-workspace"/, "Team/Lab Workspace module opens the dashboard workspace preview");
   assert.match(config, /category:\s*"team"/, "Team module is assigned to the team category");
   assert.match(ui, /function moduleCategoryMarkup/, "commercial UI renders module category disclosures");
   assert.match(ui, /data-module-categories/, "categorized module markup exposes an interactive accordion root");
   assert.match(ui, /function teamWorkspaceMarkup/, "dashboard restores a visible Teams workspace panel");
+  assert.match(ui, /id="team-workspace"/, "dashboard exposes a direct Team/Lab workspace anchor");
   assert.match(commercialStyles, /\.cv-module-category::details-content[\s\S]*block-size:\s*0/, "module category disclosures animate their expanded height");
   assert.match(commercialStyles, /\.cv-app-switcher\[open\] \.cv-app-switcher__menu[\s\S]*opacity:\s*1/, "app switcher menu fades into view when expanded");
 });

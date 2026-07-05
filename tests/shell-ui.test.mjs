@@ -65,6 +65,8 @@ test("site navigation exposes core destinations through categorized disclosure g
     ["Docs", "https://docs.chemvault.science/"],
     ["Pricing", "/pages/pricing.html"],
     ["Dashboard", "/pages/dashboard.html"],
+    ["People", "/pages/team.html"],
+    ["Developer", "/pages/developer.html"],
     ["Enterprise / Contact Sales", "/pages/contact.html"]
   ];
 
@@ -74,9 +76,15 @@ test("site navigation exposes core destinations through categorized disclosure g
   }
 
   assert.match(shell, /<details class="nav-more"/, "runtime shell has disclosure groups for categorized destinations");
-  for (const label of ["Workflows", "Knowledge", "Plans"]) {
+  for (const label of ["Workflows", "Knowledge", "Plans", "About"]) {
     assert.match(shell, new RegExp(`<summary>${label}<\\/summary>`), `runtime shell labels the ${label} navigation group`);
   }
+  const plansGroup = shell.match(/<summary>Plans<\/summary>[\s\S]*?<div class="nav-more-menu">([\s\S]*?)<\/div>/)?.[1] || "";
+  const aboutGroup = shell.match(/<summary>About<\/summary>[\s\S]*?<div class="nav-more-menu">([\s\S]*?)<\/div>/)?.[1] || "";
+  assert.doesNotMatch(plansGroup, /team\.html|developer\.html|projects\.html/, "Plans navigation stays focused on pricing and sales");
+  assert.match(aboutGroup, /team\.html/, "people/team page is grouped under About");
+  assert.match(aboutGroup, /developer\.html/, "developer profile is grouped under About");
+  assert.match(aboutGroup, /projects\.html/, "project/development notes are grouped under About");
   assert.match(shell, /function injectProductSwitcher/, "runtime shell injects the product app switcher");
   assert.match(shell, /productModules\(\)/, "runtime shell can populate app switcher links from the commercial module config");
 
@@ -323,7 +331,8 @@ test("site navigation uses a 21st.dev-inspired spotlight tab treatment", () => {
 
   assert.match(shell, /<summary>Workflows<\/summary>/, "runtime commercial navigation groups workflow pages");
   assert.match(shell, /<summary>Knowledge<\/summary>/, "runtime commercial navigation groups knowledge pages");
-  assert.match(shell, /<summary>Plans<\/summary>/, "runtime commercial navigation groups plan and team pages");
+  assert.match(shell, /<summary>Plans<\/summary>/, "runtime commercial navigation groups plan pages");
+  assert.match(shell, /<summary>About<\/summary>/, "runtime commercial navigation separates people and project pages from pricing");
   assert.match(shell, /function wireNavigationHighlight\(\)/, "runtime shell wires the top navigation spotlight");
   assert.match(commercialUi, /function wireNavigationHighlight\(\)/, "commercial homepage wires the same navigation spotlight");
   assert.match(commercialUi, /function markActiveNavigation\(\)/, "commercial homepage clears stale grouped active states before measuring the spotlight");

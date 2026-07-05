@@ -327,20 +327,27 @@
           <a href="https://docs.chemvault.science/" target="_blank" rel="noopener noreferrer">Docs</a>
           <a href="/pages/research.html">Research</a>
           <a href="/pages/platform.html">Platform</a>
-          <a href="/pages/projects.html">Projects</a>
           <a href="/pages/reagents.html">Reagents</a>
           <a href="/pages/materials.html">Materials</a>
           <a href="/pages/methods.html">Methods</a>
           <a href="/pages/library.html">Library</a>
-          <a href="/pages/about.html">About</a>
         </div>
       </details>
       <details class="nav-more">
         <summary>Plans</summary>
         <div class="nav-more-menu">
           <a href="/pages/pricing.html">Pricing</a>
-          <a href="/pages/team.html">Team</a>
           <a href="/pages/contact.html">Enterprise / Contact Sales</a>
+        </div>
+      </details>
+      <details class="nav-more">
+        <summary>About</summary>
+        <div class="nav-more-menu">
+          <a href="/pages/about.html">About ChemVault</a>
+          <a href="/pages/team.html">People</a>
+          <a href="/pages/projects.html">Projects</a>
+          <a href="/pages/developer.html">Developer</a>
+          <a href="/pages/contact.html">Contact</a>
         </div>
       </details>
     `;
@@ -400,7 +407,7 @@
       ["Molecular Modeling", "/pages/molecular-modeling.html", "Beta", "Free", "MM"],
       ["Mail", "/pages/mail.html", "Beta", "Free", "ML"],
       ["AI Paper Search", "/pages/ai-paper-search.html", "Beta", "Free", "AI"],
-      ["Team/Lab Workspace", "/pages/team.html", "Active", "Free", "TM"]
+      ["Team/Lab Workspace", "/pages/dashboard.html#team-workspace", "Active", "Free", "TM"]
     ].map(([name, route, status, access, initials]) => ({ name, route, status, access, initials }));
   }
 

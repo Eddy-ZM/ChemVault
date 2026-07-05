@@ -51,6 +51,7 @@ test("commercial config exposes the expected plans, modules and feature keys", (
   }
 
   assert.equal(config.modules.find((module) => module.id === "team_workspace")?.category, "team", "Team/Lab Workspace is grouped under team");
+  assert.equal(config.modules.find((module) => module.id === "team_workspace")?.route, "/pages/dashboard.html#team-workspace", "Team/Lab Workspace routes to the dashboard workspace preview");
   assert.equal(config.modules.find((module) => module.id === "documentation")?.route, "https://docs.chemvault.science/", "Documentation module links to the unified Docs site");
 
   for (const featureKey of [

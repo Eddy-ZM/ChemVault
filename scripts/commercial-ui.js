@@ -563,7 +563,7 @@
       ["Collections", enabled ? "Ready" : "Team/Lab", "Coordinate compounds, modeling projects, and AI paper lists."]
     ];
     return `
-      <section class="cv-dashboard-panel cv-team-workspace-panel ${enabled ? "" : "is-muted"}">
+      <section class="cv-dashboard-panel cv-team-workspace-panel ${enabled ? "" : "is-muted"}" id="team-workspace">
         <div class="cv-team-workspace-head">
           <span class="section-kicker">Team workspace</span>
           <span class="cv-plan-badge cv-plan-badge--team">${enabled ? "Enabled" : "Team/Lab"}</span>
@@ -580,7 +580,7 @@
           `).join("")}
         </div>
         <div class="cv-team-workspace-actions">
-          <a class="secondary-button" href="/pages/team.html">Open Team</a>
+          <a class="secondary-button" href="/pages/pricing.html#compare">Review Team/Lab</a>
           <button class="secondary-button" type="button" data-plan-preview="team">Preview Team/Lab</button>
         </div>
       </section>

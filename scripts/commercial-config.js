@@ -89,13 +89,13 @@
     {
       id: "team_workspace",
       name: "Team/Lab Workspace",
-      description: "Open the ChemVault team surface and preview shared lab workspace controls.",
-      route: "/pages/team.html",
+      description: "Preview shared lab workspace controls in the ChemVault dashboard.",
+      route: "/pages/dashboard.html#team-workspace",
       status: "active",
       accessLevel: "free",
       icon: "team",
       category: "team",
-      ctaLabel: "Open team"
+      ctaLabel: "Preview workspace"
     }
   ];
 
