@@ -7,8 +7,16 @@
   const lowMemoryDevice = Number.isFinite(navigator.deviceMemory) && navigator.deviceMemory <= 3;
   const largeViewport = window.matchMedia?.("(min-width: 1024px)")?.matches !== false;
   const compactViewport = window.matchMedia?.("(max-width: 900px)")?.matches !== false;
-  const enablePointerFx = !prefersReduced && isFinePointer && !lowMemoryDevice;
   const shouldThrottleSections = navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4;
+  const userAgent = navigator.userAgent || "";
+  const isAppleTouchDevice = /iP(ad|hone|od)/.test(userAgent)
+    || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  const isSafariEngine = /Safari/i.test(userAgent)
+    && !/(Chrome|Chromium|CriOS|FxiOS|EdgiOS|OPiOS|DuckDuckGo)/i.test(userAgent);
+  const mobileScrollSafe = isAppleTouchDevice
+    || (isSafariEngine && compactViewport)
+    || (compactViewport && lowMemoryDevice);
+  const enablePointerFx = !prefersReduced && isFinePointer && !lowMemoryDevice && !mobileScrollSafe;
   const enableTilt = enablePointerFx && largeViewport && !shouldThrottleSections;
   const enableMagnetic = enablePointerFx && !shouldThrottleSections;
   const compactMotionProfile = shouldThrottleSections || compactViewport;
@@ -16,6 +24,8 @@
   root.classList.add('cv-effects-ready');
   root.classList.toggle('cv-throttle-mode', compactMotionProfile || lowMemoryDevice);
   root.classList.toggle('cv-compact-mode', compactViewport);
+  root.classList.toggle('cv-mobile-scroll-safe', mobileScrollSafe);
+  root.classList.toggle('cv-safari-scroll-safe', isAppleTouchDevice || isSafariEngine);
   let pointerFrame = 0;
   let pointerEvent = null;
   let scrollEffectsFrame = 0;
@@ -51,6 +61,10 @@
 
   if (prefersReduced) {
     root.classList.add('cv-reduced-motion');
+    return;
+  }
+
+  if (mobileScrollSafe) {
     return;
   }
 

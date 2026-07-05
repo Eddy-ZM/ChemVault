@@ -221,10 +221,37 @@ test("startup welcome assets use a fresh cache key on every HTML entry", () => {
   for (const file of bootHtmlFiles) {
     const html = read(file);
 
-    assert.match(html, /boot\.js\?v=20260618c/, `${file} references startup welcome boot`);
+    assert.match(html, /boot\.js\?v=20260705a/, `${file} references startup welcome boot`);
     assert.match(html, /styles\.css\?v=(?!20260603a)\d+/, `${file} references non-stale shared styles`);
-    assert.match(html, /motion\.js\?v=20260618c/, `${file} references startup welcome motion`);
+    assert.match(html, /motion\.js\?v=20260705a/, `${file} references startup welcome motion`);
   }
+});
+
+test("mobile Safari gets a static scroll-safe visual profile", () => {
+  const boot = read("scripts/boot.js");
+  const effects = read("scripts/visual-effects.js");
+  const motion = read("scripts/motion.js");
+  const styles = read("assets/styles.css");
+  const academic = read("assets/academic.css");
+
+  assert.match(boot, /function applyMobileScrollSafety/, "boot marks scroll-safe devices before CSS and deferred scripts run");
+  assert.match(boot, /cv-mobile-scroll-safe/, "boot applies the mobile scroll safety class globally");
+  assert.match(boot, /navigator\.maxTouchPoints/, "boot catches iPadOS desktop-mode Safari");
+  assert.match(boot, /Number\.isFinite\(navigator\.deviceMemory\)/, "boot falls back for low-memory compact mobile browsers");
+  assert.match(effects, /const mobileScrollSafe = isAppleTouchDevice/, "visual effects share the same mobile scroll safety heuristic");
+  assert.match(effects, /if \(mobileScrollSafe\) \{\s*return;\s*\}/, "visual effects skip scroll rails, parallax, tilt, and staged reveals on mobile Safari");
+
+  assert.match(motion, /const isMobileScrollSafe = \(\) => root\.classList\.contains\("cv-mobile-scroll-safe"\)/, "motion layer reads the boot-time scroll safety class");
+  assert.match(motion, /if \(!isMobileScrollSafe\(\)\) prepareReveal\(document\)/, "manual motion refresh avoids rebinding reveal effects on mobile Safari");
+  assert.match(motion, /function wireReveal\(\) \{[\s\S]*isMobileScrollSafe\(\)/, "page reveal observer is disabled in the scroll-safe profile");
+  assert.match(motion, /function wireRipples\(\) \{[\s\S]*isMobileScrollSafe\(\)/, "button ripple effects are disabled in the scroll-safe profile");
+
+  assert.match(styles, /html\.cv-mobile-scroll-safe,[\s\S]*scroll-behavior:\s*auto/, "shared styles avoid smooth-scroll pressure");
+  assert.match(styles, /html\.cv-mobile-scroll-safe :is\(\.site-header[\s\S]*backdrop-filter:\s*none/, "shared shell glass avoids WebKit backdrop filters");
+  assert.match(styles, /html\.cv-mobile-scroll-safe \.motion-ripple[\s\S]*display:\s*none/, "ripples are hidden in the static profile");
+  assert.match(academic, /html\.cv-mobile-scroll-safe \.cv-scroll-rail,[\s\S]*display:\s*none/, "homepage scroll rail is removed on mobile Safari");
+  assert.match(academic, /html\.cv-mobile-scroll-safe body\.academic-home :is\(\.academic-hero-content[\s\S]*backdrop-filter:\s*none/, "homepage liquid glass uses static surfaces in the scroll-safe profile");
+  assert.match(academic, /html\.cv-mobile-scroll-safe body\.academic-home :is\(\.liquid-glass-surface[\s\S]*filter:\s*none/, "homepage glass edge filters are removed from the mobile compositor path");
 });
 
 test("footer uses a ChemVault sticky footer adapted from the template", () => {

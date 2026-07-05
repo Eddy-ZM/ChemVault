@@ -23,6 +23,22 @@
     document.querySelector("meta[name='theme-color']")?.setAttribute("content", dark ? "#101114" : "#f5f5f7");
   }
 
+  function applyMobileScrollSafety() {
+    const userAgent = navigator.userAgent || "";
+    const compactViewport = window.matchMedia?.("(max-width: 900px)")?.matches === true;
+    const lowMemoryDevice = Number.isFinite(navigator.deviceMemory) && navigator.deviceMemory <= 3;
+    const isAppleTouchDevice = /iP(ad|hone|od)/.test(userAgent)
+      || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+    const isSafariEngine = /Safari/i.test(userAgent)
+      && !/(Chrome|Chromium|CriOS|FxiOS|EdgiOS|OPiOS|DuckDuckGo)/i.test(userAgent);
+    const mobileScrollSafe = isAppleTouchDevice
+      || (isSafariEngine && compactViewport)
+      || (compactViewport && lowMemoryDevice);
+
+    document.documentElement.classList.toggle("cv-mobile-scroll-safe", mobileScrollSafe);
+    document.documentElement.classList.toggle("cv-safari-scroll-safe", isAppleTouchDevice || isSafariEngine);
+  }
+
   function boot() {
     document.documentElement.classList.add("motion-boot");
     window.CHEMVAULT_BOOT_TIMEOUT = window.setTimeout(() => {
@@ -61,6 +77,7 @@
   }
 
   try {
+    applyMobileScrollSafety();
     applyInitialTheme();
     const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
     const onHome = isHomePage();

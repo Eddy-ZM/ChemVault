@@ -1,5 +1,7 @@
 (() => {
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const root = document.documentElement;
+  const isMobileScrollSafe = () => root.classList.contains("cv-mobile-scroll-safe");
   const revealSelector = [
     ".page-hero",
     ".home-hero-copy",
@@ -85,7 +87,9 @@
     hideNavigation,
     navigate,
     showStartupWelcome: () => wireStartupWelcome({ force: true }),
-    refresh: () => prepareReveal(document)
+    refresh: () => {
+      if (!isMobileScrollSafe()) prepareReveal(document);
+    }
   };
 
   document.addEventListener("DOMContentLoaded", () => {
@@ -480,7 +484,7 @@
   }
 
   function wireReveal() {
-    if (reduceMotion.matches || !("IntersectionObserver" in window)) return;
+    if (reduceMotion.matches || isMobileScrollSafe() || !("IntersectionObserver" in window)) return;
 
     revealObserver = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
@@ -512,7 +516,7 @@
   }
 
   function prepareReveal(root) {
-    if (reduceMotion.matches || !revealObserver) return;
+    if (reduceMotion.matches || isMobileScrollSafe() || !revealObserver) return;
     const nodes = [...root.querySelectorAll(revealSelector)];
     const compact = shouldUseCompactReveal(nodes.length);
     const sectionAnchor = new Map();
@@ -554,7 +558,7 @@
   }
 
   function wireRipples() {
-    if (reduceMotion.matches) return;
+    if (reduceMotion.matches || isMobileScrollSafe()) return;
     const maxRipplePool = 12;
     const ripplePool = [];
     const hostedTargets = new WeakSet();

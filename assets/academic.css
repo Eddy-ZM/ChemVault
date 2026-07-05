@@ -7265,3 +7265,76 @@ html.dark-mode body.academic-home .mini-graph-panel circle {
       repeating-linear-gradient(0deg, rgba(226, 232, 240, 0.026) 0 1px, transparent 1px 42px) !important;
   }
 }
+
+/* Mobile Safari scroll safety: keep static glass, avoid WebKit layer pressure. */
+html.cv-mobile-scroll-safe .cv-scroll-rail,
+html.cv-mobile-scroll-safe body.academic-home .hero-beam-field,
+html.cv-mobile-scroll-safe body.academic-home .chem-orbit-shell,
+html.cv-mobile-scroll-safe body.academic-home .hero-signal-strip {
+  display: none !important;
+}
+
+html.cv-mobile-scroll-safe .cv-hero-parallax,
+html.cv-mobile-scroll-safe .cv-tilt,
+html.cv-mobile-scroll-safe .cv-magnetic,
+html.cv-mobile-scroll-safe body.academic-home .template-stage {
+  transform: none !important;
+  will-change: auto !important;
+}
+
+html.cv-mobile-scroll-safe body.academic-home :is(.template-stage, .stage-glow, .lab-console, .console-panel, .pipeline-row i::after, .mini-graph-panel line, .mini-graph-panel circle),
+html.cv-mobile-scroll-safe body.academic-home :is(.template-stage, .command-search, .lab-console, .console-panel, .academic-hero-content)::before,
+html.cv-mobile-scroll-safe body.academic-home :is(.template-stage, .command-search, .lab-console, .console-panel, .academic-hero-content)::after {
+  animation: none !important;
+}
+
+html.cv-mobile-scroll-safe body.academic-home .cv-reveal,
+html.cv-mobile-scroll-safe body.academic-home .cv-reveal.is-visible {
+  opacity: 1 !important;
+  transform: none !important;
+  filter: none !important;
+  transition: none !important;
+  will-change: auto !important;
+}
+
+html.cv-mobile-scroll-safe body.academic-home :is(.academic-hero-content, .command-search, .lab-console, .console-panel, .academic-button, .hero-proof-row span, .quick-searches button) {
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+  contain: layout paint !important;
+}
+
+html.cv-mobile-scroll-safe body.academic-home .academic-hero .academic-hero-content::before,
+html.cv-mobile-scroll-safe body.academic-home .academic-hero :is(.compound-search-panel, .command-search, .lab-console, .console-panel) {
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.54),
+    0 16px 42px rgba(71, 85, 105, 0.12) !important;
+}
+
+html.dark-mode.cv-mobile-scroll-safe body.academic-home .academic-hero .academic-hero-content::before,
+html.dark-mode.cv-mobile-scroll-safe body.academic-home .academic-hero :is(.compound-search-panel, .command-search, .lab-console, .console-panel) {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 16px 42px rgba(0, 0, 0, 0.22) !important;
+}
+
+html.cv-mobile-scroll-safe body.academic-home :is(.liquid-glass-surface, .command-search, .lab-console, .console-panel, .hero-proof-row span)::after,
+html.cv-mobile-scroll-safe body.academic-home .lab-console::before {
+  filter: none !important;
+  -webkit-filter: none !important;
+  mix-blend-mode: normal !important;
+  opacity: 0.12 !important;
+  transition: none !important;
+}
+
+html.cv-mobile-scroll-safe body.academic-home .stage-glow {
+  filter: none !important;
+  -webkit-filter: none !important;
+  opacity: 0.22 !important;
+}
+
+html.cv-mobile-scroll-safe body.academic-home .academic-section {
+  transform: none !important;
+  transition: none !important;
+}

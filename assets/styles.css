@@ -294,6 +294,37 @@ html.theme-switching[data-theme-target="dark"]::before {
   }
 }
 
+html.cv-mobile-scroll-safe,
+html.cv-mobile-scroll-safe body {
+  scroll-behavior: auto !important;
+  overscroll-behavior-y: auto;
+}
+
+html.cv-mobile-scroll-safe *,
+html.cv-mobile-scroll-safe *::before,
+html.cv-mobile-scroll-safe *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+}
+
+html.cv-mobile-scroll-safe :is(.site-header, .site-nav, .nav-more-menu, .search-shell, .theme-toggle, .brand-mark) {
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+
+html.cv-mobile-scroll-safe .motion-ripple {
+  display: none !important;
+}
+
+html.cv-mobile-scroll-safe.motion-available [data-motion-bound="true"] {
+  opacity: 1 !important;
+  transform: none !important;
+  filter: none !important;
+  transition: none !important;
+  will-change: auto !important;
+}
+
 a {
   color: inherit;
   text-decoration: none;
