@@ -80,7 +80,7 @@ These restrictions should be mirrored in the Terms of Service and internal admin
 - [ ] Document SPF, DKIM, DMARC, bounce handling, and verified sender setup.
 - [ ] Add attachment size limits, MIME type allow/deny lists, archive handling, and malware scanning or quarantine.
 - [ ] Add unsubscribe and suppression list handling before any marketing email is sent.
-- [ ] Publish an abuse reporting contact, such as abuse@chemvault.science, after ownership is confirmed.
+- [ ] Publish abuse reporting through contact@chemvault.science until a dedicated abuse mailbox is confirmed.
 - [ ] Add privacy-preserving log retention rules for email content, metadata, audit logs, and raw messages.
 - [ ] Review admin all-mail access for least privilege and emergency-only use.
 - [ ] Remove any secret values from deployment URLs, logs, and generated CI config files.

@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Pricing | ChemVault Research Workbench</title>
-  <meta name="description" content="ChemVault pricing for Free, Pro, Team/Lab, and Enterprise/Institution research workflows." />
+  <title>Access | ChemVault Research Workbench</title>
+  <meta name="description" content="ChemVault private beta access for individual researchers, labs, teams, and institutions." />
   <meta name="theme-color" content="#f5f5f7" />
   <script src="/scripts/boot.js?v=20260705a"></script>
   <link rel="canonical" href="https://chemvault.science/pages/pricing.html" />
@@ -12,7 +12,7 @@
   <link rel="icon" href="/assets/chemvault-logo-mark.png?v=20260628a" type="image/png" sizes="512x512" />
   <link rel="apple-touch-icon" href="/assets/chemvault-apple-touch-icon.png?v=20260628a" />
   <link rel="manifest" href="/site.webmanifest" />
-  <link rel="stylesheet" href="../assets/styles.css?v=20260705a" />
+  <link rel="stylesheet" href="../assets/styles.css?v=20260709a" />
   <link rel="stylesheet" href="../assets/portal.css?v=20260702b" />
   <link rel="stylesheet" href="../assets/commercial.css?v=20260703b" />
   <script src="../data/chem-data.js?v=20260603a" defer></script>
@@ -72,34 +72,37 @@
     <section class="cv-commercial-hero">
       <div class="container page-hero-grid">
         <div>
-          <p class="eyebrow">pricing for a unified chemistry research workbench</p>
-          <h1>Build your professional chemistry research workbench.</h1>
-          <p>Search compounds, manage files, model molecules, organize papers, and collaborate from one platform. Start free, upgrade when your research workflow needs more power.</p>
+          <p class="eyebrow">private beta access</p>
+          <h1>Evaluate the ChemVault research workbench.</h1>
+          <p>ChemVault is validating its core research workflow with invited users. Public self-serve payment is not available; access and team pilots are reviewed individually.</p>
           <div class="hero-actions">
-            <a class="academic-button primary" href="#plans">Compare plans</a>
-            <a class="academic-button ghost-on-light" href="#enterprise-lead">Contact Sales</a>
+            <a class="academic-button primary" href="#enterprise-lead">Request beta access</a>
+            <a class="academic-button ghost-on-light" href="#access-model">View access model</a>
           </div>
         </div>
         <aside class="cv-hero-metrics" aria-label="ChemVault commercial positioning">
           <div><span>Users</span><strong>Individuals, labs, teams, institutions</strong></div>
           <div><span>Core workflow</span><strong>Compounds, files, modeling, papers</strong></div>
-          <div><span>Current plan</span><strong data-render="plan-badge"></strong></div>
-          <div><span>Payment</span><strong>Provider placeholder</strong></div>
+          <div><span>Availability</span><strong>Invitation and pilot review</strong></div>
+          <div><span>Payment</span><strong>Not enabled</strong></div>
         </aside>
       </div>
     </section>
 
-    <section class="cv-section" id="plans">
+    <section class="cv-section" id="access-model">
       <div class="container">
         <div class="cv-section-header">
           <div>
-            <p class="eyebrow">plans</p>
-            <h2>For individuals, labs, teams, and institutions.</h2>
+            <p class="eyebrow">access model</p>
+            <h2>Validate value before packaging.</h2>
           </div>
-          <p>Pro and Team checkout buttons call a placeholder API route. No payment secret or price ID is hardcoded in the client.</p>
+          <p>Free, Pro, Team/Lab, and Enterprise are research concepts, not purchasable plans. Packaging and quotas will be set after activation and retention baselines exist.</p>
         </div>
-        <div class="cv-pricing-grid" data-render="pricing-cards" data-billing-interval="monthly"></div>
-        <p class="cv-form-status" data-checkout-status aria-live="polite"></p>
+        <div class="cv-card-grid">
+          <article class="cv-feature-panel"><h3>Individual beta</h3><p>Core compound discovery and invited workflow evaluation for individual researchers.</p></article>
+          <article class="cv-feature-panel"><h3>Lab pilot</h3><p>Time-boxed evaluation of Files, Lab and controlled collaboration with an agreed success measure.</p></article>
+          <article class="cv-feature-panel"><h3>Institution discovery</h3><p>Security, lifecycle, identity and deployment requirements are assessed before any commercial proposal.</p></article>
+        </div>
       </div>
     </section>
 
@@ -107,12 +110,16 @@
       <div class="container">
         <div class="cv-section-header">
           <div>
-            <p class="eyebrow">feature comparison</p>
-            <h2>Plan-aware access across research workflows.</h2>
+            <p class="eyebrow">beta boundaries</p>
+            <h2>What access means today.</h2>
           </div>
-          <p>Feature access is represented in shared config and mirrored in server-side API placeholders for sensitive actions such as export.</p>
+          <p>Invitations do not promise production availability, a paid entitlement, a service-level agreement, or permanent access.</p>
         </div>
-        <div data-render="feature-comparison"></div>
+        <div class="cv-card-grid">
+          <article class="cv-feature-panel"><h3>Human-reviewed onboarding</h3><p>We confirm the workflow, data sensitivity and expected outcome before enabling a pilot.</p></article>
+          <article class="cv-feature-panel"><h3>No public checkout</h3><p>No payment is collected from this page and no unavailable paid feature is represented as purchasable.</p></article>
+          <article class="cv-feature-panel"><h3>Measured progression</h3><p>Packaging follows evidence from successful analysis, export, reliability and return usage.</p></article>
+        </div>
       </div>
     </section>
 
@@ -134,7 +141,7 @@
         <div class="cv-lead-panel" id="enterprise-lead">
           <span class="section-kicker">Enterprise / institution</span>
           <h2>Talk to us about lab, company, or institution workflows.</h2>
-          <p>Use this form for Team/Lab procurement, custom onboarding, API access placeholders, SSO/SAML planning, or institution-wide access.</p>
+          <p>Use this form to request a Team/Lab pilot or discuss security, onboarding, API, SSO/SAML, and institution-wide requirements.</p>
           <form data-lead-form data-lead-type="enterprise" data-form-id="pricing-enterprise-lead" class="cv-lead-form">
             <label class="cv-honeypot" aria-hidden="true">Website <input name="website" autocomplete="off" tabindex="-1" /></label>
             <div class="cv-form-grid">
@@ -181,15 +188,15 @@
         <div class="cv-section-header">
           <div>
             <p class="eyebrow">FAQ</p>
-            <h2>Commercial MVP notes.</h2>
+            <h2>Beta access notes.</h2>
           </div>
-          <p>The first version is intentionally conservative: it creates the commercial contract and UI without pretending that unavailable scientific backends already exist.</p>
+          <p>The current access model is intentionally conservative and does not represent unavailable capabilities as purchasable.</p>
         </div>
         <div class="cv-card-grid">
-          <article class="cv-feature-panel"><h3>Is payment live?</h3><p>No. Checkout routes are placeholders until a provider such as Stripe is configured through environment variables and SDK code.</p></article>
+          <article class="cv-feature-panel"><h3>Is payment live?</h3><p>No. This page does not offer checkout or collect payment. Commercial packaging will follow validated usage and lifecycle readiness.</p></article>
           <article class="cv-feature-panel"><h3>Is AI Paper Search live?</h3><p>It is a beta surface with early access collection and plan-aware placeholders. It does not fabricate paper data.</p></article>
-          <article class="cv-feature-panel"><h3>Can teams use shared workspaces?</h3><p>The Team/Lab plan contract exists. Shared workspace storage needs authenticated organization data before real collaboration is enabled.</p></article>
-          <article class="cv-feature-panel"><h3>How are permissions enforced?</h3><p>Client gates are mirrored by server API helpers for protected actions. Real auth and subscription state should replace the placeholder plan resolver.</p></article>
+          <article class="cv-feature-panel"><h3>Can teams use shared workspaces?</h3><p>Team pilots are scoped individually while authenticated organization data and shared-workspace controls are validated.</p></article>
+          <article class="cv-feature-panel"><h3>How are permissions enforced?</h3><p>Protected actions require server-side identity and resource authorization; beta labels in the interface do not grant access by themselves.</p></article>
         </div>
       </div>
     </section>

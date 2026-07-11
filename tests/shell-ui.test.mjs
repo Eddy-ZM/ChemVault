@@ -235,6 +235,29 @@ test("startup welcome assets use a fresh cache key on every HTML entry", () => {
   }
 });
 
+test("public contact references use confirmed ChemVault mailboxes", () => {
+  const contactFiles = [
+    ".env.example",
+    "ENVIRONMENT_VARIABLES.md",
+    "docs/compliance/apple-app-compliance.md",
+    "docs/compliance/email-compliance.md",
+    "docs/legal/privacy-policy.md",
+    "docs/legal/terms-of-service.md",
+    "pages/account-delete.html",
+    "pages/account-export.html",
+    "pages/privacy.html",
+    "pages/security.html",
+    "pages/terms.html"
+  ];
+  const unconfirmedMailboxPattern = /(?:support|abuse|privacy|security|legal)@chemvault\.science|support@example\.com/;
+
+  for (const file of contactFiles) {
+    assert.doesNotMatch(read(file), unconfirmedMailboxPattern, `${file} does not reference an unconfirmed public mailbox`);
+  }
+
+  assert.match(read("pages/security.html"), /mailto:contact@chemvault\.science/, "security reporting page uses the confirmed contact mailbox");
+});
+
 test("mobile Safari gets a static scroll-safe visual profile", () => {
   const boot = read("scripts/boot.js");
   const effects = read("scripts/visual-effects.js");
@@ -306,6 +329,10 @@ test("footer uses a ChemVault sticky footer adapted from the template", () => {
   assert.match(styles, /\.site-footer[\s\S]*view-timeline-name:\s*--footer-clarify/, "footer exposes a reveal timeline for the subtle blur effect");
   assert.match(styles, /@supports \(animation-timeline:\s*view\(\)\)[\s\S]*\.footer-panel[\s\S]*animation:\s*footer-clarify/, "footer panel clarifies as the footer is revealed");
   assert.match(styles, /@keyframes footer-clarify[\s\S]*filter:\s*blur\(5px\)[\s\S]*filter:\s*blur\(0\)/, "footer reveal moves from slight blur to clear");
+  assert.match(styles, /\.footer-column\s*{[\s\S]*background:[\s\S]*rgba\(255, 255, 255, 0\.025\)/, "footer columns use distinct grouped cards");
+  assert.match(styles, /\.footer-heading\s*{[\s\S]*border-bottom:\s*1px solid rgba\(255, 255, 255, 0\.11\)/, "footer headings are visually separated from links");
+  assert.match(styles, /\.footer-column a:first-of-type\s*{[\s\S]*font-size:\s*clamp\(0\.98rem, 1\.05vw, 1\.08rem\)/, "footer primary links are larger than secondary links");
+  assert.match(styles, /\.footer-column a:nth-of-type\(n \+ 4\)\s*{[\s\S]*font-size:\s*0\.78rem/, "footer tertiary links are visually quieter");
   assert.match(styles, /\.footer-version\s*{[\s\S]*letter-spacing:\s*0\.08em/, "footer version has a compact metadata treatment");
   assert.match(styles, /\.footer-mobile-compact\s*{[\s\S]*display:\s*none/, "desktop footer keeps the mobile footer summary hidden");
   assert.match(styles, /@media \(max-width:\s*620px\)[\s\S]*\.footer-grid\s*{[\s\S]*display:\s*none/, "mobile layout replaces the full link grid with a compact footer");

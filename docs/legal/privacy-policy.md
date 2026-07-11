@@ -2,15 +2,23 @@ Draft only. This document is not legal advice and must be reviewed before commer
 
 # ChemVault Privacy Policy
 
-Last updated: July 2, 2026
+Last updated: July 8, 2026
 
 This Privacy Policy explains how ChemVault handles information in the ChemVault website, ChemVault Mail, User System, Docs, File System, Notification System, Molecule Model / Molecule Studio, Extract / AI Scientific Data Extraction, Apple native applications, TestFlight builds, APIs, and related services.
 
 ChemVault is an early-stage scientific and developer platform. Some services are live, some are beta, and some documented features may be partially implemented. Where a feature is not yet deployed, this policy should be updated before launch. This draft must be reviewed by qualified legal counsel before commercial use.
 
+This policy is a transparency notice, not a certification that ChemVault satisfies every privacy, data protection, security, App Store, email, research, export-control, or sector-specific legal requirement. If this policy conflicts with actual product behavior, infrastructure settings, provider contracts, or App Store metadata, ChemVault must either correct the product behavior or update this policy before relying on it publicly. Needs legal review.
+
 ## 1. Information We Collect
 
 ChemVault may collect the following categories of information, depending on which services you use.
+
+### Sensitive, Regulated, and High-Risk Information
+
+ChemVault is not currently documented as approved for protected health information, clinical care, regulated submissions, GxP records, export-controlled data, controlled substances workflows, payment card storage, school records, children's data, or other specially regulated information unless a separate written agreement or deployment notice expressly says so.
+
+Users should not submit confidential, sensitive personal, patient, student, hazardous-materials, export-controlled, trade-secret, or third-party proprietary information unless they have authority to do so and the relevant ChemVault environment, provider configuration, and contract have been approved for that use. Needs legal review.
 
 ### Account and Profile Information
 
@@ -38,7 +46,7 @@ Uploaded files may contain confidential, personal, proprietary, regulated, or sc
 
 ChemVault Extract and related AI features may process uploaded documents, extracted text, tables, metadata, prompts, user instructions, AI inputs, AI outputs, citations, review decisions, correction history, exported datasets, molecule identifiers, SMILES strings, PDB identifiers, and generated molecular structures.
 
-AI outputs may be incomplete, inaccurate, or unsuitable for scientific, medical, legal, regulatory, financial, or safety-critical use without human review.
+AI outputs may be incomplete, inaccurate, non-deterministic, or unsuitable for scientific, medical, legal, regulatory, financial, operational, or safety-critical use without independent human review.
 
 ### Notification and Communication Information
 
@@ -81,7 +89,7 @@ ChemVault may use information to:
 - analyze usage, capacity, reliability, and performance;
 - comply with legal obligations and respond to lawful requests.
 
-ChemVault should not use user content for unrelated purposes unless this is disclosed, permitted by the user, and reviewed by legal counsel.
+ChemVault should not use user content for unrelated advertising, model-training, marketing, or resale purposes unless the use is disclosed, authorized where required, technically configured, and reviewed by legal counsel. Needs legal review.
 
 ## 3. AI and Scientific Data Processing
 
@@ -91,7 +99,7 @@ AI systems may process confidential or sensitive information if users include it
 
 AI output is provided for assistance and review. Users are responsible for independently verifying scientific, technical, regulatory, medical, legal, or safety-relevant outputs before relying on them.
 
-OpenAI and any other AI provider data handling must be confirmed against the active service settings, contracts, and product configuration before production launch. Needs legal review.
+OpenAI and any other AI provider data handling must be confirmed against the active service settings, contracts, data retention settings, and product configuration before production launch. ChemVault should not promise that an AI provider will not retain, review, or use submitted content unless that statement is supported by the active provider terms and account configuration. Needs legal review.
 
 ## 4. Email System Processing
 
@@ -105,7 +113,7 @@ Users must not use ChemVault Mail for spam, phishing, impersonation, unlawful bu
 
 Uploaded files may be stored in Cloudflare R2, object storage, databases, or other configured storage systems. File metadata may be stored in database tables for access control, previews, sharing, downloads, auditing, and administration.
 
-ChemVault should implement size limits, type restrictions, malware scanning or equivalent safety controls, permission checks, share revocation, deletion handling, and retention rules before production launch. Some of these controls were not fully detected in the current codebase and require technical remediation.
+ChemVault should implement size limits, type restrictions, malware scanning or equivalent safety controls, permission checks, default-private access, share revocation, deletion handling, and retention rules before production launch. Some controls may be baseline implementations and require technical remediation before ChemVault can represent that file handling is production-complete.
 
 ## 6. Third-Party Services
 
@@ -120,7 +128,7 @@ ChemVault may use third-party processors and infrastructure providers, including
 - Stripe or another payment provider if payment features are enabled in the future;
 - OAuth providers such as Apple, Google, GitHub, or Microsoft if enabled.
 
-This list must be kept current as architecture and vendors change. Data processing agreements, subprocessors, transfer terms, and security terms require legal review before commercial launch.
+This list must be kept current as architecture and vendors change. Third-party services may process data under their own terms or as ChemVault processors, depending on the integration. Data processing agreements, subprocessors, transfer terms, security terms, retention settings, and provider privacy labels require legal review before commercial launch.
 
 ## 7. Cookies, Local Storage, and Similar Technologies
 
@@ -128,7 +136,7 @@ ChemVault may use cookies, local storage, session storage, Keychain, UserDefault
 
 Authentication cookies should be configured with appropriate security attributes such as HttpOnly, Secure, and SameSite where technically supported.
 
-If ChemVault adds analytics, advertising, marketing cookies, cross-site tracking, or similar technologies, this policy and any cookie notice must be updated before deployment. Needs legal review.
+If ChemVault adds analytics, advertising, marketing cookies, cross-site tracking, session replay, or similar technologies, this policy and any cookie notice must be updated before deployment. ChemVault should not claim that it uses no tracking technologies unless the deployed website, apps, providers, and analytics settings support that statement. Needs legal review.
 
 ## 8. Data Retention
 
@@ -138,17 +146,19 @@ The current codebase includes some deletion and soft-deletion mechanisms, but a 
 
 ## 9. User Controls and Rights
 
-Depending on your location and applicable law, you may have rights to access, correct, delete, export, restrict, or object to certain processing of your information.
+Depending on your location, account type, organization, and applicable law, you may have rights to access, correct, delete, export, restrict, or object to certain processing of your information.
 
 ChemVault should provide clear account deletion and data export request processes before commercial launch. Some deletion mechanisms exist in the User System, but a complete cross-service deletion and export workflow was not detected.
 
-To request privacy support, contact: support@chemvault.science. Dedicated privacy, security, and abuse contact addresses should be confirmed before launch.
+Deletion and export requests may require identity verification and may be limited by security, abuse prevention, legal, backup, audit, institutional, and operational retention requirements. Current deletion and export pages should be treated as pending request baselines until cross-service automation is verified.
+
+To request privacy help, contact: contact@chemvault.science. Dedicated privacy, security, and abuse contact addresses should be confirmed before launch.
 
 ## 10. Security
 
 ChemVault uses technical and organizational measures intended to protect information, such as authentication, role checks, token hashing, encryption for certain secrets, access controls, audit logs, Cloudflare security services, and restricted secret handling.
 
-No system can be guaranteed to be completely secure. ChemVault should continue to harden rate limits, upload restrictions, administrator access controls, log redaction, secret management, data deletion, and incident response processes before commercial launch.
+No security measure is absolute, and ChemVault cannot guarantee that unauthorized access, data loss, provider outages, vulnerabilities, or configuration mistakes will never occur. ChemVault should continue to harden rate limits, upload restrictions, administrator access controls, log redaction, secret management, data deletion, backup handling, and incident response processes before commercial launch.
 
 ## 11. Children and Education Users
 
@@ -158,7 +168,7 @@ If ChemVault is offered to minors, schools, universities, educational programs, 
 
 ## 12. International Transfers
 
-ChemVault and its providers may process information in multiple countries or regions. International transfer requirements depend on the user location, provider contracts, infrastructure configuration, and applicable law. Needs legal review before commercial launch.
+ChemVault and its providers may process information in multiple countries or regions. International transfer requirements depend on the user location, provider contracts, infrastructure configuration, organization instructions, and applicable law. ChemVault should not promise a specific data residency or transfer mechanism unless it is technically configured and contractually supported. Needs legal review before commercial launch.
 
 ## 13. Changes to This Policy
 
@@ -169,7 +179,9 @@ ChemVault may update this Privacy Policy as services, infrastructure, legal requ
 For privacy, security, or abuse questions, contact:
 
 ChemVault
-Email: support@chemvault.science
+Email: contact@chemvault.science
+
+Do not send passwords, API keys, private keys, recovery codes, or other secrets in ordinary contact messages. Security reports should use the published security or abuse channel where available.
 
 Before commercial launch, ChemVault should confirm official privacy, legal, support, and abuse contact addresses and publish them consistently across the website, apps, App Store metadata, and legal documents.
 

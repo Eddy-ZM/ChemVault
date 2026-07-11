@@ -2875,31 +2875,72 @@ td strong {
 .footer-link-groups {
   display: grid;
   grid-template-columns: repeat(4, minmax(124px, 1fr));
-  gap: clamp(18px, 3vw, 34px);
+  gap: clamp(14px, 2vw, 24px);
 }
 
 .footer-column {
+  position: relative;
   display: grid;
-  gap: 10px;
+  align-content: start;
+  gap: 8px;
   min-width: 0;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  padding: 16px 16px 18px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.02)),
+    rgba(255, 255, 255, 0.025);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.footer-column::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 3px;
+  border-radius: 18px 0 0 18px;
+  background: linear-gradient(180deg, rgba(142, 197, 255, 0.72), rgba(125, 211, 252, 0.08));
+  opacity: 0.82;
 }
 
 .footer-heading {
+  display: inline-flex;
+  width: 100%;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.11);
+  margin-bottom: 3px;
+  padding-bottom: 10px;
   color: rgba(170, 205, 255, 0.72) !important;
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   font-weight: 900;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.13em;
+  line-height: 1;
   text-transform: uppercase;
 }
 
 .footer-column a {
+  position: relative;
   width: fit-content;
-  color: rgba(255, 255, 255, 0.92);
-  font-size: 0.91rem;
-  font-weight: 760;
-  line-height: 1.32;
+  color: rgba(232, 240, 252, 0.76);
+  font-size: 0.83rem;
+  font-weight: 690;
+  line-height: 1.28;
   overflow-wrap: anywhere;
   transition: color 180ms ease, transform 180ms ease;
+}
+
+.footer-column a:first-of-type {
+  margin: 1px 0 5px;
+  color: #ffffff;
+  font-size: clamp(0.98rem, 1.05vw, 1.08rem);
+  font-weight: 880;
+  letter-spacing: 0;
+}
+
+.footer-column a:nth-of-type(n + 4) {
+  color: rgba(214, 226, 242, 0.62);
+  font-size: 0.78rem;
+  font-weight: 640;
 }
 
 .footer-column a:hover,
@@ -2909,7 +2950,9 @@ td strong {
 }
 
 .footer-column span:not(.footer-heading) {
-  font-size: 0.9rem;
+  color: rgba(211, 222, 238, 0.58);
+  font-size: 0.76rem;
+  font-weight: 590;
   line-height: 1.45;
 }
 

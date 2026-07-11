@@ -2,9 +2,11 @@
 
 Draft only. Needs legal review.
 
-Last reviewed: July 2, 2026
+Last reviewed: July 8, 2026
 
 This draft describes ChemVault retention principles. Retention period to be confirmed before commercial launch unless stated otherwise.
+
+This policy is a planning document, not a guarantee that every ChemVault service already enforces the same retention period or deletion workflow. Retention settings must be aligned with actual databases, object storage, backups, logs, provider dashboards, contracts, and legal obligations before commercial launch. Needs legal review.
 
 | Data Category | Examples | Draft Retention Principle | User Control | Notes |
 | --- | --- | --- | --- | --- |
@@ -18,6 +20,7 @@ This draft describes ChemVault retention principles. Retention period to be conf
 | Export requests | export scope, status, admin notes, completion | Retention period to be confirmed before commercial launch | request status/contact | Expire export packages after a defined period. |
 | Backups | database/object backups | Retention period to be confirmed before commercial launch | restored deletion handling to be defined | Document delayed deletion from backups. |
 | Security logs | IPs, user agents, abuse events, failed auth | Retention period to be confirmed before commercial launch | limited user control | Retain only as necessary for security and fraud prevention. |
+| Regulated or high-risk data if approved | clinical, patient, student, export-controlled, controlled-substances, regulated submissions | Not currently approved by this draft; retention period to be confirmed in a written agreement before use | depends on agreement and law | Do not accept by default. Requires technical, security, and legal review. |
 
 ## Required Implementation Work
 
@@ -26,3 +29,4 @@ This draft describes ChemVault retention principles. Retention period to be conf
 - Add R2 lifecycle rules for deleted or expired objects.
 - Document backup restoration behavior.
 - Align Privacy Policy and Terms with this policy.
+- Confirm provider-specific retention settings for Cloudflare, Resend/SMTP providers, OpenAI or other AI providers, Apple, GitHub, Supabase, and any payment processor before publishing final retention promises.

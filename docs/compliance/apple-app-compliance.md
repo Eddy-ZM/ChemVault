@@ -2,7 +2,7 @@
 
 Draft compliance document. This is not legal advice. Needs legal review before App Store submission or commercial launch.
 
-Last reviewed: July 2, 2026
+Operational status is tracked in `docs/compliance/issue-register.md`; this narrative remains review guidance rather than a live launch dashboard.
 
 ## Remediation Status Update
 
@@ -13,10 +13,13 @@ Completed in this pass:
 - User System login, register, and OAuth entry points now include Terms/Privacy notices.
 - Extract app public footer and auth redirect card now link to Terms/Privacy.
 - App Store preparation drafts were added under `docs/app-store/`.
+- Account deletion and export now use a fail-closed cross-service lifecycle job covering User, Files, Lab, Notifications, Mail and Extract.
+- The canonical native ChemVault target is `ChemVaultAppleApp`; the duplicate local Apple target and the Tauri Mail WebView prototype are archived.
+- Apple release material is excluded from the code workspace by default, and the previously detected private key was removed from the workspace.
 
-Partially completed:
+Partially completed / activation required:
 
-- Account deletion and data export are implemented as minimum request flows on the main site and main API, not yet as full cross-service orchestration.
+- Cross-service deletion/export code and tests exist, but production migrations, service secrets, deployments and end-to-end canaries remain launch gates.
 - Apple-native app settings/about screens still need verification and links.
 - Exact App Privacy Details still require review of each submitted binary and backend behavior.
 
@@ -96,7 +99,7 @@ Recommended TestFlight description points:
 
 Example draft:
 
-> ChemVault is a beta scientific workspace for testing account, file, mail, molecule, and AI extraction workflows. This TestFlight build may be unstable or incomplete. Do not use it for production-critical, regulated, confidential, or irreplaceable data unless you are authorized to do so. AI and scientific extraction results require human review. For support or feedback, contact support@chemvault.science.
+> ChemVault is a beta scientific workspace for testing account, file, mail, molecule, and AI extraction workflows. This TestFlight build may be unstable or incomplete. Do not use it for production-critical, regulated, confidential, or irreplaceable data unless you are authorized to do so. AI and scientific extraction results require human review. For support or feedback, email contact@chemvault.science.
 
 ## 6. What to Test Guidance
 

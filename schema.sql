@@ -178,7 +178,8 @@ CREATE TABLE IF NOT EXISTS forms_submissions (
   assigned_to TEXT,
   internal_notes TEXT,
   public_tracking_id TEXT,
-  metadata_json TEXT NOT NULL DEFAULT '{}'
+  metadata_json TEXT NOT NULL DEFAULT '{}',
+  closed_at TEXT
 );
 
 CREATE TABLE IF NOT EXISTS forms_replies (
@@ -214,6 +215,7 @@ CREATE INDEX IF NOT EXISTS data_export_requests_status_idx ON data_export_reques
 CREATE INDEX IF NOT EXISTS admin_audit_logs_action_idx ON admin_audit_logs (action);
 CREATE INDEX IF NOT EXISTS admin_audit_logs_target_idx ON admin_audit_logs (target_type, target_id);
 CREATE INDEX IF NOT EXISTS forms_submissions_created_idx ON forms_submissions (created_at);
+CREATE INDEX IF NOT EXISTS forms_submissions_closed_idx ON forms_submissions (closed_at);
 CREATE INDEX IF NOT EXISTS forms_submissions_status_idx ON forms_submissions (status);
 CREATE INDEX IF NOT EXISTS forms_submissions_type_idx ON forms_submissions (type);
 CREATE INDEX IF NOT EXISTS forms_submissions_priority_idx ON forms_submissions (priority);

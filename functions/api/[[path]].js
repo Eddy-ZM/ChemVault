@@ -374,6 +374,10 @@ export async function onRequest(context) {
       );
       if (!limited.ok) return rateLimitResponse(limited);
       if (segments[1] === "forms") {
+        if (request.method === "POST" && segments[2] === "purge") {
+          const result = await purgeExpiredFormSubmissions(env, hasDb, request, admin.identity);
+          return json(result, result.ok ? 200 : 503);
+        }
         if (request.method === "GET" && segments[2] === "export.csv") {
           return exportFormsCsv(env, hasDb, url.searchParams);
         }
@@ -1084,11 +1088,25 @@ async function createFormSubmission(env, body, request, hasDb, options = {}) {
   ).run();
 
   const notification = await sendFormSubmissionNotification(env, submission, request);
+  const triageEvent = await sendFormTriageEvent(env, submission, request);
   if (!notification.ok) {
     const updatedMetadata = {
       ...submission.metadata,
       email_notification_failed: true,
       email_notification_status: notification.reason || String(notification.status || "failed")
+    };
+    await env.DB.prepare(`
+      UPDATE forms_submissions
+      SET metadata_json = ?, updated_at = ?
+      WHERE id = ?
+    `).bind(stringifyMetadata(updatedMetadata), new Date().toISOString(), submission.id).run();
+    submission.metadata = updatedMetadata;
+  }
+  if (!triageEvent.ok) {
+    const updatedMetadata = {
+      ...submission.metadata,
+      triage_event_failed: true,
+      triage_event_status: triageEvent.reason || String(triageEvent.status || "failed")
     };
     await env.DB.prepare(`
       UPDATE forms_submissions
@@ -1316,6 +1334,8 @@ async function updateFormSubmission(env, hasDb, request, id, body = {}, adminIde
     if (!status) return { ok: false, error: "Invalid status." };
     fields.push("status = ?");
     values.push(status);
+    fields.push("closed_at = ?");
+    values.push(status === "resolved" || status === "closed" ? new Date().toISOString() : null);
   }
   if ("priority" in body) {
     const priority = normalizeFormPriority(body.priority, "");
@@ -1363,9 +1383,9 @@ async function bulkUpdateFormSubmissions(env, hasDb, request, body = {}, adminId
   for (const id of ids) {
     const result = await env.DB.prepare(`
       UPDATE forms_submissions
-      SET status = ?, updated_at = ?
+      SET status = ?, closed_at = ?, updated_at = ?
       WHERE id = ? OR public_tracking_id = ?
-    `).bind(status, updatedAt, id, id).run();
+    `).bind(status, status === "resolved" || status === "closed" ? updatedAt : null, updatedAt, id, id).run();
     updated += Number(result?.meta?.changes || 0);
   }
   await writeAdminAuditLog(env, request, {
@@ -2656,6 +2676,32 @@ async function safeAddColumn(db, table, column, definition) {
   }
 }
 
+async function purgeExpiredFormSubmissions(env, hasDb, request, adminIdentity) {
+  if (!hasDb) return { ok: false, error: "Forms database is not configured." };
+  await ensureFormsSchema(env.DB);
+  const configuredDays = Number(env.FORMS_RETENTION_DAYS || 90);
+  const retentionDays = Number.isFinite(configuredDays) ? clamp(configuredDays, 30, 730) : 90;
+  const cutoff = new Date(Date.now() - retentionDays * 86_400_000).toISOString();
+  const countRow = await env.DB.prepare(
+    "SELECT COUNT(*) AS count FROM forms_submissions WHERE closed_at < ? AND type != 'security'"
+  ).bind(cutoff).first();
+  const count = Number(countRow?.count || 0);
+  await env.DB.batch([
+    env.DB.prepare(
+      "DELETE FROM forms_replies WHERE submission_id IN (SELECT id FROM forms_submissions WHERE closed_at < ? AND type != 'security')"
+    ).bind(cutoff),
+    env.DB.prepare("DELETE FROM forms_submissions WHERE closed_at < ? AND type != 'security'").bind(cutoff)
+  ]);
+  await writeAdminAuditLog(env, request, {
+    actorEmail: adminIdentity?.email || "admin",
+    action: "forms.retention.purge",
+    targetType: "forms_submission",
+    targetId: "retention",
+    metadata: { retentionDays, cutoff, submissionsDeleted: count }
+  });
+  return { ok: true, retentionDays, cutoff, submissionsDeleted: count };
+}
+
 async function ensureFormsSchema(db) {
   if (formsSchemaReady) return;
   await db.prepare(`
@@ -2676,9 +2722,11 @@ async function ensureFormsSchema(db) {
       assigned_to TEXT,
       internal_notes TEXT,
       public_tracking_id TEXT,
-      metadata_json TEXT
+      metadata_json TEXT,
+      closed_at TEXT
     )
   `).run();
+  await safeAddColumn(db, "forms_submissions", "closed_at", "TEXT");
   await db.prepare(`
     CREATE TABLE IF NOT EXISTS forms_replies (
       id TEXT PRIMARY KEY,
@@ -2699,6 +2747,7 @@ async function ensureFormsSchema(db) {
     db.prepare("CREATE INDEX IF NOT EXISTS forms_submissions_type_idx ON forms_submissions (type)").run(),
     db.prepare("CREATE INDEX IF NOT EXISTS forms_submissions_priority_idx ON forms_submissions (priority)").run(),
     db.prepare("CREATE INDEX IF NOT EXISTS forms_submissions_email_idx ON forms_submissions (email)").run(),
+    db.prepare("CREATE INDEX IF NOT EXISTS forms_submissions_closed_idx ON forms_submissions (closed_at)").run(),
     db.prepare("CREATE UNIQUE INDEX IF NOT EXISTS forms_submissions_tracking_idx ON forms_submissions (public_tracking_id)").run(),
     db.prepare("CREATE INDEX IF NOT EXISTS forms_replies_submission_idx ON forms_replies (submission_id)").run(),
     db.prepare("CREATE INDEX IF NOT EXISTS forms_replies_created_idx ON forms_replies (created_at)").run()
@@ -2901,6 +2950,45 @@ function adminReplyShape(row) {
     providerMessageId: row.provider_message_id || "",
     status: row.status
   };
+}
+
+async function sendFormTriageEvent(env, submission, request) {
+  const endpoint = clean(env.NOTIFICATIONS_EVENT_URL).replace(/\/+$/, "");
+  const secret = clean(env.EVENT_DELIVERY_SECRET);
+  const triageUserId = clean(env.FORMS_TRIAGE_USER_ID);
+  if (!endpoint || !secret || !triageUserId) {
+    return { ok: false, reason: "not_configured" };
+  }
+  const payload = {
+    specVersion: "1.0",
+    id: `forms:${submission.id}`,
+    type: "forms.submission.received",
+    source: "chemvault-forms",
+    subject: `forms/${submission.id}`,
+    time: submission.createdAt,
+    user: { id: triageUserId },
+    data: {
+      title: "New Forms triage item",
+      summary: `${submission.type} submission · ${submission.priority} priority · ${submission.publicTrackingId}`,
+      deepLink: buildAdminFormUrl(env, request, submission.id),
+      ticketId: submission.id,
+      priority: submission.priority
+    }
+  };
+  try {
+    const response = await fetch(endpoint, {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        "x-chemvault-event-key": secret
+      },
+      body: JSON.stringify(payload),
+      signal: AbortSignal.timeout(8000)
+    });
+    return response.ok ? { ok: true, status: response.status } : { ok: false, status: response.status, reason: `http_${response.status}` };
+  } catch (error) {
+    return { ok: false, reason: error instanceof Error ? error.message.slice(0, 160) : "request_failed" };
+  }
 }
 
 async function sendFormSubmissionNotification(env, submission, request) {

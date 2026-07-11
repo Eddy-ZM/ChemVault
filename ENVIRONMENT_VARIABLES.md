@@ -29,7 +29,7 @@ Last reviewed: July 3, 2026
 | `STRIPE_PRO_YEARLY_PRICE_ID` | Stripe Pro yearly price identifier | No | If Stripe enabled | Low | `your_stripe_pro_yearly_price_id_here` | Operational config, not a secret. |
 | `STRIPE_TEAM_MONTHLY_PRICE_ID` | Stripe Team monthly price identifier | No | If Stripe enabled | Low | `your_stripe_team_monthly_price_id_here` | Operational config, not a secret. |
 | `STRIPE_TEAM_YEARLY_PRICE_ID` | Stripe Team yearly price identifier | No | If Stripe enabled | Low | `your_stripe_team_yearly_price_id_here` | Operational config, not a secret. |
-| `ENTERPRISE_LEAD_EMAIL` | Legacy lead notification destination | No | Optional | Moderate | `support@example.com` | Kept for compatibility; `/api/leads` mail now uses `LEADS_NOTIFY_TO` or `FORMS_NOTIFY_TO`. |
+| `ENTERPRISE_LEAD_EMAIL` | Legacy lead notification destination | No | Optional | Moderate | `contact@chemvault.science` | Kept for compatibility; `/api/leads` mail now uses `LEADS_NOTIFY_TO` or `FORMS_NOTIFY_TO`. |
 | `NEWSLETTER_PROVIDER` | Newsletter provider selector | No | Optional | No | `placeholder` | Newsletter storage is D1-backed; bulk sending is not enabled yet. |
 | `RESEND_API_KEY` | Resend email API key | No | If lead/forms mail enabled | Yes | `your_resend_api_key_here` | Store as provider secret. Missing Resend config does not block D1 lead submission. |
 | `LEADS_NOTIFY_TO` | Lead notification recipient override | No | If separate lead inbox needed | Moderate | `forms@chemvault.science` | Optional. Falls back to `FORMS_NOTIFY_TO`. Comma-separated recipients allowed. |

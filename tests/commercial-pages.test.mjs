@@ -13,17 +13,18 @@ function assertIncludes(file, patterns) {
   }
 }
 
-test("commercial MVP pages expose expected plan and workflow surfaces", () => {
+test("commercial pages expose honest beta access and workflow surfaces", () => {
   assertIncludes("pages/pricing.html", [
     [/Free/i, "mentions Free"],
     [/Pro/i, "mentions Pro"],
     [/Team\/Lab/i, "mentions Team/Lab"],
     [/Enterprise/i, "mentions Enterprise"],
-    [/data-render="pricing-cards"/, "renders plan cards from shared config"],
-    [/Contact Sales/i, "contains Contact Sales CTA"],
+    [/private beta/i, "states the private beta availability"],
+    [/No public checkout/i, "states that checkout is unavailable"],
     [/data-lead-form data-lead-type="enterprise"/, "contains enterprise lead form"],
     [/data-lead-form data-lead-type="ai_beta"/, "contains AI beta lead form"]
   ]);
+  assert.doesNotMatch(read("pages/pricing.html"), /data-render="pricing-cards"/, "pricing does not render unavailable checkout plans");
 
   assertIncludes("pages/dashboard.html", [
     [/Current plan/i, "shows current plan"],

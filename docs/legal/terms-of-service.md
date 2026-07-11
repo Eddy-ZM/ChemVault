@@ -2,11 +2,13 @@ Draft only. This document is not legal advice and must be reviewed before commer
 
 # ChemVault Terms of Service
 
-Last updated: July 2, 2026
+Last updated: July 8, 2026
 
 These Terms of Service describe rules for using ChemVault, including the ChemVault website, ChemVault Mail, User System, Docs, File System, Notification System, Molecule Model / Molecule Studio, Extract / AI Scientific Data Extraction, Apple native applications, TestFlight builds, APIs, and related services.
 
 ChemVault is an early-stage scientific and developer platform. Some features are beta, experimental, partially implemented, or subject to change. These draft terms must be reviewed by qualified legal counsel before commercial launch.
+
+These draft Terms are not a final enterprise agreement, data processing agreement, regulated-use approval, App Store approval, or legal opinion. They should not be presented as proof that ChemVault is fully compliant with any specific privacy, consumer, education, healthcare, export-control, research, email, or sector-specific law. Needs legal review.
 
 ## 1. Accounts
 
@@ -25,6 +27,7 @@ You are responsible for:
 - complying with applicable laws, export controls, intellectual property rules, privacy rules, data protection rules, institutional policies, and professional standards;
 - reviewing AI, scientific, and extracted outputs before relying on them;
 - keeping confidential, regulated, proprietary, or sensitive information out of ChemVault unless you are authorized to process it there;
+- ensuring that any high-risk, regulated, export-controlled, clinical, safety-critical, student, patient, or confidential workflow has written approval and appropriate safeguards before use;
 - protecting any API keys, access tokens, app passwords, and downloaded data.
 
 ## 3. Prohibited Use
@@ -38,7 +41,8 @@ You must not use ChemVault to:
 - upload, send, or share unlawful, harmful, abusive, defamatory, infringing, privacy-invasive, or deceptive content;
 - impersonate another person or organization;
 - interfere with ChemVault, its users, third-party providers, or connected networks;
-- use ChemVault for high-risk decisions without qualified human review.
+- use ChemVault for high-risk decisions without qualified human review;
+- submit protected health information, regulated clinical data, payment card data, children's data, student records, export-controlled data, controlled substances data, or other specially regulated content unless ChemVault has expressly approved that use in writing and the relevant environment is configured for it.
 
 ## 4. Email Service Rules
 
@@ -48,19 +52,25 @@ You must not send marketing email through ChemVault unless you have all required
 
 ChemVault may monitor, rate limit, suspend, reject, quarantine, or delete email activity where needed to protect the service, users, recipients, providers, or third parties.
 
+Email deliverability, routing, inbox placement, provider acceptance, spam filtering, and recipient delivery are not guaranteed.
+
 ## 5. File Upload Rules
 
 You may upload files only if you have the right to do so. You must not upload unlawful, infringing, malicious, deceptive, privacy-invasive, regulated, export-controlled, or unsafe content unless ChemVault has expressly authorized that use and appropriate safeguards are in place.
 
 ChemVault may impose file size limits, file type restrictions, scan or inspect files for safety, remove files, disable links, revoke shares, or suspend access if needed for security, abuse prevention, legal compliance, or service operation.
 
+Files may be private by default in supported services, but users and administrators remain responsible for reviewing sharing settings, links, permissions, exports, and downloaded copies. ChemVault should not be treated as the only backup for important files.
+
 ## 6. AI Features
 
-ChemVault AI features, including scientific extraction, summarization, classification, dataset generation, molecule-related processing, and similar tools, are provided for assistance only.
+ChemVault AI features, including scientific extraction, summarization, classification, dataset generation, molecule-related processing, and similar tools, are provided for assistance only and are not professional advice.
 
 AI output may be inaccurate, incomplete, outdated, misleading, non-deterministic, or unsuitable for your use case. You are responsible for independently verifying AI output before using it for research, publication, clinical, regulatory, legal, financial, safety, operational, or other important decisions.
 
 You must not submit content to AI features unless you are authorized to process that content through ChemVault and any applicable AI providers.
+
+AI providers, model availability, model behavior, retention settings, and output quality may change. ChemVault should not promise provider-specific data handling unless supported by the active provider terms, account configuration, and contract. Needs legal review.
 
 ## 7. Scientific Data Extraction Disclaimer
 
@@ -68,17 +78,23 @@ ChemVault Extract may process documents, tables, figures, citations, metadata, a
 
 ChemVault does not guarantee that extracted scientific data is accurate, complete, reproducible, suitable for publication, suitable for regulatory submission, or safe for laboratory, clinical, environmental, industrial, or other operational use.
 
+ChemVault does not provide medical, legal, regulatory, hazardous-materials, laboratory safety, manufacturing, patent, or professional advice through extraction results, previews, summaries, or recommendations.
+
 ## 8. Platform Availability
 
 ChemVault may be unavailable, interrupted, delayed, degraded, or changed. ChemVault does not guarantee uninterrupted service, error-free operation, data availability, delivery success, model availability, provider availability, or compatibility with every device, browser, network, file type, email provider, app version, or workflow.
 
 You are responsible for maintaining appropriate backups and independent records for important files, emails, data, and outputs.
 
+ChemVault should not be used as the sole system of record for irreplaceable, regulated, safety-critical, publication-critical, litigation-sensitive, or business-critical information unless a separate written agreement and technical controls expressly support that use.
+
 ## 9. Beta and TestFlight Versions
 
 Beta, preview, staging, and TestFlight versions may be unstable, incomplete, experimental, or changed without notice. They may contain bugs, data loss risks, disabled features, test data, limited support, or diagnostic logging.
 
 Do not use beta or TestFlight versions for production-critical, safety-critical, regulated, confidential, or irreplaceable workflows unless ChemVault has expressly approved that use in writing and appropriate safeguards are in place.
+
+TestFlight and App Store availability, Apple review outcomes, diagnostics, crash reporting, and Apple account processing are subject to Apple's rules and settings. No ChemVault statement should be read as a guarantee of App Store approval.
 
 ## 10. Account Suspension or Termination
 
@@ -106,6 +122,8 @@ ChemVault may depend on third-party services such as Cloudflare, Resend, OpenAI,
 
 Third-party services may have their own terms, policies, availability, security practices, and data processing rules. ChemVault is not responsible for third-party services outside ChemVault's control. Vendor contracts and data processing terms require legal review before commercial launch.
 
+Users must comply with any third-party terms that apply to their use of connected providers, including identity providers, email providers, app stores, AI providers, hosting platforms, payment processors, and organization-managed systems.
+
 ## 14. Payments and Subscriptions
 
 The current codebase includes billing placeholders and subscription-related structures. If paid plans, trials, subscriptions, refunds, taxes, or invoices are enabled, ChemVault must publish additional payment terms and configure a payment processor.
@@ -118,13 +136,15 @@ ChemVault's processing of personal information is described in the ChemVault Pri
 
 ## 16. Security and Abuse Reporting
 
-Users should report security issues, abuse, spam, phishing, impersonation, malicious files, account compromise, or suspected unauthorized access to support@chemvault.science.
+Users should report security issues, abuse, spam, phishing, impersonation, malicious files, account compromise, or suspected unauthorized access to contact@chemvault.science.
 
 Before commercial launch, ChemVault should publish dedicated security, privacy, and abuse contacts and define internal response procedures.
 
-## 17. Limitation of Liability
+## 17. Disclaimers and Limitation of Liability
 
-To the maximum extent permitted by applicable law, ChemVault should not be liable for indirect, incidental, consequential, special, exemplary, punitive, or lost-profit damages, or for loss of data, goodwill, business, research opportunity, scientific results, or service availability.
+ChemVault services, beta features, AI outputs, extraction results, previews, file previews, mail delivery, notifications, APIs, and documentation are provided on an "as is" and "as available" draft basis unless a final written agreement says otherwise. ChemVault does not warrant that the services will be uninterrupted, error-free, secure, accurate, complete, suitable for a particular purpose, or free from harmful components.
+
+Subject to applicable law and final legal review, ChemVault should not be liable for indirect, incidental, consequential, special, exemplary, punitive, or lost-profit damages, or for loss of data, goodwill, business, research opportunity, scientific results, service availability, provider availability, or unauthorized use of accounts.
 
 The final liability terms, disclaimers, warranty exclusions, damages cap, governing law, venue, arbitration, and consumer rights language must be drafted and reviewed by qualified legal counsel. Needs legal review.
 
@@ -139,9 +159,11 @@ Material changes should be communicated through reasonable means where appropria
 For support, privacy, security, or abuse questions, contact:
 
 ChemVault
-Email: support@chemvault.science
+Email: contact@chemvault.science
 
 Official company name, mailing address, legal contact, privacy contact, security contact, and abuse contact must be confirmed before commercial launch.
+
+Do not send passwords, API keys, private keys, recovery codes, or other secrets through ordinary contact messages.
 
 ## 20. Legal Review Required
 

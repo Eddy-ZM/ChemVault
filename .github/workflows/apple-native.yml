@@ -1,0 +1,38 @@
+name: Apple native validation
+
+on:
+  pull_request:
+    paths:
+      - "ChemVaultAppleApp/**"
+      - ".github/workflows/apple-native.yml"
+  push:
+    branches: [main, test]
+    paths:
+      - "ChemVaultAppleApp/**"
+      - ".github/workflows/apple-native.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: macos-15
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Inspect shared schemes
+        run: xcodebuild -list -project ChemVaultAppleApp/ChemVaultAppleApp.xcodeproj
+      - name: Build iOS Simulator target
+        run: >-
+          xcodebuild build
+          -project ChemVaultAppleApp/ChemVaultAppleApp.xcodeproj
+          -scheme 'ChemVault iOS'
+          -destination 'generic/platform=iOS Simulator'
+          CODE_SIGNING_ALLOWED=NO
+      - name: Build macOS target
+        run: >-
+          xcodebuild build
+          -project ChemVaultAppleApp/ChemVaultAppleApp.xcodeproj
+          -scheme 'ChemVault macOS'
+          -destination 'platform=macOS'
+          CODE_SIGNING_ALLOWED=NO
