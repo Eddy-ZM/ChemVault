@@ -364,6 +364,16 @@ export async function onRequest(context) {
       return result;
     }
 
+    if (segments[0] === "internal" && segments[1] === "forms" && segments[2] === "purge" && request.method === "POST") {
+      const expected = clean(env.FORMS_RETENTION_SECRET);
+      const authorization = clean(request.headers.get("authorization"));
+      if (!expected || authorization !== `Bearer ${expected}`) {
+        return json({ ok: false, error: "Invalid retention scheduler credential." }, 401);
+      }
+      const result = await purgeExpiredFormSubmissions(env, hasDb, request, { email: "retention-scheduler" });
+      return json(result, result.ok ? 200 : 503);
+    }
+
     if (segments[0] === "admin") {
       const admin = await requireAdminAccess(request, env, adminRequirementForSegments(segments, request.method));
       if (!admin.ok) return json(admin, 403);
@@ -487,7 +497,7 @@ export async function onRequest(context) {
 
     return json({ error: "Not found", routes: ["/api/health", "/api/entitlements", "/api/leads", "/api/newsletter/unsubscribe", "/api/forms/submit", "/api/forms/lookup", "/api/feedback", "/api/account/deletion-request", "/api/account/export-request", "/api/billing/checkout", "/api/export/compound", "/api/records", "/api/records/:type/:id", "/api/enrich", "/api/facets"] }, 404);
   } catch (error) {
-    if (segments[0] === "forms" || segments[0] === "feedback" || segments[0] === "leads" || segments[0] === "newsletter" || segments[0] === "admin") {
+    if (segments[0] === "forms" || segments[0] === "feedback" || segments[0] === "leads" || segments[0] === "newsletter" || segments[0] === "admin" || segments[0] === "internal") {
       return json({
         ok: false,
         error: "Request failed. Internal details were suppressed."
