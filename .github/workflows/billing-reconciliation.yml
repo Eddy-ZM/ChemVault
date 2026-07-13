@@ -1,0 +1,29 @@
+name: Billing reconciliation
+
+on:
+  schedule:
+    - cron: "35 2 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: billing-reconciliation
+  cancel-in-progress: false
+
+jobs:
+  reconcile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      BILLING_RECONCILE_SECRET: ${{ secrets.BILLING_RECONCILE_SECRET }}
+      BILLING_RECONCILE_URL: ${{ vars.BILLING_RECONCILE_URL || 'https://chemvault-aw3.pages.dev/api/internal/billing/reconcile' }}
+    steps:
+      - name: Reconcile Stripe subscriptions into D1
+        run: |
+          test -n "$BILLING_RECONCILE_SECRET"
+          curl --fail --silent --show-error \
+            -X POST \
+            -H "Authorization: Bearer $BILLING_RECONCILE_SECRET" \
+            "$BILLING_RECONCILE_URL"

@@ -426,6 +426,41 @@ export async function handleBillingLifecycle(env, db, userId, body = {}) {
   };
 }
 
+export async function reconcileStripeSubscriptions(env, db, { limit = 50 } = {}) {
+  assertStripeConfigured(env);
+  await ensureBillingSchema(db);
+  const boundedLimit = clampInteger(limit, 1, 100, 50);
+  const result = await db.prepare(`
+    SELECT provider_subscription_id
+    FROM subscriptions
+    WHERE provider = 'stripe'
+      AND provider_subscription_id IS NOT NULL
+      AND status NOT IN ('canceled', 'incomplete_expired')
+    ORDER BY updated_at ASC
+    LIMIT ?
+  `).bind(boundedLimit).all();
+  const rows = Array.isArray(result?.results) ? result.results : [];
+  const reconciled = [];
+  const reconciledAt = Math.floor(Date.now() / 1000);
+
+  for (const row of rows) {
+    const providerId = clean(row.provider_subscription_id);
+    if (!providerId) continue;
+    const remote = await stripeRequest(env, `/v1/subscriptions/${encodeURIComponent(providerId)}`, null, { method: "GET" });
+    if (!clean(remote?.id) || !clean(remote?.status)) {
+      throw new BillingError("invalid_stripe_response", "Stripe returned an incomplete subscription during reconciliation.", 502);
+    }
+    await upsertStripeSubscription(db, env, {
+      id: `reconcile:${reconciledAt}:${providerId}`.slice(0, 255),
+      created: reconciledAt,
+      livemode: Boolean(remote.livemode)
+    }, remote);
+    reconciled.push({ subscriptionId: providerId, status: clean(remote.status) });
+  }
+
+  return { ok: true, checked: rows.length, reconciled };
+}
+
 export async function verifyStripeSignature(rawBody, signatureHeader, secret, toleranceSeconds = DEFAULT_SIGNATURE_TOLERANCE_SECONDS, nowMs = Date.now()) {
   const parsed = parseStripeSignature(signatureHeader);
   const tolerance = clampInteger(toleranceSeconds, 30, 900, DEFAULT_SIGNATURE_TOLERANCE_SECONDS);

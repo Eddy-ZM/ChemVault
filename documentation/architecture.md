@@ -8,6 +8,8 @@ Authorized suite services may read a user's resolved plan through `/api/internal
 
 Billing is a required participant in User Center's distributed account lifecycle. Export returns the user's billing metadata. Delete first retrieves and cancels every non-terminal Stripe subscription, updates local entitlement state, and only then reports success; financial transaction records remain subject to the documented retention policy instead of being silently erased.
 
+Stripe webhooks remain the primary event path. A separately credentialed daily reconciliation job retrieves every bounded non-terminal subscription and reapplies Stripe's current state to D1, so a lost or repeatedly failed webhook does not leave access permanently stale.
+
 Public chemistry records are intentionally public. Form bodies, reply emails, leads, billing customer/subscription IDs, webhook records, admin audit, and replies are private. No browser receives Stripe secret keys, webhook secrets, or the cross-service billing credential.
 
 The repository contains a production-capable billing implementation, but billing remains disabled until Stripe products/prices, secrets, webhook delivery, D1 migration, and live canaries pass the release gate in [Commercial readiness](commercial-readiness.md).

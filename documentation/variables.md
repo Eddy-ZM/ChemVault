@@ -10,6 +10,7 @@
 | `STRIPE_WEBHOOK_SECRET` | Cloudflare secret | Raw-body webhook verification | Rotate with endpoint secret; accept overlap only through an explicit deployment plan |
 | `BILLING_SERVICE_SECRET` | Main site and authorized services | Internal entitlement endpoint | Rotate on exposure and periodically; never reuse as end-user auth |
 | `LIFECYCLE_SERVICE_SECRET` | User Center and main billing API | Billing export and subscription cancellation before account deletion | Rotate every 90 days/incident; keep distinct from billing entitlement and scheduler secrets |
+| `BILLING_RECONCILE_SECRET`, `BILLING_RECONCILE_LIMIT` | Main API and scheduled workflow | Bounded Stripe-to-D1 subscription reconciliation | Scheduler secret must be distinct; default batch 50, maximum 100 |
 | Stripe safety options | Server config | Signature tolerance, test-event rejection, tax, past-due policy | Defaults are restrictive; policy changes require release review |
 | User/admin origins and allowlists | Server config | Admin identity | Review on role/domain change; fail closed |
 | Resend/provider key and addresses | Server secret/config | Confirmations/admin notices | Rotate every 90 days or on incident; stored intake survives mail failure |

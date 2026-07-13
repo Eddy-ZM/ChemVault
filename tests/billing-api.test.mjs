@@ -131,6 +131,16 @@ class BillingD1Mock {
   }
 
   #all(sql, values) {
+    if (sql.includes("FROM SUBSCRIPTIONS") && sql.includes("STATUS NOT IN")) {
+      return {
+        results: this.subscriptions
+          .filter((subscription) => subscription.provider === "stripe"
+            && subscription.provider_subscription_id
+            && !["canceled", "incomplete_expired"].includes(subscription.status))
+          .slice(0, Number(values[0] || 50))
+          .map((subscription) => ({ provider_subscription_id: subscription.provider_subscription_id }))
+      };
+    }
     if (sql.includes("FROM SUBSCRIPTIONS") && sql.includes("WHERE USER_ID")) {
       return { results: this.subscriptions.filter((subscription) => subscription.user_id === values[0]) };
     }
@@ -526,4 +536,57 @@ test("billing lifecycle exports records and cancels future charges before accoun
     body: { action: "delete", requestId: "job_unauthorized" }
   });
   assert.equal(unauthorized.response.status, 401);
+});
+
+test("scheduled billing reconciliation refreshes non-terminal subscription state", async () => {
+  const db = new BillingD1Mock({
+    subscriptions: [{
+      id: "local_reconcile",
+      user_id: "user_reconcile",
+      provider: "stripe",
+      provider_customer_id: "cus_reconcile",
+      provider_subscription_id: "sub_reconcile",
+      plan: "pro",
+      status: "active",
+      price_id: "price_pro_monthly",
+      billing_interval: "monthly",
+      updated_at: "2026-07-01T00:00:00.000Z"
+    }]
+  });
+  const env = { ...billingEnv(db), BILLING_RECONCILE_SECRET: "reconcile-secret" };
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = async (url, init = {}) => {
+    assert.equal(String(url), "https://api.stripe.com/v1/subscriptions/sub_reconcile");
+    assert.equal(init.method, "GET");
+    return new Response(JSON.stringify({
+      id: "sub_reconcile",
+      customer: "cus_reconcile",
+      status: "past_due",
+      livemode: false,
+      current_period_end: 1_800_000_000,
+      cancel_at_period_end: false,
+      metadata: { chemvault_user_id: "user_reconcile", chemvault_plan: "pro", chemvault_billing_interval: "monthly" },
+      items: { data: [{ price: { id: "price_pro_monthly" } }] }
+    }), { status: 200, headers: { "content-type": "application/json" } });
+  };
+  try {
+    const result = await callApi("internal/billing/reconcile", {
+      method: "POST",
+      env,
+      headers: { authorization: "Bearer reconcile-secret" }
+    });
+    assert.equal(result.response.status, 200);
+    assert.equal(result.payload.checked, 1);
+    assert.equal(result.payload.reconciled[0].status, "past_due");
+    assert.equal(db.subscriptions[0].status, "past_due");
+
+    const unauthorized = await callApi("internal/billing/reconcile", {
+      method: "POST",
+      env,
+      headers: { authorization: "Bearer wrong" }
+    });
+    assert.equal(unauthorized.response.status, 401);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
 });

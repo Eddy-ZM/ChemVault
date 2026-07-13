@@ -20,6 +20,7 @@ import {
   handleBillingLifecycle,
   handleStripeWebhook,
   isStripeConfigured,
+  reconcileStripeSubscriptions,
   resolveBillingUserByEmail,
   resolvePlanForUserId,
   resolveSubscriptionContext
@@ -402,6 +403,17 @@ export async function onRequest(context) {
       if (!hasDb) return json({ ok: false, error: "Billing storage is unavailable." }, 503);
       const result = await handleBillingLifecycle(env, env.DB, decodePathSegment(segments[2]), await readJSONBody(request));
       return json(result);
+    }
+
+    if (segments[0] === "internal" && segments[1] === "billing" && segments[2] === "reconcile") {
+      if (request.method !== "POST") return json({ error: "Method not allowed" }, 405);
+      const expected = clean(env.BILLING_RECONCILE_SECRET);
+      const authorization = clean(request.headers.get("authorization"));
+      if (!expected || authorization !== `Bearer ${expected}`) {
+        return json({ ok: false, error: "Invalid billing reconciliation credential." }, 401);
+      }
+      if (!hasDb) return json({ ok: false, error: "Billing storage is unavailable." }, 503);
+      return json(await reconcileStripeSubscriptions(env, env.DB, { limit: env.BILLING_RECONCILE_LIMIT }));
     }
 
     if (segments[0] === "internal" && segments[1] === "billing" && segments[2] === "entitlements") {
