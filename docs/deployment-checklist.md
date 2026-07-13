@@ -124,9 +124,12 @@ npx wrangler d1 execute chemvault-production --remote --file=schema.sql
 - Apply `schema.sql` before testing `/api/leads`.
 - Apply `migrations/0002_add_forms_management.sql` before testing `/api/forms/submit` or `/admin/forms`.
 - Apply `migrations/0003_leads_email_notifications.sql` before testing `/api/leads`, `/api/admin/leads` or newsletter unsubscribe on an existing D1 database.
+- Apply `migrations/0004_forms_retention.sql` before enabling scheduled Forms retention.
+- Apply `migrations/0005_stripe_billing.sql` before testing checkout, portal, webhooks, subscription reconciliation, or distributed account lifecycle.
+- Apply `migrations/0006_billing_usage_enforcement.sql` before testing metered cloud quantum usage.
 - `schema.sql` is currently the initialization path for staging D1. Before formal production launch, migrate ongoing schema changes to Cloudflare D1 migrations.
-- `subscriptions` is only a placeholder schema until real checkout/webhooks are implemented.
-- `usage_records` is only a quota placeholder until real usage tracking is implemented.
+- `subscriptions` is the server-side source of plan state populated by Stripe webhooks and reconciliation.
+- `usage_records` is the central idempotent usage ledger; Model must remain in `shadow` until its index migration and service secret are deployed and canaries pass.
 
 ## API Smoke Checks
 
@@ -145,10 +148,12 @@ npx wrangler d1 execute chemvault-production --remote --file=schema.sql
 - `PATCH /api/admin/forms/:id` updates status, priority, owner or internal notes.
 - `POST /api/admin/forms/:id/reply` saves the reply and sends email when Resend is configured.
 - `GET /api/admin/forms/export.csv` downloads CSV with an admin bearer token.
-- `POST /api/billing/checkout` returns a clearly labeled placeholder in local/staging when mock billing is enabled.
-- `POST /api/billing/checkout` returns `payment_not_configured` or `payment_provider_not_implemented` in production until real payment is wired.
-- `POST /api/billing/portal` follows the same placeholder/not-configured rule.
-- `POST /api/export/compound` returns HTTP 402 for Free/default users.
+- `POST /api/billing/checkout` may return a clearly labeled non-payment response only in local/staging when mock billing is enabled.
+- `POST /api/billing/checkout` creates a Stripe session only when verified identity, provider configuration, plan flags, and public checkout flags allow it; otherwise it fails closed.
+- `POST /api/billing/portal` resolves the canonical Stripe customer and creates a portal session only when billing is configured.
+- `POST /api/billing/webhook` rejects invalid signatures and processes repeated event IDs idempotently.
+- `POST /api/internal/billing/usage/consume` requires the billing service secret and enforces the server-resolved daily allowance.
+- `POST /api/export/compound` returns HTTP 501 because compound export is not currently sold.
 
 Manual API targets after Preview deployment:
 
@@ -198,12 +203,13 @@ After deployment:
 - Admin Forms table loads, filters, supports bulk status update and exports CSV.
 - Admin Forms detail page updates status/priority/internal notes and shows saved replies.
 - Dashboard/workbench page is accessible.
-- AI Paper Search beta page is accessible.
+- Dashboard plan state comes from `/api/entitlements`; changing browser storage cannot promote the production plan.
+- AI Paper Search early-access page states that the workflow is not currently sold.
 - Compound search still supports free basic search.
-- Pro export/save gates are visible but not unlocked for Free.
+- Compound export/save controls are absent from the purchasable product surface.
 - Navigation and app switcher work across product pages.
-- PremiumGate/FeatureGate previews show upgrade prompts for Free/default users.
-- Export gating is still enforced by `/api/export/compound`, not only by frontend hiding.
+- The shipped cloud quantum gate reflects the server-resolved entitlement.
+- `/api/export/compound` returns `501 feature_not_available` for every plan.
 - Browser console has no obvious JavaScript errors.
 - `sitemap.xml` is accessible.
 - `404.html` uses the commercialized navigation and footer.

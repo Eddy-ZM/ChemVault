@@ -402,12 +402,11 @@
     return [
       ["Home", "/index.html", "Active", "Free", "CV"],
       ["Compound Search", "/pages/search.html", "Active", "Free", "CS"],
-      ["Research File Library", "/pages/file-library.html", "Beta", "Free", "FL"],
+      ["Research File Library", "https://file.chemvault.science/", "Active", "Free", "FL"],
       ["Professional Documentation", "https://docs.chemvault.science/", "Active", "Free", "DG"],
       ["Molecular Modeling", "/pages/molecular-modeling.html", "Beta", "Free", "MM"],
-      ["Mail", "/pages/mail.html", "Beta", "Free", "ML"],
-      ["AI Paper Search", "/pages/ai-paper-search.html", "Beta", "Free", "AI"],
-      ["Team/Lab Workspace", "/pages/dashboard.html#team-workspace", "Active", "Free", "TM"]
+      ["Mail", "https://mail.chemvault.science/", "Active", "Free", "ML"],
+      ["AI Paper Search", "/pages/ai-paper-search.html", "Beta", "Free", "AI"]
     ].map(([name, route, status, access, initials]) => ({ name, route, status, access, initials }));
   }
 

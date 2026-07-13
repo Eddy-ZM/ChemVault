@@ -82,7 +82,7 @@ This table is a preparation aid only. Final App Privacy Details must be complete
 | Location | Main app detects country/region from public IP country-code services and caches region locally | Not detected beyond IP-based service logs | Not detected beyond service logs | Possibly yes if server logs retained | Not currently detected | Treat as coarse location/region risk. |
 | Contact List | Not detected | Not detected | Not detected | Not currently detected | Not currently detected | Do not declare unless implemented. |
 | Health / Fitness | Not detected | Not detected | Not detected | Not currently detected | Not currently detected | Scientific chemistry data is not automatically health data, but context can make it sensitive. Needs legal review. |
-| Financial Info | Not currently detected in app; billing placeholders exist on web | Not detected | Not detected | Not currently detected | Not currently detected | Add if payment is enabled. |
+| Financial Info | Native app does not collect card data; web source can open Stripe-hosted checkout and stores subscription identifiers and usage records when enabled | Not detected in native app | Subscription status may affect app entitlements | Main D1 and Stripe when public billing is approved | Stripe retention plus approved ChemVault billing retention | Update App Store disclosures if native account or entitlement surfaces expose paid subscription state. |
 | Sensitive Info | Possible if users upload or send sensitive files, emails, or AI inputs | Possible through emails/attachments | Possible through molecule/project data | Possibly yes | Not currently detected | Avoid collecting unnecessary sensitive information. |
 
 ## 5. TestFlight Beta App Description Guidance

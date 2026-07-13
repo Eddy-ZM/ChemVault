@@ -126,7 +126,7 @@ Users must comply with any third-party terms that apply to their use of connecte
 
 ## 14. Payments and Subscriptions
 
-The current codebase includes billing placeholders and subscription-related structures. If paid plans, trials, subscriptions, refunds, taxes, or invoices are enabled, ChemVault must publish additional payment terms and configure a payment processor.
+The current source includes Stripe checkout, portal, webhook, subscription, cancellation, reconciliation, and usage-accounting integrations, while public checkout remains disabled by default pending launch approval. Before paid plans, trials, renewals, refunds, taxes, or invoices are offered publicly, ChemVault must publish approved payment terms, configure the production payment processor, and verify cancellation and support procedures.
 
 Payment, refund, tax, subscription renewal, cancellation, and consumer protection terms require legal review before launch.
 

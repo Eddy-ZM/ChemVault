@@ -28,7 +28,7 @@ test("commercial API health and entitlements routes respond without D1", async (
   assert.equal(entitlements.response.status, 200);
   assert.equal(entitlements.payload.plan, "free");
   assert.equal(entitlements.payload.features["compound.search.basic"].enabled, true);
-  assert.equal(entitlements.payload.features["compound.search.export"].enabled, false);
+  assert.equal("compound.search.export" in entitlements.payload.features, false);
   assert.equal(entitlements.payload.meta.authMode, "placeholder");
   assert.match(entitlements.payload.meta.message, /placeholder auth/i);
 });
@@ -139,36 +139,35 @@ test("production commercial guard disables mock billing and placeholder auth", a
   assert.equal(entitlements.payload.plan, "anonymous");
   assert.equal(entitlements.payload.meta.authMode, "chemvault-user");
   assert.equal(entitlements.payload.meta.authenticated, false);
-  assert.equal(entitlements.payload.features["compound.search.export"].enabled, false);
+  assert.equal("compound.search.export" in entitlements.payload.features, false);
 
   const exportAttempt = await callApi("export/compound", {
     method: "POST",
     env: productionEnv,
     body: {}
   });
-  assert.equal(exportAttempt.response.status, 402);
+  assert.equal(exportAttempt.response.status, 501);
   assert.equal(exportAttempt.payload.ok, false);
-  assert.equal(exportAttempt.payload.currentPlan, "anonymous");
+  assert.equal(exportAttempt.payload.code, "feature_not_available");
 });
 
-test("server-side export entitlement does not trust client plan values", async () => {
+test("unshipped compound export is not advertised as available to any plan", async () => {
   const free = await callApi("export/compound", {
     method: "POST",
     body: {
       plan: "pro"
     }
   });
-  assert.equal(free.response.status, 402);
+  assert.equal(free.response.status, 501);
   assert.equal(free.payload.ok, false);
-  assert.equal(free.payload.requiredPlan, "pro");
-  assert.equal(free.payload.currentPlan, "free");
+  assert.equal(free.payload.code, "feature_not_available");
 
   const pro = await callApi("export/compound", {
     method: "POST",
     env: { DEFAULT_USER_PLAN: "pro" },
     body: {}
   });
-  assert.equal(pro.response.status, 200);
-  assert.equal(pro.payload.ok, true);
-  assert.equal(pro.payload.mode, "placeholder");
+  assert.equal(pro.response.status, 501);
+  assert.equal(pro.payload.ok, false);
+  assert.equal(pro.payload.code, "feature_not_available");
 });

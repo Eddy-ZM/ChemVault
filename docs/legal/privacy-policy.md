@@ -66,7 +66,7 @@ The Apple native applications may store local preferences such as language setti
 
 ### Payment Information
 
-The current main website includes placeholder billing routes and subscription tables. If payment processing is added, payment information should be handled by a dedicated payment processor such as Stripe or another provider. ChemVault should avoid storing full payment card numbers. Payment flows require separate legal, privacy, tax, and security review before launch.
+The current source includes Stripe checkout, billing portal, webhook, subscription, and usage-accounting integrations. Public checkout is disabled by default pending launch approval. If payment processing is enabled, Stripe handles payment-card entry; ChemVault stores provider customer/subscription identifiers, plan and status information, billing event metadata, and metered usage records, but should not store full payment card numbers. Payment launch requires separate legal, privacy, tax, refund, support, and security review.
 
 ### Apple TestFlight and App Store Information
 

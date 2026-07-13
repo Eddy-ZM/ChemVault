@@ -73,7 +73,7 @@ High-risk gaps:
 | Logs and audit data | admin actions, mail audit, API key usage, webhook logs, route errors, Cloudflare logs | All services |
 | Commercial/contact data | lead email, name, role, organization, interests, message | Main site and Extract contact flows |
 | Device/browser data | IP address, browser, OS, user agent, Apple diagnostics/TestFlight data where applicable | User System, Mail, Notification, Apple/TestFlight, Cloudflare |
-| Payment data | Not currently detected as live processing; billing placeholders and subscription tables exist | Main site schema/API placeholders |
+| Payment and subscription data | Stripe integration is implemented in source but public checkout is disabled by default; provider customer/subscription IDs, plan/status, billing events, and usage records are stored when enabled | Main billing API, Stripe, and main D1 |
 
 ## 4. Purpose and Necessity
 

@@ -3,8 +3,9 @@
   const $ = (selector, root = document) => root.querySelector(selector);
   const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 
-  document.addEventListener("DOMContentLoaded", () => {
+  document.addEventListener("DOMContentLoaded", async () => {
     if (!commercial()) return;
+    await hydrateServerEntitlements();
     renderPlanBadge();
     renderModuleBlocks();
     renderPricingBlocks();
@@ -13,7 +14,6 @@
     markActiveNavigation();
     wireNavigationDisclosures();
     wireNavigationHighlight();
-    wirePlanPreview();
     wireCheckoutButtons();
     wireLeadForms();
     wireTrackedActions();
@@ -22,13 +22,32 @@
     commercial().trackEvent(pageEventName(), { path: location.pathname });
   });
 
+  async function hydrateServerEntitlements() {
+    try {
+      const response = await fetch("/api/entitlements", {
+        method: "GET",
+        headers: { accept: "application/json" },
+        credentials: "include",
+        signal: AbortSignal.timeout(5_000)
+      });
+      const payload = await response.json().catch(() => null);
+      if (!response.ok || payload?.source !== "server") throw new Error("Entitlements are unavailable.");
+      commercial().setServerEntitlements(payload, false);
+    } catch {
+      commercial().setServerEntitlements({
+        plan: "free",
+        features: {},
+        meta: { environment: "unavailable", authMode: "unavailable", authenticated: false }
+      }, false);
+    }
+  }
+
   window.addEventListener("chemvault:planchange", () => {
     renderPlanBadge();
     renderModuleBlocks();
     renderPricingBlocks();
     renderDashboardBlocks();
     applyFeatureGates();
-    wirePlanPreview();
   });
 
   function pageEventName() {
@@ -105,16 +124,6 @@
     });
   }
 
-  function wirePlanPreview() {
-    $$("[data-plan-preview]").forEach((button) => {
-      button.addEventListener("click", () => {
-        const plan = commercial().setPreviewPlan(button.dataset.planPreview);
-        $$("[data-plan-preview]").forEach((item) => item.classList.toggle("is-active", item.dataset.planPreview === plan));
-      });
-      button.classList.toggle("is-active", button.dataset.planPreview === currentPlan());
-    });
-  }
-
   function wireCheckoutButtons() {
     document.addEventListener("click", async (event) => {
       const trigger = event.target.closest("[data-checkout-plan]");
@@ -123,11 +132,11 @@
       const planId = trigger.dataset.checkoutPlan;
       const interval = trigger.dataset.billingInterval || "monthly";
       const statusTarget = $(trigger.dataset.statusTarget || "[data-checkout-status]") || trigger.closest("section")?.querySelector("[data-checkout-status]");
-      setStatus(statusTarget, "Preparing checkout placeholder...");
+      setStatus(statusTarget, "Preparing secure checkout...");
       commercial().trackEvent("upgrade_clicked", { planId, interval });
       try {
         const session = await commercial().createCheckoutSession(planId, interval);
-        setStatus(statusTarget, session.message || "Checkout placeholder is ready. Configure a payment provider to enable live payments.", "success");
+        setStatus(statusTarget, session.message || "Checkout session is ready.", "success");
         if (session.url && session.mode !== "placeholder") {
           location.href = session.url;
         }
@@ -224,7 +233,7 @@
         });
         const result = await response.json().catch(() => ({}));
         if (!response.ok) throw new Error(result.message || result.error || "Feature is not available.");
-        setStatus(status, result.message || "Protected action placeholder completed.", "success");
+        setStatus(status, result.message || "Protected action completed.", "success");
       } catch (error) {
         setStatus(status, error.message || "Feature is not available for the current server-side plan.", "error");
       }
@@ -526,81 +535,40 @@
 
   function dashboardMarkup() {
     const plan = currentPlan();
-    const teamVisible = commercial().isTeamOrAbove();
     return `
       <div class="cv-dashboard-grid">
         <section class="cv-dashboard-panel cv-dashboard-panel--primary">
           <span class="section-kicker">Current plan</span>
           <h2>${esc(planLabel(plan))}</h2>
-          <p>${plan === "free" ? "Start free, then upgrade when search, export, file storage, modeling, and AI paper workflows need more power." : "Your current preview plan unlocks professional ChemVault workflows in this local MVP."}</p>
-          <div class="cv-plan-switcher" aria-label="Preview plan">
-            ${["free", "pro", "team", "enterprise"].map((item) => `<button type="button" data-plan-preview="${item}">${esc(planLabel(item))}</button>`).join("")}
-          </div>
+          <p>This plan is resolved by the server from the verified ChemVault User identity and central subscription record. The browser cannot promote itself to a paid plan.</p>
           <a class="academic-button primary" href="/pages/pricing.html">Review pricing</a>
         </section>
         <section class="cv-dashboard-panel">
-          <span class="section-kicker">Usage</span>
-          ${usageSummaryMarkup()}
+          <span class="section-kicker">Files</span>
+          <h3>Private research storage</h3>
+          <p>Open ChemVault Files to see current storage usage, uploads, shares, and activity.</p>
+          <a class="secondary-button" href="https://file.chemvault.science/">Open Files</a>
         </section>
         <section class="cv-dashboard-panel">
-          <span class="section-kicker">Recent modules</span>
-          <div class="cv-empty-list">
-            <p>No saved compounds yet.</p>
-            <p>No files uploaded yet.</p>
-            <p>No modeling projects yet.</p>
-            <p>AI Paper Search is in beta.</p>
-          </div>
+          <span class="section-kicker">Model</span>
+          <h3>Local tools and cloud quantum</h3>
+          <p>Viewer, local engines, and local export remain free. Cloud quantum checks the server-resolved subscription and daily allowance.</p>
+          <a class="secondary-button" href="https://model.chemvault.science/">Open Model</a>
         </section>
-        ${teamWorkspaceMarkup(teamVisible)}
+        <section class="cv-dashboard-panel">
+          <span class="section-kicker">Team/Lab</span>
+          <h3>Pilot only</h3>
+          <p>Shared organization and seat workflows are not self-service features. Contact ChemVault to scope a controlled Team pilot.</p>
+          <a class="secondary-button" href="/pages/pricing.html#enterprise-lead">Request a pilot</a>
+        </section>
       </div>
     `;
   }
 
-  function teamWorkspaceMarkup(enabled) {
-    const lanes = [
-      ["Seats", enabled ? "6 active" : "Preview", "Invite researchers and reviewers into a shared lab space."],
-      ["Shared files", enabled ? "Connected" : "Team/Lab", "Group papers, spectra, reports, and project assets."],
-      ["Collections", enabled ? "Ready" : "Team/Lab", "Coordinate compounds, modeling projects, and AI paper lists."]
-    ];
-    return `
-      <section class="cv-dashboard-panel cv-team-workspace-panel ${enabled ? "" : "is-muted"}" id="team-workspace">
-        <div class="cv-team-workspace-head">
-          <span class="section-kicker">Team workspace</span>
-          <span class="cv-plan-badge cv-plan-badge--team">${enabled ? "Enabled" : "Team/Lab"}</span>
-        </div>
-        <h3>${enabled ? "Shared ChemVault workspace enabled" : "Teams interface preview"}</h3>
-        <p>${enabled ? "Shared file library, saved compounds, modeling projects, and paper collections are ready for future backend connection." : "The Teams surface is back as a visible workspace preview. Upgrade preview state to Team/Lab to unlock shared controls."}</p>
-        <div class="cv-team-workspace-grid">
-          ${lanes.map(([label, value, body]) => `
-            <article>
-              <span>${esc(label)}</span>
-              <strong>${esc(value)}</strong>
-              <p>${esc(body)}</p>
-            </article>
-          `).join("")}
-        </div>
-        <div class="cv-team-workspace-actions">
-          <a class="secondary-button" href="/pages/pricing.html#compare">Review Team/Lab</a>
-          <button class="secondary-button" type="button" data-plan-preview="team">Preview Team/Lab</button>
-        </div>
-      </section>
-    `;
-  }
-
   function usageSummaryMarkup() {
-    const rows = [
-      ["compound.search.basic", "Basic compound search"],
-      ["file_library.storage.pro", "File library storage"],
-      ["modeling.viewer", "Modeling preview"],
-      ["papers.search.preview", "AI paper preview"]
-    ];
-    return `<div class="cv-usage-list">
-      ${rows.map(([featureKey, label]) => {
-        const limit = commercial().getFeatureLimit(null, featureKey);
-        const used = commercial().getCurrentUsage(null, featureKey);
-        const unit = commercial().features[featureKey]?.unit || "uses";
-        return `<div class="cv-usage-row"><span>${esc(label)}</span><strong>${limit == null ? "Custom" : `${used}/${limit} ${unit}`}</strong></div>`;
-      }).join("")}
+    return `<div class="cv-empty-list">
+      <p>Usage is reported by the service that owns it.</p>
+      <p>Open Files for storage usage and Model for cloud quantum allowance.</p>
     </div>`;
   }
 

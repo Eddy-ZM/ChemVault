@@ -52,16 +52,16 @@
         <div>
           <p class="eyebrow">research file library</p>
           <h1>Organize papers, reports, instrument files, and project assets.</h1>
-          <p>The first web MVP provides plan-aware library structure, quota UI, and safe empty states. Real uploads should connect to the existing ChemVault Files service before production use.</p>
-          <p><strong>File safety notice:</strong> Only upload files you are authorized to process. Production uploads should enforce file size, MIME type, executable/script restrictions, private-by-default access, audit logging, and malware scanning or quarantine before broad use.</p>
+          <p>ChemVault Files is the dedicated, authenticated workspace for private research files. It supports projects and folders, queued uploads, previews, search, tags, controlled sharing, and activity history.</p>
+          <p><strong>File safety notice:</strong> Only upload files you are authorized to process. Files remain subject to account permissions, storage quota, file-policy checks, and the sharing settings you choose.</p>
           <div class="hero-actions">
-            <a class="academic-button primary" href="#library">Open library view</a>
+            <a class="academic-button primary" href="https://file.chemvault.science/">Open ChemVault Files</a>
             <a class="academic-button ghost-on-light" href="pricing.html">Upgrade storage</a>
           </div>
         </div>
         <aside class="cv-hero-metrics">
           <div><span>Current plan</span><strong data-render="plan-badge"></strong></div>
-          <div><span>Storage quota</span><strong>Plan-aware quota UI</strong></div>
+          <div><span>Storage quota</span><strong>Server-enforced</strong></div>
         </aside>
       </div>
     </section>
@@ -69,20 +69,21 @@
     <section class="cv-section" id="library">
       <div class="container cv-commercial-grid">
         <div class="cv-feature-panel">
-          <span class="section-kicker">Free library</span>
-          <h2>Basic file list placeholder</h2>
-          <p>No files have been uploaded yet. This placeholder keeps the public site safe while the dedicated file service remains the source of truth for storage.</p>
+          <span class="section-kicker">File workspace</span>
+          <h2>Work in the real ChemVault Files library</h2>
+          <p>The main site does not duplicate file state. Sign in to ChemVault Files to browse your current projects, folders, uploads, shares, and review history.</p>
           <div class="cv-empty-list">
-            <p>No files uploaded yet.</p>
-            <p>No folders created yet.</p>
-            <p>Storage usage is tracked through the plan quota helper.</p>
+            <p>Private-by-default file access.</p>
+            <p>PDF, image, text, CSV, and spectroscopy previews.</p>
+            <p>Expiring share links with optional download permission.</p>
           </div>
+          <a class="academic-button primary" href="https://file.chemvault.science/">Go to Files</a>
         </div>
         <div class="cv-feature-panel">
           <span class="section-kicker">Quota</span>
           <h2>Plan-aware storage</h2>
-          <div data-render="usage-summary"></div>
-          <p>Upgrade to Pro for larger storage and advanced organization. Team/Lab unlocks a shared file workspace.</p>
+          <p>Open ChemVault Files to view the current server-enforced storage total and remaining allowance.</p>
+          <p>Free accounts receive 100 MB. Pro accounts receive 10 GB. Team pilot and Enterprise allocations are enabled only through an approved commercial agreement.</p>
           <a class="academic-button primary" href="pricing.html">Upgrade storage</a>
         </div>
       </div>
@@ -93,26 +94,26 @@
         <div class="cv-section-header">
           <div>
             <p class="eyebrow">premium file workflows</p>
-            <h2>Advanced organization and shared lab libraries.</h2>
+            <h2>Secure organization, review, and sharing.</h2>
           </div>
-          <p>These controls are gated because they need authenticated storage, subscription state, and team workspace data.</p>
+          <p>These capabilities are delivered by the authenticated Files service rather than simulated on the public site.</p>
         </div>
         <div class="cv-card-grid">
-          <article class="cv-feature-panel" data-feature-key="file_library.advanced" data-gate-title="Advanced file organization" data-gate-body="Pro unlocks tags, advanced sorting, AI-assisted organization, and export placeholders after storage is connected.">
+          <article class="cv-feature-panel">
             <h3>Advanced organization</h3>
-            <p>Tags, saved views, AI-assisted organization, and export controls.</p>
+            <p>Projects, folders, tags, search, filters, and upload queues keep research assets reviewable.</p>
           </article>
-          <article class="cv-feature-panel" data-feature-key="file_library.team_workspace" data-gate-title="Shared file workspace" data-gate-body="Team/Lab unlocks shared libraries, project folders, and basic role permissions after organization auth is connected.">
-            <h3>Team file workspace</h3>
-            <p>Shared project library, team roles, and lab-level storage quotas.</p>
+          <article class="cv-feature-panel">
+            <h3>Controlled sharing</h3>
+            <p>Create read-only links, choose expiry and download policy, and review access activity.</p>
           </article>
-          <article class="cv-feature-panel" data-feature-key="papers.collections" data-gate-title="Paper collections" data-gate-body="Pro unlocks saved paper collections and cross-links with AI Paper Search.">
-            <h3>Paper collections</h3>
-            <p>Connect uploaded papers to AI search, tags, and reading queues.</p>
+          <article class="cv-feature-panel">
+            <h3>Browser preview</h3>
+            <p>Review supported research documents and data without leaving the file workspace.</p>
           </article>
-          <article class="cv-feature-panel" data-feature-key="enterprise.custom_onboarding" data-gate-title="Institution file onboarding" data-gate-body="Enterprise unlocks custom data migration, procurement support, and institution policy review.">
+          <article class="cv-feature-panel">
             <h3>Institution onboarding</h3>
-            <p>Custom storage policy, migration planning, and procurement workflow.</p>
+            <p>Contact ChemVault to scope storage policy, migration, quota, and procurement requirements before purchase.</p>
           </article>
         </div>
       </div>

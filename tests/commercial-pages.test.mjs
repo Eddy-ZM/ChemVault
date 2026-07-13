@@ -37,21 +37,22 @@ test("commercial pages expose honest beta access and workflow surfaces", () => {
     [/AI Paper Search/i, "names AI Paper Search"],
     [/beta/i, "shows beta state"],
     [/early access/i, "contains early access copy"],
-    [/data-feature-key="papers\.ai_summary"/, "gates Pro paper summaries"]
+    [/not currently sold/i, "states that unfinished AI workflows are not paid entitlements"]
   ]);
+  assert.doesNotMatch(read("pages/ai-paper-search.html"), /data-feature-key="papers\.|Pro workflow|Team\/Lab unlocks/i, "AI discovery page does not sell unfinished workflows");
 
   assertIncludes("pages/file-library.html", [
     [/Research File Library/i, "names the file library"],
     [/quota/i, "shows quota language"],
-    [/premium/i, "contains premium workflow language"],
-    [/data-feature-key="file_library\.advanced"/, "gates advanced file organization"]
+    [/https:\/\/file\.chemvault\.science\//, "links to the real Files service"],
+    [/private-by-default/i, "describes the real Files security boundary"]
   ]);
 
   assertIncludes("pages/docs.html", [
     [/Professional Documentation/i, "names documentation module"],
     [/public documentation/i, "contains public docs language"],
-    [/premium/i, "contains premium docs language"],
-    [/data-feature-key="docs\.premium"/, "gates premium guides"]
+    [/https:\/\/docs\.chemvault\.science\//, "links to the canonical Docs site"],
+    [/account and safety/i, "covers account and safety guidance"]
   ]);
 
   assertIncludes("pages/molecular-modeling.html", [
@@ -66,19 +67,21 @@ test("commercial pages expose honest beta access and workflow surfaces", () => {
   assertIncludes("pages/mail.html", [
     [/Mail/i, "names mail module"],
     [/workflow/i, "contains workflow language"],
-    [/templates/i, "contains template language"],
-    [/data-feature-key="mail\.templates"/, "gates mail templates"]
+    [/https:\/\/mail\.chemvault\.science\//, "links to the real Mail service"],
+    [/app passwords/i, "describes supported client credentials"]
   ]);
+  for (const page of ["pages/file-library.html", "pages/docs.html", "pages/mail.html"]) {
+    assert.doesNotMatch(read(page), /Basic file list placeholder|Prototype mode|after .* is connected/i, `${page} does not market a simulated product surface`);
+  }
 });
 
-test("compound search keeps free search while adding Pro gates", () => {
+test("compound search keeps free search without selling unshipped export controls", () => {
   const html = read("pages/search.html");
 
   assert.match(html, /id="academicSearchForm"/, "search page keeps the basic search form");
   assert.match(html, /id="academicSearch"/, "search page keeps the basic search input");
-  assert.match(html, /data-feature-key="compound\.search\.export"/, "search page adds a Pro export gate");
-  assert.match(html, /Export results/, "search page exposes export action inside the gated workflow");
-  assert.match(html, /Save search/, "search page exposes saved-search action inside the gated workflow");
+  assert.match(html, /Search boundary/, "search page explains the supported boundary");
+  assert.doesNotMatch(html, /data-feature-key="compound\.search\.export"|Export results|Save search/, "search page does not sell unshipped export or save actions");
 });
 
 test("commercial forms and client logic provide validation and clear states", () => {
@@ -110,21 +113,25 @@ test("home lead forms use compact CTA layout and checkbox-safe controls", () => 
   assert.match(commercialStyles, /\.cv-check-row input\[type="checkbox"\][\s\S]*width:\s*18px/, "checkboxes keep compact consent-row dimensions");
 });
 
-test("home modules are categorized and Team workspace is visible", () => {
+test("home modules use real service routes and keep Team workspace pilot-only", () => {
   const home = read("index.html");
   const config = read("scripts/commercial-config.js");
   const ui = read("scripts/commercial-ui.js");
   const commercialStyles = read("assets/commercial.css");
 
   assert.match(home, /data-render="app-modules" data-module-layout="categorized"/, "home asks the shared UI to render categorized modules");
-  assert.match(home, /pages\/dashboard\.html#team-workspace/, "home Teams CTA links to the workspace preview instead of the people page");
-  assert.match(config, /id:\s*"team_workspace"/, "commercial config exposes the Team/Lab Workspace module");
-  assert.match(config, /route:\s*"\/pages\/dashboard\.html#team-workspace"/, "Team/Lab Workspace module opens the dashboard workspace preview");
-  assert.match(config, /category:\s*"team"/, "Team module is assigned to the team category");
+  assert.match(home, /Team workspaces are not self-service yet/i, "home publishes the Team pilot boundary");
+  assert.doesNotMatch(home, /pages\/dashboard\.html#team-workspace|Preview Teams/, "home does not expose a simulated Team workspace");
+  assert.doesNotMatch(config, /id:\s*"team_workspace"/, "commercial config does not expose an unimplemented Team module");
+  assert.match(config, /route:\s*"https:\/\/file\.chemvault\.science\/"/, "commercial config opens the real Files service");
+  assert.match(config, /route:\s*"https:\/\/mail\.chemvault\.science\/"/, "commercial config opens the real Mail service");
+  assert.match(config, /category:\s*"operations"/, "service modules remain grouped under operations");
   assert.match(ui, /function moduleCategoryMarkup/, "commercial UI renders module category disclosures");
   assert.match(ui, /data-module-categories/, "categorized module markup exposes an interactive accordion root");
-  assert.match(ui, /function teamWorkspaceMarkup/, "dashboard restores a visible Teams workspace panel");
-  assert.match(ui, /id="team-workspace"/, "dashboard exposes a direct Team/Lab workspace anchor");
+  assert.doesNotMatch(ui, /function teamWorkspaceMarkup/, "dashboard removes the simulated Teams implementation");
+  assert.doesNotMatch(ui, /id="team-workspace"|Shared ChemVault workspace enabled/, "dashboard does not fabricate Team workspace state");
+  assert.match(ui, /fetch\("\/api\/entitlements"/, "commercial UI hydrates plan state from the server");
+  assert.match(ui, /browser cannot promote itself to a paid plan/i, "dashboard explains the authoritative plan boundary");
   assert.match(commercialStyles, /\.cv-module-category::details-content[\s\S]*block-size:\s*0/, "module category disclosures animate their expanded height");
   assert.match(commercialStyles, /\.cv-app-switcher\[open\] \.cv-app-switcher__menu[\s\S]*opacity:\s*1/, "app switcher menu fades into view when expanded");
 });
@@ -166,7 +173,9 @@ test("commercial schema, env docs and implementation remain aligned", () => {
   ]) {
     assert.match(envExample, new RegExp(`${variable}=`), `.env.example contains ${variable}`);
     assert.match(envDocs, new RegExp(variable), `environment docs contain ${variable}`);
-    assert.match(commercialDocs, new RegExp(variable), `commercial docs contain ${variable}`);
+  }
+  for (const variable of ["ENVIRONMENT", "COMMERCIAL_MODE", "ENABLE_MOCK_BILLING", "ENABLE_MOCK_AUTH", "PAYMENT_PROVIDER", "ENABLE_PUBLIC_CHECKOUT", "ENABLE_TEAM_CHECKOUT", "BILLING_SERVICE_SECRET"]) {
+    assert.match(commercialDocs, new RegExp(variable), `commercial runbook contains critical control ${variable}`);
   }
 
   assert.match(deploymentChecklist, /ENVIRONMENT=production/, "deployment checklist covers production environment guard");
@@ -176,7 +185,7 @@ test("commercial schema, env docs and implementation remain aligned", () => {
   assert.match(deploymentChecklist, /npx wrangler d1 execute chemvault-dev --local --file=schema\.sql/, "deployment checklist documents local D1 schema application");
   assert.match(deploymentChecklist, /npx wrangler d1 execute chemvault-staging --remote --file=schema\.sql/, "deployment checklist documents staging D1 schema application");
   assert.match(deploymentChecklist, /npx wrangler d1 execute chemvault-production --remote --file=schema\.sql/, "deployment checklist documents production D1 schema application");
-  assert.match(deploymentChecklist, /POST \/api\/export\/compound.*HTTP 402/, "deployment checklist verifies export gating");
+  assert.match(deploymentChecklist, /POST \/api\/export\/compound.*HTTP 501/, "deployment checklist documents the unavailable export boundary");
   assert.match(deploymentChecklist, /migrations\/0003_leads_email_notifications\.sql/, "deployment checklist includes the leads email migration");
   assert.match(deploymentChecklist, /GET \/api\/admin\/leads/, "deployment checklist covers protected lead admin smoke checks");
   assert.match(stagingDocs, /pages_build_output_dir|Static build output:\s*`dist`/, "staging docs identify the Pages build output");
@@ -206,8 +215,10 @@ test("commercial schema, env docs and implementation remain aligned", () => {
   }
   assert.match(stagingDocs, /payment_not_configured/, "staging docs document production payment guard");
   assert.match(stagingDocs, /placeholder_checkout/, "staging docs document staging billing placeholder");
-  assert.match(commercialDocs, /placeholder/i, "commercial docs explain payment placeholder state");
-  assert.match(commercialDocs, /Replace this placeholder|real user\/session\/subscription lookup|real auth/i, "commercial docs explain auth/subscription TODO");
+  assert.match(commercialDocs, /Stripe integration in source includes/i, "commercial docs describe the implemented billing path");
+  assert.match(commercialDocs, /signed webhook processing/i, "commercial docs record webhook verification");
+  assert.match(commercialDocs, /Public checkout remains disabled/i, "commercial docs preserve the paid-launch boundary");
+  assert.match(commercialDocs, /compound export is not sold/i, "commercial docs do not sell the unavailable export route");
   assert.match(readme, /Public checkout remains disabled/i, "README states the current commercial availability boundary");
   assert.match(readme, /local engines.*do not consume ChemVault cloud quota/is, "README separates local tools from paid cloud capacity");
   assert.doesNotMatch(readme, /npm run|deployment-checklist\.md|Commercial MVP Foundation/, "README remains product-facing rather than implementation-facing");

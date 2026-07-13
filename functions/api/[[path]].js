@@ -170,34 +170,14 @@ const serverPlanOrder = {
 
 const serverFeatureEntitlements = {
   "compound.search.basic": "anonymous",
-  "compound.search.advanced": "pro",
-  "compound.search.saved": "pro",
-  "compound.search.export": "pro",
-  "compound.search.batch": "pro",
   "file_library.basic": "free",
-  "file_library.advanced": "pro",
   "file_library.storage.pro": "pro",
-  "file_library.team_workspace": "team",
   "docs.public": "anonymous",
-  "docs.premium": "pro",
   "modeling.viewer": "free",
   "modeling.advanced": "free",
   "modeling.export": "free",
   "modeling.cloud_quantum": "pro",
-  "modeling.high_quota": "team",
-  "mail.basic": "free",
-  "mail.templates": "pro",
-  "mail.automation": "team",
-  "papers.search.preview": "free",
-  "papers.search.full": "pro",
-  "papers.ai_summary": "pro",
-  "papers.collections": "pro",
-  "papers.export": "pro",
-  "team.members": "team",
-  "team.shared_workspace": "team",
-  "enterprise.api": "enterprise",
-  "enterprise.sso": "enterprise",
-  "enterprise.custom_onboarding": "enterprise"
+  "mail.basic": "free"
 };
 
 const billingUsagePolicies = {
@@ -573,16 +553,12 @@ export async function onRequest(context) {
       if (request.method !== "POST") return json({ error: "Method not allowed" }, 405);
       const limited = checkRateLimit(request, "export", rateLimitPolicies.export);
       if (!limited.ok) return rateLimitResponse(limited);
-      const plan = await resolveServerPlan(request, env, hasDb ? env.DB : null);
-      const access = requireServerFeatureAccess(plan, "compound.search.export");
-      if (!access.ok) return json(access, 402);
       return json({
-        ok: true,
-        mode: "placeholder",
-        message: "Compound export will be generated here after subscription and export storage are connected.",
-        featureKey: "compound.search.export",
+        ok: false,
+        code: "feature_not_available",
+        error: "Compound export is not currently included in a purchasable ChemVault plan.",
         meta: { version: API_VERSION }
-      });
+      }, 501);
     }
 
     if (segments[0] === "records") {

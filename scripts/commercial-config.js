@@ -1,4 +1,5 @@
 (function () {
+  let authoritativeEntitlements = null;
   const planOrder = {
     anonymous: 0,
     free: 1,
@@ -23,7 +24,7 @@
     {
       id: "compound_search",
       name: "Compound Search",
-      description: "Search, save, and export compound information.",
+      description: "Search source-backed compound and academic information.",
       route: "/pages/search.html",
       status: "active",
       accessLevel: "free",
@@ -34,9 +35,9 @@
     {
       id: "file_library",
       name: "Research File Library",
-      description: "Organize research files, papers, reports, and project assets.",
-      route: "/pages/file-library.html",
-      status: "beta",
+      description: "Organize, preview, share, and review private research files.",
+      route: "https://file.chemvault.science/",
+      status: "active",
       accessLevel: "free",
       icon: "folder",
       category: "operations",
@@ -67,9 +68,9 @@
     {
       id: "mail",
       name: "Mail",
-      description: "Manage professional research communication and notifications.",
-      route: "/pages/mail.html",
-      status: "beta",
+      description: "Use the authenticated ChemVault inbox and mail clients.",
+      route: "https://mail.chemvault.science/",
+      status: "active",
       accessLevel: "free",
       icon: "mail",
       category: "operations",
@@ -78,24 +79,13 @@
     {
       id: "ai_paper_search",
       name: "AI Paper Search",
-      description: "Search, summarize, tag, and organize academic papers with AI.",
+      description: "Join discovery for a source-backed AI literature workflow.",
       route: "/pages/ai-paper-search.html",
       status: "beta",
       accessLevel: "free",
       icon: "spark",
       category: "research",
       ctaLabel: "Join beta"
-    },
-    {
-      id: "team_workspace",
-      name: "Team/Lab Workspace",
-      description: "Preview shared lab workspace controls in the ChemVault dashboard.",
-      route: "/pages/dashboard.html#team-workspace",
-      status: "active",
-      accessLevel: "free",
-      icon: "team",
-      category: "team",
-      ctaLabel: "Preview workspace"
     }
   ];
 
@@ -116,7 +106,7 @@
         "Limited file library usage",
         "Public documentation",
         "Basic molecule viewer preview",
-        "AI paper search preview",
+        "AI Paper Search early-access waitlist",
         "Newsletter subscription"
       ]
     },
@@ -130,14 +120,10 @@
       checkout: true,
       highlight: true,
       features: [
-        "Advanced compound search",
-        "Saved searches and search history",
-        "CSV/PDF export placeholders",
-        "Higher file storage quota",
-        "Premium guides and workflows",
+        "10 GB private file storage",
         "20 cloud quantum jobs per day",
-        "AI paper summaries, tags, and collections",
-        "Weekly research and paper briefs"
+        "Expanded ChemVault Mail recipient allowance",
+        "Subscription management through the billing portal"
       ]
     },
     {
@@ -146,18 +132,15 @@
       subtitle: "For research groups, labs, university teams, startups, and small companies.",
       priceMonthly: "From £49/month",
       priceYearly: "From £499/year",
-      ctaLabel: "Start Team Plan",
-      checkout: true,
+      ctaLabel: "Request Team Pilot",
+      contact: true,
       highlight: false,
       features: [
         "Everything in Pro",
-        "Multiple seats",
-        "Shared team workspace",
-        "Shared file library",
-        "Shared compounds and projects",
+        "100 GB storage allocation for approved pilots",
         "200 cloud quantum jobs per day during Team pilots",
-        "Team paper collections",
-        "Basic admin controls and invoice support"
+        "Higher ChemVault Mail recipient allowance",
+        "Pilot onboarding and invoice support"
       ]
     },
     {
@@ -165,18 +148,16 @@
       name: "Enterprise/Institution",
       subtitle: "For companies, universities, research institutions, large labs, and organizations.",
       priceMonthly: "Custom",
-      priceYearly: "From £999/year",
+      priceYearly: "Custom",
       ctaLabel: "Contact Sales",
       contact: true,
       highlight: false,
       features: [
         "Everything in Team/Lab",
         "Custom onboarding",
-        "Custom data integrations",
-        "Advanced security options",
-        "SSO/SAML placeholder",
-        "API access placeholder",
         "Custom quotas and reports",
+        "Security and integration requirements review",
+        "Institution storage and migration planning",
         "Procurement and dedicated support"
       ]
     }
@@ -184,51 +165,44 @@
 
   const features = {
     "compound.search.basic": { minPlan: "anonymous", label: "Basic compound search", limits: { free: 25, pro: 500, team: 2000, enterprise: null } },
-    "compound.search.advanced": { minPlan: "pro", label: "Advanced compound filters" },
-    "compound.search.saved": { minPlan: "pro", label: "Saved compound searches", limits: { free: 0, pro: 100, team: 1000, enterprise: null } },
-    "compound.search.export": { minPlan: "pro", label: "Compound export" },
-    "compound.search.batch": { minPlan: "pro", label: "Batch compound search" },
+    "compound.search.advanced": { minPlan: "anonymous", label: "Advanced compound filters" },
+    "compound.search.saved": { minPlan: "pro", label: "Saved compound searches", availability: "planned", limits: { free: 0, pro: 100, team: 1000, enterprise: null } },
+    "compound.search.export": { minPlan: "pro", label: "Compound export", availability: "planned" },
+    "compound.search.batch": { minPlan: "pro", label: "Batch compound search", availability: "planned" },
     "file_library.basic": { minPlan: "free", label: "Basic file library", limits: { free: 100, pro: 10000, team: 100000, enterprise: null }, unit: "MB" },
-    "file_library.advanced": { minPlan: "pro", label: "Advanced file organization" },
+    "file_library.advanced": { minPlan: "free", label: "Advanced file organization" },
     "file_library.storage.pro": { minPlan: "pro", label: "Pro file storage", limits: { free: 100, pro: 10000, team: 100000, enterprise: null }, unit: "MB" },
-    "file_library.team_workspace": { minPlan: "team", label: "Shared file workspace" },
+    "file_library.team_workspace": { minPlan: "team", label: "Shared file workspace", availability: "planned" },
     "docs.public": { minPlan: "anonymous", label: "Public documentation" },
-    "docs.premium": { minPlan: "pro", label: "Premium professional guides" },
+    "docs.premium": { minPlan: "pro", label: "Premium professional guides", availability: "planned" },
     "modeling.viewer": { minPlan: "free", label: "Molecule viewer and public lookups" },
     "modeling.advanced": { minPlan: "free", label: "Local molecular modeling" },
     "modeling.export": { minPlan: "free", label: "Local modeling export" },
     "modeling.cloud_quantum": { minPlan: "pro", label: "Cloud quantum calculation", limits: { free: 0, pro: 20, team: 200, enterprise: 1000 }, unit: "jobs/day" },
-    "modeling.high_quota": { minPlan: "team", label: "High modeling quota" },
+    "modeling.high_quota": { minPlan: "team", label: "High modeling quota", availability: "planned" },
     "mail.basic": { minPlan: "free", label: "Basic mail and notifications" },
-    "mail.templates": { minPlan: "pro", label: "Mail templates" },
-    "mail.automation": { minPlan: "team", label: "Mail workflow automation" },
-    "papers.search.preview": { minPlan: "free", label: "AI paper search preview", limits: { free: 5, pro: 200, team: 1000, enterprise: null } },
-    "papers.search.full": { minPlan: "pro", label: "Full AI paper search" },
-    "papers.ai_summary": { minPlan: "pro", label: "AI paper summaries" },
-    "papers.collections": { minPlan: "pro", label: "Paper collections" },
-    "papers.export": { minPlan: "pro", label: "Paper export" },
-    "team.members": { minPlan: "team", label: "Team members" },
-    "team.shared_workspace": { minPlan: "team", label: "Shared team workspace" },
-    "enterprise.api": { minPlan: "enterprise", label: "API access placeholder" },
-    "enterprise.sso": { minPlan: "enterprise", label: "SSO/SAML placeholder" },
-    "enterprise.custom_onboarding": { minPlan: "enterprise", label: "Custom onboarding" }
+    "mail.templates": { minPlan: "pro", label: "Mail templates", availability: "planned" },
+    "mail.automation": { minPlan: "team", label: "Mail workflow automation", availability: "planned" },
+    "papers.search.preview": { minPlan: "free", label: "AI paper search preview", availability: "planned", limits: { free: 5, pro: 200, team: 1000, enterprise: null } },
+    "papers.search.full": { minPlan: "pro", label: "Full AI paper search", availability: "planned" },
+    "papers.ai_summary": { minPlan: "pro", label: "AI paper summaries", availability: "planned" },
+    "papers.collections": { minPlan: "pro", label: "Paper collections", availability: "planned" },
+    "papers.export": { minPlan: "pro", label: "Paper export", availability: "planned" },
+    "team.members": { minPlan: "team", label: "Team members", availability: "planned" },
+    "team.shared_workspace": { minPlan: "team", label: "Shared team workspace", availability: "planned" },
+    "enterprise.api": { minPlan: "enterprise", label: "Managed API access", availability: "planned" },
+    "enterprise.sso": { minPlan: "enterprise", label: "SSO/SAML", availability: "planned" },
+    "enterprise.custom_onboarding": { minPlan: "enterprise", label: "Custom onboarding", availability: "contact" }
   };
 
   const comparisonRows = [
-    ["Compound search", "Basic", "Advanced", "Advanced + shared", "Custom"],
-    ["Saved searches", "Limited history", "Included", "Shared history", "Custom retention"],
-    ["Export", "No", "CSV/PDF placeholder", "Team exports", "Custom exports/API"],
-    ["File storage", "100 MB", "10 GB", "100 GB shared", "Custom"],
-    ["Premium documentation", "Public docs", "Professional guides", "Team workflows", "Institution guides"],
+    ["Compound search and filters", "Included", "Included", "Included", "Requirements review"],
+    ["File storage", "100 MB", "10 GB", "100 GB pilot allocation", "Custom"],
     ["Molecular modeling", "Viewer, local engines and export", "Free tools + 20 cloud jobs/day", "Free tools + 200 cloud jobs/day", "Managed quota"],
-    ["AI paper search", "Preview", "Full search", "Shared collections", "Institution access"],
-    ["AI paper summaries", "No", "Included", "Included", "Custom workflows"],
-    ["Team workspace", "No", "No", "Included", "Custom"],
-    ["Shared file library", "No", "No", "Included", "Custom"],
-    ["Team seats", "1", "1", "Multiple seats", "Custom"],
-    ["Enterprise onboarding", "No", "No", "No", "Included"],
-    ["API access placeholder", "No", "No", "No", "Planned"],
-    ["Invoice support", "No", "Annual only", "Included", "Procurement support"]
+    ["ChemVault Mail limits", "Standard", "Expanded", "Pilot allocation", "Custom"],
+    ["AI paper search", "Early-access preview", "Early-access preview", "Pilot scope", "Requirements review"],
+    ["Onboarding", "Self-serve", "Self-serve", "Pilot onboarding", "Custom onboarding"],
+    ["Invoice support", "No", "Annual only", "Pilot agreements", "Procurement support"]
   ];
 
   function normalisePlan(value) {
@@ -237,12 +211,8 @@
 
   function getUserPlan(user) {
     if (user && typeof user === "object" && user.plan) return normalisePlan(user.plan);
-    // TODO: Replace local preview state with the authenticated ChemVault User plan.
-    try {
-      return normalisePlan(localStorage.getItem("chemvault-plan-preview") || "free");
-    } catch {
-      return "free";
-    }
+    if (authoritativeEntitlements) return authoritativeEntitlements.plan;
+    return "free";
   }
 
   function hasPlan(user, plan) {
@@ -251,14 +221,21 @@
 
   function hasFeatureAccess(user, featureKey) {
     const feature = features[featureKey];
-    if (!feature) return false;
+    if (!feature || feature.availability === "planned") return false;
+    if ((!user || typeof user !== "object") && authoritativeEntitlements) {
+      return authoritativeEntitlements.features[featureKey]?.enabled === true;
+    }
     return hasPlan(user, feature.minPlan);
   }
 
   function requireFeatureAccess(user, featureKey) {
     if (hasFeatureAccess(user, featureKey)) return true;
     const feature = features[featureKey];
-    const error = new Error(feature ? `${feature.label} requires ${feature.minPlan} plan or above.` : "Unknown feature.");
+    const error = new Error(feature?.availability === "planned"
+      ? `${feature.label} is planned and is not included in a purchasable plan.`
+      : feature
+        ? `${feature.label} requires ${feature.minPlan} plan or above.`
+        : "Unknown feature.");
     error.code = "FEATURE_ACCESS_DENIED";
     error.featureKey = featureKey;
     error.requiredPlan = feature?.minPlan || "pro";
@@ -326,15 +303,23 @@
     }
   }
 
-  function setPreviewPlan(plan) {
-    const value = normalisePlan(plan);
-    try {
-      localStorage.setItem("chemvault-plan-preview", value);
-    } catch {
-      return value;
-    }
-    window.dispatchEvent(new CustomEvent("chemvault:planchange", { detail: { plan: value } }));
-    return value;
+  function setServerEntitlements(payload, notify = true) {
+    const plan = normalisePlan(payload?.plan);
+    const featureEntries = payload?.features && typeof payload.features === "object" ? payload.features : {};
+    authoritativeEntitlements = {
+      plan,
+      features: Object.fromEntries(Object.entries(featureEntries).map(([key, value]) => [key, {
+        enabled: value?.enabled === true,
+        requiredPlan: normalisePlan(value?.requiredPlan)
+      }])),
+      meta: payload?.meta && typeof payload.meta === "object" ? { ...payload.meta } : {}
+    };
+    if (notify) window.dispatchEvent(new CustomEvent("chemvault:planchange", { detail: { plan, source: "server" } }));
+    return authoritativeEntitlements;
+  }
+
+  function getServerEntitlements() {
+    return authoritativeEntitlements;
   }
 
   function trackEvent(name, properties = {}) {
@@ -387,7 +372,8 @@
     getCurrentUsage,
     hasUsageRemaining,
     recordUsage,
-    setPreviewPlan,
+    setServerEntitlements,
+    getServerEntitlements,
     trackEvent,
     createCheckoutSession,
     createBillingPortalSession

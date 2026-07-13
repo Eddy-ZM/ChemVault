@@ -9,7 +9,7 @@ Last reviewed: July 13, 2026
 | `ENVIRONMENT` | Main site runtime environment | No | Yes | No | `staging` | Use `production` only with production controls enabled. |
 | `COMMERCIAL_MODE` | Main commercial safety mode | No | Yes | No | `staging` | `production` disables mock billing/auth paths. |
 | `PUBLIC_APP_URL` | Public app URL for redirects | No | Yes for billing | No | `https://chemvault.science` | Configure in Cloudflare Pages/Workers. |
-| `ENABLE_MOCK_BILLING` | Allows placeholder billing routes | Yes | No | No | `false` | Must be false in production. |
+| `ENABLE_MOCK_BILLING` | Allows clearly labeled non-payment billing responses for local/staging QA | Yes | No | No | `false` | Must be false in production. |
 | `ENABLE_MOCK_AUTH` | Allows placeholder auth/admin routes | Yes | No | No | `false` | Must be false in production. |
 | `DEFAULT_USER_PLAN` | Local/staging plan placeholder | No | No | No | `free` | Do not use for production entitlement logic. |
 | `CHEMVAULT_ADMIN_EMAILS` | Allowed main-site administrator emails | No | Yes for `/admin/*` | Moderate | `ziwen.mu@chemvault.science,admin@chemvault.science` | Used after Cloudflare Access or ChemVault User authentication. Email is not enough by itself; the request must also be authenticated. |

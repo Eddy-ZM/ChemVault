@@ -455,7 +455,8 @@ test("subscription webhooks are idempotent and become the source of entitlements
     assert.equal(entitlements.response.status, 200);
     assert.equal(entitlements.payload.plan, "pro");
     assert.equal(entitlements.payload.meta.subscription.status, "active");
-    assert.equal(entitlements.payload.features["compound.search.export"].enabled, true);
+    assert.equal(entitlements.payload.features["modeling.cloud_quantum"].enabled, true);
+    assert.equal("compound.search.export" in entitlements.payload.features, false);
 
     const internal = await callApi("internal/billing/entitlements?userId=user_verified", {
       env,
@@ -463,7 +464,8 @@ test("subscription webhooks are idempotent and become the source of entitlements
     });
     assert.equal(internal.response.status, 200);
     assert.equal(internal.payload.plan, "pro");
-    assert.equal(internal.payload.features["compound.search.export"], true);
+    assert.equal(internal.payload.features["modeling.cloud_quantum"], true);
+    assert.equal("compound.search.export" in internal.payload.features, false);
 
     const internalByEmail = await callApi("internal/billing/entitlements?email=Verified%40Example.com", {
       env,

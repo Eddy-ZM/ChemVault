@@ -46,12 +46,13 @@ test("commercial config exposes the expected plans, modules and feature keys", (
     "public pricing plans are exposed in display order"
   );
 
-  for (const moduleId of ["main", "compound_search", "file_library", "documentation", "molecular_modeling", "mail", "ai_paper_search", "team_workspace"]) {
+  for (const moduleId of ["main", "compound_search", "file_library", "documentation", "molecular_modeling", "mail", "ai_paper_search"]) {
     assert(config.modules.some((module) => module.id === moduleId), `module config includes ${moduleId}`);
   }
 
-  assert.equal(config.modules.find((module) => module.id === "team_workspace")?.category, "team", "Team/Lab Workspace is grouped under team");
-  assert.equal(config.modules.find((module) => module.id === "team_workspace")?.route, "/pages/dashboard.html#team-workspace", "Team/Lab Workspace routes to the dashboard workspace preview");
+  assert.equal(config.modules.some((module) => module.id === "team_workspace"), false, "unimplemented Team workspace is not presented as a product module");
+  assert.equal(config.modules.find((module) => module.id === "file_library")?.route, "https://file.chemvault.science/", "File Library opens the real Files service");
+  assert.equal(config.modules.find((module) => module.id === "mail")?.route, "https://mail.chemvault.science/", "Mail opens the real Mail service");
   assert.equal(config.modules.find((module) => module.id === "documentation")?.route, "https://docs.chemvault.science/", "Documentation module links to the unified Docs site");
 
   for (const featureKey of [
@@ -70,15 +71,33 @@ test("commercial config exposes the expected plans, modules and feature keys", (
   }
 });
 
+test("server entitlements override browser preview state", () => {
+  const config = loadCommercialConfig("enterprise");
+  assert.equal(config.getUserPlan(), "free", "browser storage cannot select a paid plan before server hydration");
+  config.setServerEntitlements({
+    plan: "pro",
+    features: {
+      "modeling.cloud_quantum": { enabled: true, requiredPlan: "pro" },
+      "compound.search.advanced": { enabled: false, requiredPlan: "pro" }
+    },
+    meta: { environment: "production", authMode: "chemvault-user", authenticated: true }
+  }, false);
+
+  assert.equal(config.getUserPlan(), "pro");
+  assert.equal(config.hasFeatureAccess(null, "modeling.cloud_quantum"), true);
+  assert.equal(config.hasFeatureAccess(null, "compound.search.advanced"), false);
+  assert.equal("setPreviewPlan" in config, false, "client plan preview mutation is not part of the production API");
+});
+
 test("commercial entitlement helpers enforce plan order", () => {
   const config = loadCommercialConfig("free");
 
   assert.equal(config.hasFeatureAccess({ plan: "free" }, "compound.search.basic"), true, "Free can use basic compound search");
   assert.equal(config.hasFeatureAccess({ plan: "free" }, "compound.search.export"), false, "Free cannot export compound search results");
-  assert.equal(config.hasFeatureAccess({ plan: "pro" }, "compound.search.export"), true, "Pro can use Pro export");
-  assert.equal(config.hasFeatureAccess({ plan: "team" }, "team.shared_workspace"), true, "Team can use shared workspaces");
-  assert.equal(config.hasFeatureAccess({ plan: "enterprise" }, "enterprise.api"), true, "Enterprise can use enterprise API placeholder");
-  assert.equal(config.hasFeatureAccess({ plan: "admin" }, "enterprise.api"), true, "Admin can use enterprise-level placeholders");
+  assert.equal(config.hasFeatureAccess({ plan: "pro" }, "compound.search.export"), false, "Planned export is not sold to Pro");
+  assert.equal(config.hasFeatureAccess({ plan: "team" }, "team.shared_workspace"), false, "Planned shared workspaces are not sold to Team");
+  assert.equal(config.hasFeatureAccess({ plan: "enterprise" }, "enterprise.api"), false, "Planned API access is not sold to Enterprise");
+  assert.equal(config.hasFeatureAccess({ plan: "admin" }, "enterprise.api"), false, "Admin does not turn planned product claims into shipped features");
 
   assert.equal(config.isProOrAbove({ plan: "pro" }), true);
   assert.equal(config.isProOrAbove({ plan: "free" }), false);
@@ -87,8 +106,8 @@ test("commercial entitlement helpers enforce plan order", () => {
   assert.equal(config.isEnterpriseOrAdmin({ plan: "admin" }), true);
   assert.throws(
     () => config.requireFeatureAccess({ plan: "free" }, "compound.search.export"),
-    /requires pro plan or above/,
-    "requireFeatureAccess throws for insufficient plans"
+    /planned and is not included in a purchasable plan/,
+    "requireFeatureAccess distinguishes planned work from paid entitlements"
   );
 });
 
