@@ -1053,6 +1053,11 @@ async function createFeedbackCompatibilitySubmission(env, body, request, hasDb) 
 }
 
 async function createFormSubmission(env, body, request, hasDb, options = {}) {
+  const rawIdempotencyKey = clean(request.headers.get("idempotency-key"));
+  const idempotencyKey = normalizeIdempotencyKey(rawIdempotencyKey);
+  if (rawIdempotencyKey && !idempotencyKey) {
+    return { ok: false, submitted: false, error: "Invalid Idempotency-Key header.", httpStatus: 400 };
+  }
   const normalized = await normalizeFormSubmission(body, request, env, options);
   if (!normalized.ok) {
     return { ok: false, submitted: false, error: normalized.error, httpStatus: 400 };
@@ -1072,11 +1077,20 @@ async function createFormSubmission(env, body, request, hasDb, options = {}) {
   }
 
   await ensureFormsSchema(env.DB);
-  await env.DB.prepare(`
-    INSERT INTO forms_submissions (
+  if (idempotencyKey) {
+    const existing = await env.DB.prepare(`
+      SELECT id, created_at, type, status, priority, subject, public_tracking_id
+      FROM forms_submissions
+      WHERE idempotency_key = ?
+      LIMIT 1
+    `).bind(idempotencyKey).first();
+    if (existing) return idempotentFormSubmissionResult(existing);
+  }
+  const insertResult = await env.DB.prepare(`
+    INSERT OR IGNORE INTO forms_submissions (
       id, created_at, updated_at, type, status, priority, name, email, subject, message,
-      source_url, user_agent, ip_hash, assigned_to, internal_notes, public_tracking_id, metadata_json
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      source_url, user_agent, ip_hash, assigned_to, internal_notes, public_tracking_id, idempotency_key, metadata_json
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `).bind(
     submission.id,
     submission.createdAt,
@@ -1094,8 +1108,18 @@ async function createFormSubmission(env, body, request, hasDb, options = {}) {
     submission.assignedTo,
     submission.internalNotes,
     submission.publicTrackingId,
+    idempotencyKey || null,
     stringifyMetadata(submission.metadata)
   ).run();
+  if (Number(insertResult?.meta?.changes || 0) === 0 && idempotencyKey) {
+    const existing = await env.DB.prepare(`
+      SELECT id, created_at, type, status, priority, subject, public_tracking_id
+      FROM forms_submissions
+      WHERE idempotency_key = ?
+      LIMIT 1
+    `).bind(idempotencyKey).first();
+    if (existing) return idempotentFormSubmissionResult(existing);
+  }
 
   const notification = await sendFormSubmissionNotification(env, submission, request);
   const triageEvent = await sendFormTriageEvent(env, submission, request);
@@ -1136,6 +1160,32 @@ async function createFormSubmission(env, body, request, hasDb, options = {}) {
     emailNotificationSent: notification.ok,
     emailNotificationSkipped: Boolean(notification.skipped),
     submission: publicSubmissionShape(submission),
+    meta: { version: API_VERSION }
+  };
+}
+
+function normalizeIdempotencyKey(value) {
+  const key = limitText(value, 128);
+  return /^[A-Za-z0-9:_-]{16,128}$/.test(key) ? key : "";
+}
+
+function idempotentFormSubmissionResult(row) {
+  return {
+    ok: true,
+    submitted: true,
+    stored: true,
+    idempotent: true,
+    mode: "d1",
+    trackingId: row.public_tracking_id,
+    message: "This submission was already recorded.",
+    submission: {
+      trackingId: row.public_tracking_id,
+      type: row.type,
+      status: row.status,
+      priority: row.priority,
+      subject: row.subject,
+      createdAt: row.created_at
+    },
     meta: { version: API_VERSION }
   };
 }
@@ -2732,11 +2782,13 @@ async function ensureFormsSchema(db) {
       assigned_to TEXT,
       internal_notes TEXT,
       public_tracking_id TEXT,
+      idempotency_key TEXT,
       metadata_json TEXT,
       closed_at TEXT
     )
   `).run();
   await safeAddColumn(db, "forms_submissions", "closed_at", "TEXT");
+  await safeAddColumn(db, "forms_submissions", "idempotency_key", "TEXT");
   await db.prepare(`
     CREATE TABLE IF NOT EXISTS forms_replies (
       id TEXT PRIMARY KEY,
@@ -2759,6 +2811,7 @@ async function ensureFormsSchema(db) {
     db.prepare("CREATE INDEX IF NOT EXISTS forms_submissions_email_idx ON forms_submissions (email)").run(),
     db.prepare("CREATE INDEX IF NOT EXISTS forms_submissions_closed_idx ON forms_submissions (closed_at)").run(),
     db.prepare("CREATE UNIQUE INDEX IF NOT EXISTS forms_submissions_tracking_idx ON forms_submissions (public_tracking_id)").run(),
+    db.prepare("CREATE UNIQUE INDEX IF NOT EXISTS forms_submissions_idempotency_idx ON forms_submissions (idempotency_key) WHERE idempotency_key IS NOT NULL").run(),
     db.prepare("CREATE INDEX IF NOT EXISTS forms_replies_submission_idx ON forms_replies (submission_id)").run(),
     db.prepare("CREATE INDEX IF NOT EXISTS forms_replies_created_idx ON forms_replies (created_at)").run()
   ]);

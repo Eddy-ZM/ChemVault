@@ -40,9 +40,9 @@ Last reviewed: July 3, 2026
 | `FORMS_IP_HASH_SALT` | Optional salt for Forms `ip_hash` | No | Recommended | Yes | `replace_with_forms_hash_salt` | Used only to hash client IPs before storage; raw IP is not stored in Forms tables. |
 | `RESEND_WEBHOOK_SECRET` | Resend webhook verification | No | If webhooks enabled | Yes | `replace_with_resend_webhook_secret` | Required before accepting provider webhooks. |
 | `OPENAI_API_KEY` | OpenAI API key for AI features | No | If platform AI enabled | Yes | `your_openai_api_key_here` | Store server-side only. |
-| `APP_URL` | Extract web app URL | Yes | Yes | No | `https://app.chemvault.science` | Set in Extract environment. |
+| `APP_URL` | Legacy Extract redirect URL | Yes | Yes | No | `https://app.chemvault.science` | Sunset compatibility only; new workflows use Lab. |
 | `API_BASE_URL` | Extract backend API URL | Yes | Yes | No | `https://api.chemvault.science` | Used by Extract web app. |
-| `NEXT_PUBLIC_APP_URL` | Extract public app URL | Yes | Yes | No | `https://app.chemvault.science` | Browser-visible. |
+| `NEXT_PUBLIC_APP_URL` | Legacy Extract public redirect URL | Yes | Yes | No | `https://app.chemvault.science` | Browser-visible compatibility URL; canonical product is Lab. |
 | `NEXT_PUBLIC_API_BASE_URL` | Extract public API URL | Yes | Yes | No | `https://api.chemvault.science` | Browser-visible. |
 | `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Stripe browser key | No | If Stripe enabled | No | `your_stripe_publishable_key_here` | Publishable, but keep environment-specific. |
 | `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | Turnstile browser site key | No | If Turnstile enabled | No | `your_turnstile_site_key_here` | Public key. |

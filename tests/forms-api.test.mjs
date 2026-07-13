@@ -51,7 +51,7 @@ class FormsStatement {
     if (sql.startsWith("create table") || sql.startsWith("create index") || sql.startsWith("create unique index")) {
       return { meta: { changes: 0 } };
     }
-    if (sql.includes("insert into forms_submissions")) {
+    if (sql.includes("insert into forms_submissions") || sql.includes("insert or ignore into forms_submissions")) {
       const [
         id,
         created_at,
@@ -69,8 +69,12 @@ class FormsStatement {
         assigned_to,
         internal_notes,
         public_tracking_id,
+        idempotency_key,
         metadata_json
       ] = this.args;
+      if (idempotency_key && [...this.db.submissions.values()].some((row) => row.idempotency_key === idempotency_key)) {
+        return { meta: { changes: 0 } };
+      }
       this.db.submissions.set(id, {
         id,
         created_at,
@@ -88,6 +92,7 @@ class FormsStatement {
         assigned_to,
         internal_notes,
         public_tracking_id,
+        idempotency_key,
         metadata_json
       });
       return { meta: { changes: 1 } };
@@ -133,7 +138,9 @@ class FormsStatement {
       return { count: this.filteredSubmissions().length };
     }
     if (sql.includes("from forms_submissions")) {
-      const row = this.findSubmission(this.args[0], this.args[1]);
+      const row = sql.includes("where idempotency_key = ?")
+        ? [...this.db.submissions.values()].find((candidate) => candidate.idempotency_key === this.args[0])
+        : this.findSubmission(this.args[0], this.args[1]);
       if (!row) return null;
       if (sql.startsWith("select id, email, subject")) {
         return { id: row.id, email: row.email, subject: row.subject };
@@ -256,6 +263,26 @@ test("regular form submission saves to D1 when email notification fails", async 
   } finally {
     globalThis.fetch = originalFetch;
   }
+});
+
+test("form submission idempotency key returns the original ticket without duplicate side effects", async () => {
+  const db = new FormsD1Mock();
+  const headers = { "idempotency-key": "form-submit-1234567890" };
+  const body = {
+    type: "feedback",
+    email: "researcher@example.com",
+    subject: "Idempotent feedback",
+    message: "Store this submission once."
+  };
+
+  const first = await callApi("forms/submit", { method: "POST", env: { DB: db }, body, headers });
+  const second = await callApi("forms/submit", { method: "POST", env: { DB: db }, body, headers });
+
+  assert.equal(first.response.status, 201);
+  assert.equal(second.response.status, 201);
+  assert.equal(second.payload.idempotent, true);
+  assert.equal(second.payload.trackingId, first.payload.trackingId);
+  assert.equal(db.submissions.size, 1);
 });
 
 test("feedback compatibility path does not create public GitHub issues", async () => {
