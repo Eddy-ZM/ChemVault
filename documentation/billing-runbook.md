@@ -12,6 +12,8 @@
 
 For Files, Lab, and Mail, deploy in `shadow` mode first. Verify canonical identity, plan mapping, usage recording, and one synthetic over-quota event, then switch each service independently to `enforce`. A missing identity, secret, D1 binding, or billing response must fail closed after enforcement is enabled.
 
+Keep `TEAM_BILLING_ENABLED=false` while Team pilots are individually scoped. Enabling it is a separate release decision that requires organization ownership, membership invitations, seat assignment/revocation, shared-resource authorization, and proration/cancellation canaries.
+
 ## Signals to monitor
 
 - Count and age of rows in `billing_webhook_events` with `processed_at IS NULL` or non-empty `last_error`.

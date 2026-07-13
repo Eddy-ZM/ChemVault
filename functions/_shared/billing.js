@@ -213,6 +213,9 @@ export async function createStripeCheckoutSession(request, env, db, body = {}) {
   if (!BILLABLE_PLANS.has(plan)) {
     throw new BillingError("unsupported_checkout_plan", "Only Pro and Team checkout are available online.", 400);
   }
+  if (plan === "team" && !teamCheckoutEnabled(env)) {
+    throw new BillingError("team_checkout_unavailable", "Team checkout is not available until organization and seat provisioning are enabled.", 409);
+  }
   if (!BILLING_INTERVALS.has(interval)) {
     throw new BillingError("invalid_billing_interval", "Billing interval must be monthly or yearly.", 400);
   }
@@ -618,6 +621,10 @@ function userCenterOrigin(env) {
 function normalizePlan(value) {
   const plan = clean(value).toLowerCase();
   return ["anonymous", "free", "pro", "team", "enterprise", "admin"].includes(plan) ? plan : "free";
+}
+
+function teamCheckoutEnabled(env) {
+  return clean(env.TEAM_BILLING_ENABLED).toLowerCase() === "true";
 }
 
 function normalizeBillingInterval(value, fallback = "") {

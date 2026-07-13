@@ -5,6 +5,7 @@
 | D1 `DB` binding | Server binding | Forms, leads, billing, admin | Apply migration before enablement; private and billing workflows fail closed when unavailable |
 | `USER_SYSTEM_ORIGIN`, shared session | Server config/request credential | Identity and entitlement resolution | HTTPS production origin; invalid/unavailable identity never grants paid access |
 | `PAYMENT_PROVIDER`, four Stripe Price IDs | Server config | Checkout and webhook plan mapping | Only `stripe` enables live path; unknown/missing Price ID fails closed |
+| `TEAM_BILLING_ENABLED` | Server config, default `false` | Team Checkout release gate | Enable only after organization membership and seat provisioning pass canaries |
 | `STRIPE_SECRET_KEY` | Cloudflare secret | Stripe REST API | Rotate on exposure/provider incident; never browser-visible |
 | `STRIPE_WEBHOOK_SECRET` | Cloudflare secret | Raw-body webhook verification | Rotate with endpoint secret; accept overlap only through an explicit deployment plan |
 | `BILLING_SERVICE_SECRET` | Main site and authorized services | Internal entitlement endpoint | Rotate on exposure and periodically; never reuse as end-user auth |

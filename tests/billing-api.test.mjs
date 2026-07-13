@@ -152,6 +152,7 @@ function billingEnv(db) {
     STRIPE_PRO_YEARLY_PRICE_ID: "price_pro_yearly",
     STRIPE_TEAM_MONTHLY_PRICE_ID: "price_team_monthly",
     STRIPE_TEAM_YEARLY_PRICE_ID: "price_team_yearly",
+    TEAM_BILLING_ENABLED: "true",
     PUBLIC_APP_URL: "https://chemvault.science",
     USER_SYSTEM_ORIGIN: "https://user.chemvault.science"
   };
@@ -232,6 +233,32 @@ test("checkout uses verified identity, fixed Stripe prices and a recorded idempo
     assert.equal(new Headers(stripeCall.init.headers).get("idempotency-key"), "chemvault:checkout_attempt_0001");
     assert.equal(db.checkoutSessions[0].user_id, "user_verified");
     assert.equal(db.checkoutSessions[0].price_id, "price_team_yearly");
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
+test("Team checkout stays disabled until organization and seat provisioning are enabled", async () => {
+  const db = new BillingD1Mock();
+  const env = { ...billingEnv(db), TEAM_BILLING_ENABLED: "false" };
+  const originalFetch = globalThis.fetch;
+  let stripeCalls = 0;
+  globalThis.fetch = async (url) => {
+    if (String(url).endsWith("/api/auth/me")) return identityResponse();
+    stripeCalls += 1;
+    throw new Error(`Unexpected Stripe call: ${url}`);
+  };
+  try {
+    const result = await callApi("billing/checkout", {
+      method: "POST",
+      env,
+      headers: { cookie: "chemvault_session=signed" },
+      body: { planId: "team", billingInterval: "monthly", seats: 3 }
+    });
+    assert.equal(result.response.status, 409);
+    assert.equal(result.payload.code, "team_checkout_unavailable");
+    assert.equal(stripeCalls, 0);
+    assert.equal(db.checkoutSessions.length, 0);
   } finally {
     globalThis.fetch = originalFetch;
   }
