@@ -102,6 +102,25 @@ test("commercial forms and client logic provide validation and clear states", ()
   assert.doesNotMatch(ui, /STRIPE_SECRET_KEY|STRIPE_WEBHOOK_SECRET|sk_live|sk_test/, "client UI does not embed payment secrets");
 });
 
+test("commercial plan scripts use the current cache key on every product entry", () => {
+  for (const page of [
+    "index.html",
+    "pages/ai-paper-search.html",
+    "pages/dashboard.html",
+    "pages/docs.html",
+    "pages/file-library.html",
+    "pages/mail.html",
+    "pages/molecular-modeling.html",
+    "pages/pricing.html",
+    "pages/search.html"
+  ]) {
+    const html = read(page);
+    assert.match(html, /commercial-config\.js\?v=20260713a/, `${page} loads the current plan configuration`);
+    assert.match(html, /commercial-ui\.js\?v=20260713a/, `${page} loads the authoritative-plan UI`);
+    assert.doesNotMatch(html, /commercial-(?:config|ui)\.js\?v=20260705b/, `${page} does not retain the stale browser-plan bundle`);
+  }
+});
+
 test("home lead forms use compact CTA layout and checkbox-safe controls", () => {
   const home = read("index.html");
   const commercialStyles = read("assets/commercial.css");
