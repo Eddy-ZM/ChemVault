@@ -4,7 +4,7 @@ ChemVault is the suite's public chemistry knowledge/search site and the server a
 
 ChemVault User is the identity authority. Billing endpoints forward the existing session credential to User Center `/api/auth/me`; client-provided user IDs and plan names are never billing authority. Stripe is the payment-state authority. Signed `customer.subscription.*` events update D1, and the main site resolves the effective plan from the verified user plus the latest entitled subscription. Older webhook events cannot overwrite newer subscription state.
 
-Authorized suite services may read a user's resolved plan through `/api/internal/billing/entitlements` with `BILLING_SERVICE_SECRET`. The service secret proves service identity only; the calling service must independently prove which end user is making the request.
+Authorized suite services may read a user's resolved plan through `/api/internal/billing/entitlements` with `BILLING_SERVICE_SECRET`. Services may supply a canonical User Center ID, or a verified account email that the main API resolves through User Center's minimal internal identity endpoint. The service secret proves service identity only; the calling service must independently prove which end user is making the request.
 
 Public chemistry records are intentionally public. Form bodies, reply emails, leads, billing customer/subscription IDs, webhook records, admin audit, and replies are private. No browser receives Stripe secret keys, webhook secrets, or the cross-service billing credential.
 

@@ -161,6 +161,49 @@ export async function resolvePlanForUserId(env, db, userId) {
   return entitledPlan(await latestSubscriptionForUser(db, id), env);
 }
 
+export async function resolveBillingUserByEmail(env, emailAddress) {
+  const email = clean(emailAddress).toLowerCase();
+  const secret = clean(env.BILLING_SERVICE_SECRET);
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    throw new BillingError("invalid_billing_email", "A valid billing email is required.", 400);
+  }
+  if (!secret) {
+    throw new BillingError("billing_identity_not_configured", "Billing identity resolution is not configured.", 503);
+  }
+
+  const endpoint = new URL(`${userCenterOrigin(env)}/api/internal/billing/identity`);
+  endpoint.searchParams.set("email", email);
+  let response;
+  try {
+    response = await fetch(endpoint, {
+      method: "GET",
+      headers: {
+        accept: "application/json",
+        authorization: `Bearer ${secret}`,
+        "user-agent": "ChemVault-Billing"
+      },
+      signal: AbortSignal.timeout(DEFAULT_TIMEOUT_MS)
+    });
+  } catch {
+    throw new BillingError("identity_service_unavailable", "Billing identity could not be verified.", 503);
+  }
+
+  if (response.status === 404) {
+    throw new BillingError("billing_identity_not_found", "Billing identity was not found.", 404);
+  }
+  if (!response.ok) {
+    throw new BillingError("identity_service_unavailable", "Billing identity could not be verified.", 503);
+  }
+
+  const payload = await response.json().catch(() => null);
+  const id = clean(payload?.user?.id);
+  const resolvedEmail = clean(payload?.user?.email).toLowerCase();
+  if (!id || resolvedEmail !== email) {
+    throw new BillingError("invalid_identity_response", "Billing identity response is incomplete.", 503);
+  }
+  return { id, email: resolvedEmail };
+}
+
 export async function createStripeCheckoutSession(request, env, db, body = {}) {
   assertStripeConfigured(env);
   await ensureBillingSchema(db);

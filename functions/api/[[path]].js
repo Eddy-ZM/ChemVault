@@ -19,6 +19,7 @@ import {
   createStripePortalSession,
   handleStripeWebhook,
   isStripeConfigured,
+  resolveBillingUserByEmail,
   resolvePlanForUserId,
   resolveSubscriptionContext
 } from "../_shared/billing.js";
@@ -398,11 +399,20 @@ export async function onRequest(context) {
         return json({ ok: false, error: "Invalid billing service credential." }, 401);
       }
       if (!hasDb) return json({ ok: false, error: "Billing storage is unavailable." }, 503);
-      const userId = clean(url.searchParams.get("userId"));
+      const requestedUserId = clean(url.searchParams.get("userId"));
+      const requestedEmail = clean(url.searchParams.get("email")).toLowerCase();
+      const resolvedIdentity = requestedEmail
+        ? await resolveBillingUserByEmail(env, requestedEmail)
+        : null;
+      if (requestedUserId && resolvedIdentity && requestedUserId !== resolvedIdentity.id) {
+        throw new BillingError("billing_identity_mismatch", "Billing identity does not match the requested user.", 400);
+      }
+      const userId = resolvedIdentity?.id || requestedUserId;
       const plan = await resolvePlanForUserId(env, env.DB, userId);
       return json({
         ok: true,
         userId,
+        ...(resolvedIdentity ? { email: resolvedIdentity.email } : {}),
         plan,
         features: Object.fromEntries(Object.keys(serverFeatureEntitlements).map((featureKey) => [
           featureKey,

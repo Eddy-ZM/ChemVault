@@ -370,8 +370,15 @@ test("subscription webhooks are idempotent and become the source of entitlements
   assert.equal(db.subscriptions[0].last_event_id, "evt_subscription_active");
 
   const originalFetch = globalThis.fetch;
-  globalThis.fetch = async (url) => {
+  globalThis.fetch = async (url, init = {}) => {
     if (String(url).endsWith("/api/auth/me")) return identityResponse();
+    if (String(url) === "https://user.chemvault.science/api/internal/billing/identity?email=verified%40example.com") {
+      assert.equal(init.headers.authorization, "Bearer service_secret");
+      return new Response(JSON.stringify({
+        ok: true,
+        user: { id: "user_verified", email: "verified@example.com" }
+      }), { status: 200, headers: { "content-type": "application/json" } });
+    }
     throw new Error(`Unexpected fetch: ${url}`);
   };
   try {
@@ -391,6 +398,22 @@ test("subscription webhooks are idempotent and become the source of entitlements
     assert.equal(internal.response.status, 200);
     assert.equal(internal.payload.plan, "pro");
     assert.equal(internal.payload.features["compound.search.export"], true);
+
+    const internalByEmail = await callApi("internal/billing/entitlements?email=Verified%40Example.com", {
+      env,
+      headers: { authorization: "Bearer service_secret" }
+    });
+    assert.equal(internalByEmail.response.status, 200);
+    assert.equal(internalByEmail.payload.userId, "user_verified");
+    assert.equal(internalByEmail.payload.email, "verified@example.com");
+    assert.equal(internalByEmail.payload.plan, "pro");
+
+    const mismatch = await callApi("internal/billing/entitlements?userId=attacker&email=verified%40example.com", {
+      env,
+      headers: { authorization: "Bearer service_secret" }
+    });
+    assert.equal(mismatch.response.status, 400);
+    assert.equal(mismatch.payload.code, "billing_identity_mismatch");
   } finally {
     globalThis.fetch = originalFetch;
   }
