@@ -3,14 +3,14 @@
 ## Enablement order
 
 1. Create Stripe Pro and Team recurring Prices for monthly and yearly billing. Record only Price IDs in server config.
-2. Back up D1, then apply `migrations/0005_stripe_billing.sql` once. Verify the new tables, columns, and indexes.
+2. Back up D1, then apply `migrations/0005_stripe_billing.sql` and `migrations/0006_billing_usage_enforcement.sql` once. Verify the tables, columns, and usage lookup index.
 3. Set `PUBLIC_APP_URL`, `USER_SYSTEM_ORIGIN`, `PAYMENT_PROVIDER=stripe`, and the four Price IDs.
 4. Add `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, and a newly generated `BILLING_SERVICE_SECRET` to server secret stores. Install the same billing service secret on the main API, User Center, and each quota-enforcing product; never expose it to clients. Configure separate `LIFECYCLE_SERVICE_SECRET` and `BILLING_RECONCILE_SECRET` values for their narrowly scoped workflows.
 5. Register `POST https://chemvault.science/api/billing/webhook` for Checkout Session completion and customer subscription lifecycle events.
 6. Keep `ALLOW_STRIPE_TEST_EVENTS=false` in production. Use Stripe test mode in a non-production environment for the full canary.
 7. Enable paid calls-to-action only after the release gate in `commercial-readiness.md` is signed off.
 
-For Files, Lab, and Mail, deploy in `shadow` mode first. Verify canonical identity, plan mapping, usage recording, and one synthetic over-quota event, then switch each service independently to `enforce`. A missing identity, secret, D1 binding, or billing response must fail closed after enforcement is enabled.
+For Files, Lab, Mail, and Model cloud quantum, deploy in `shadow` mode first. Verify canonical identity, plan mapping, usage recording, one idempotent replay, and one synthetic over-quota event, then switch each service independently to `enforce`. A missing identity, secret, D1 binding, or billing response must fail closed after enforcement is enabled. Model's local desktop engines remain local capabilities and never consume SaaS quota.
 
 Keep `TEAM_BILLING_ENABLED=false` while Team pilots are individually scoped. Enabling it is a separate release decision that requires organization ownership, membership invitations, seat assignment/revocation, shared-resource authorization, and proration/cancellation canaries.
 
@@ -25,6 +25,7 @@ Enable the daily `billing-reconciliation.yml` workflow only after its dedicated 
 - Subscription counts by status and plan, especially spikes in `past_due`, `canceled`, or unmapped `free`.
 - Stripe API 5xx/timeout rate, User Center verification failures, and internal entitlement 401/503 rate.
 - Mismatch between Stripe active subscriptions and D1 active/trialing subscriptions.
+- Cloud quantum usage by plan, quota-denial rate, idempotent replay rate, and paid requests that fail before the private backend responds.
 
 Never log cookies, authorization headers, Stripe keys, webhook signatures, complete Stripe payloads, or billing-service secrets.
 

@@ -9,6 +9,7 @@ class BillingD1Mock {
     this.subscriptions = subscriptions.map((subscription) => ({ ...subscription }));
     this.checkoutSessions = [];
     this.webhookEvents = new Map();
+    this.usageRecords = [];
   }
 
   prepare(sql) {
@@ -27,7 +28,15 @@ class BillingD1Mock {
   }
 
   #run(sql, values) {
-    if (sql.includes("INSERT OR IGNORE INTO BILLING_CHECKOUT_SESSIONS")) {
+    if (sql.includes("INSERT INTO USAGE_RECORDS")) {
+      const [id, userId, featureKey, amount, periodStart, periodEnd, , , , , limit] = values;
+      const existing = this.usageRecords.find((record) => record.id === id);
+      const used = this.usageRecords
+        .filter((record) => record.user_id === userId && record.feature_key === featureKey && record.period_start === periodStart)
+        .reduce((total, record) => total + Number(record.amount || 0), 0);
+      if (existing || used + Number(amount) > Number(limit)) return { success: true, meta: { changes: 0 } };
+      this.usageRecords.push({ id, user_id: userId, feature_key: featureKey, amount, period_start: periodStart, period_end: periodEnd });
+    } else if (sql.includes("INSERT OR IGNORE INTO BILLING_CHECKOUT_SESSIONS")) {
       if (!this.checkoutSessions.some((session) => session.id === values[0])) {
         this.checkoutSessions.push({
           id: values[0],
@@ -116,6 +125,16 @@ class BillingD1Mock {
   }
 
   #first(sql, values) {
+    if (sql.includes("FROM USAGE_RECORDS") && sql.includes("WHERE ID")) {
+      return this.usageRecords.find((record) => record.id === values[0]) || null;
+    }
+    if (sql.includes("FROM USAGE_RECORDS") && sql.includes("SUM(AMOUNT)")) {
+      return {
+        used: this.usageRecords
+          .filter((record) => record.user_id === values[0] && record.feature_key === values[1] && record.period_start === values[2])
+          .reduce((total, record) => total + Number(record.amount || 0), 0)
+      };
+    }
     if (sql.includes("FROM BILLING_WEBHOOK_EVENTS WHERE ID")) {
       return this.webhookEvents.get(values[0]) || null;
     }
@@ -464,6 +483,115 @@ test("subscription webhooks are idempotent and become the source of entitlements
   } finally {
     globalThis.fetch = originalFetch;
   }
+});
+
+test("cloud quantum usage is subscription-gated, atomic and idempotent", async () => {
+  const db = new BillingD1Mock({
+    subscriptions: [{
+      id: "subscription_usage",
+      user_id: "user_usage",
+      provider: "stripe",
+      provider_subscription_id: "sub_usage",
+      plan: "pro",
+      status: "active",
+      updated_at: "2026-07-13T00:00:00.000Z"
+    }]
+  });
+  const env = { ...billingEnv(db), BILLING_SERVICE_SECRET: "service_secret" };
+  const headers = { authorization: "Bearer service_secret" };
+
+  const first = await callApi("internal/billing/usage/consume", {
+    method: "POST",
+    env,
+    headers,
+    body: {
+      userId: "user_usage",
+      featureKey: "modeling.cloud_quantum",
+      requestId: "quantum-request-00000001",
+      amount: 1
+    }
+  });
+  assert.equal(first.response.status, 200);
+  assert.equal(first.payload.allowed, true);
+  assert.equal(first.payload.plan, "pro");
+  assert.equal(first.payload.limit, 20);
+  assert.equal(first.payload.used, 1);
+  assert.equal(first.payload.remaining, 19);
+  assert.equal(first.payload.idempotent, false);
+
+  const replay = await callApi("internal/billing/usage/consume", {
+    method: "POST",
+    env,
+    headers,
+    body: {
+      userId: "user_usage",
+      featureKey: "modeling.cloud_quantum",
+      requestId: "quantum-request-00000001",
+      amount: 1
+    }
+  });
+  assert.equal(replay.response.status, 200);
+  assert.equal(replay.payload.idempotent, true);
+  assert.equal(replay.payload.used, 1);
+  assert.equal(db.usageRecords.length, 1);
+
+  for (let index = 2; index <= 20; index += 1) {
+    const allowed = await callApi("internal/billing/usage/consume", {
+      method: "POST",
+      env,
+      headers,
+      body: {
+        userId: "user_usage",
+        featureKey: "modeling.cloud_quantum",
+        requestId: `quantum-request-${String(index).padStart(8, "0")}`,
+        amount: 1
+      }
+    });
+    assert.equal(allowed.response.status, 200);
+  }
+  const exhausted = await callApi("internal/billing/usage/consume", {
+    method: "POST",
+    env,
+    headers,
+    body: {
+      userId: "user_usage",
+      featureKey: "modeling.cloud_quantum",
+      requestId: "quantum-request-00000021",
+      amount: 1
+    }
+  });
+  assert.equal(exhausted.response.status, 429);
+  assert.equal(exhausted.payload.allowed, false);
+  assert.equal(exhausted.payload.reason, "quota_exhausted");
+  assert.equal(exhausted.payload.used, 20);
+
+  const free = await callApi("internal/billing/usage/consume", {
+    method: "POST",
+    env,
+    headers,
+    body: {
+      userId: "free_user",
+      featureKey: "modeling.cloud_quantum",
+      requestId: "quantum-request-free-0001",
+      amount: 1
+    }
+  });
+  assert.equal(free.response.status, 402);
+  assert.equal(free.payload.reason, "subscription_required");
+  assert.equal(free.payload.requiredPlan, "pro");
+
+  const unauthorized = await callApi("internal/billing/usage/consume", {
+    method: "POST",
+    env,
+    headers: { authorization: "Bearer wrong" },
+    body: {
+      userId: "user_usage",
+      featureKey: "modeling.cloud_quantum",
+      requestId: "quantum-request-unauthorized",
+      amount: 1
+    }
+  });
+  assert.equal(unauthorized.response.status, 401);
 });
 
 test("billing lifecycle exports records and cancels future charges before account deletion", async () => {

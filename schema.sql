@@ -243,6 +243,7 @@ CREATE INDEX IF NOT EXISTS billing_checkout_user_idx ON billing_checkout_session
 CREATE INDEX IF NOT EXISTS billing_webhook_processed_idx ON billing_webhook_events (processed_at);
 CREATE INDEX IF NOT EXISTS feature_entitlements_plan_idx ON feature_entitlements (plan);
 CREATE INDEX IF NOT EXISTS usage_records_feature_idx ON usage_records (feature_key);
+CREATE INDEX IF NOT EXISTS usage_records_user_period_idx ON usage_records (user_id, feature_key, period_start);
 CREATE UNIQUE INDEX IF NOT EXISTS resources_slug_idx ON resources (slug);
 CREATE INDEX IF NOT EXISTS account_deletion_requests_email_idx ON account_deletion_requests (email);
 CREATE INDEX IF NOT EXISTS account_deletion_requests_status_idx ON account_deletion_requests (status);

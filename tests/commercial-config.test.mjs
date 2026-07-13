@@ -60,6 +60,7 @@ test("commercial config exposes the expected plans, modules and feature keys", (
     "file_library.basic",
     "docs.premium",
     "modeling.viewer",
+    "modeling.cloud_quantum",
     "papers.search.preview",
     "papers.ai_summary",
     "team.shared_workspace",

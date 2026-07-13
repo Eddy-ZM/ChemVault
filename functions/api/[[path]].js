@@ -181,8 +181,9 @@ const serverFeatureEntitlements = {
   "docs.public": "anonymous",
   "docs.premium": "pro",
   "modeling.viewer": "free",
-  "modeling.advanced": "pro",
-  "modeling.export": "pro",
+  "modeling.advanced": "free",
+  "modeling.export": "free",
+  "modeling.cloud_quantum": "pro",
   "modeling.high_quota": "team",
   "mail.basic": "free",
   "mail.templates": "pro",
@@ -197,6 +198,21 @@ const serverFeatureEntitlements = {
   "enterprise.api": "enterprise",
   "enterprise.sso": "enterprise",
   "enterprise.custom_onboarding": "enterprise"
+};
+
+const billingUsagePolicies = {
+  "modeling.cloud_quantum": {
+    requiredFeature: "modeling.cloud_quantum",
+    unit: "job",
+    limits: {
+      anonymous: 0,
+      free: 0,
+      pro: 20,
+      team: 200,
+      enterprise: 1000,
+      admin: 5000
+    }
+  }
 };
 
 const leadTypes = new Set(["newsletter", "enterprise", "ai_beta"]);
@@ -444,6 +460,18 @@ export async function onRequest(context) {
           hasServerFeatureAccess(plan, featureKey)
         ]))
       });
+    }
+
+    if (segments[0] === "internal" && segments[1] === "billing" && segments[2] === "usage" && segments[3] === "consume") {
+      if (request.method !== "POST") return json({ error: "Method not allowed" }, 405);
+      const expected = clean(env.BILLING_SERVICE_SECRET);
+      const authorization = clean(request.headers.get("authorization"));
+      if (!expected || authorization !== `Bearer ${expected}`) {
+        return json({ ok: false, error: "Invalid billing service credential." }, 401);
+      }
+      if (!hasDb) return json({ ok: false, error: "Billing storage is unavailable." }, 503);
+      const result = await consumeBillingUsage(env, env.DB, await readJSONBody(request));
+      return json(stripHttpStatus(result), result.httpStatus || 200);
     }
 
     if (segments[0] === "admin") {
@@ -2801,6 +2829,7 @@ async function ensureCommercialSchema(db) {
     db.prepare("CREATE INDEX IF NOT EXISTS newsletter_subscribers_token_idx ON newsletter_subscribers (unsubscribe_token_hash)").run(),
     db.prepare("CREATE INDEX IF NOT EXISTS subscriptions_plan_idx ON subscriptions (plan)").run(),
     db.prepare("CREATE INDEX IF NOT EXISTS usage_records_feature_idx ON usage_records (feature_key)").run(),
+    db.prepare("CREATE INDEX IF NOT EXISTS usage_records_user_period_idx ON usage_records (user_id, feature_key, period_start)").run(),
     db.prepare("CREATE INDEX IF NOT EXISTS account_deletion_requests_email_idx ON account_deletion_requests (email)").run(),
     db.prepare("CREATE INDEX IF NOT EXISTS account_deletion_requests_status_idx ON account_deletion_requests (status)").run(),
     db.prepare("CREATE INDEX IF NOT EXISTS data_export_requests_email_idx ON data_export_requests (email)").run(),
@@ -3363,6 +3392,122 @@ function hasServerFeatureAccess(plan, featureKey) {
   const required = serverFeatureEntitlements[featureKey];
   if (!required) return false;
   return serverPlanOrder[normaliseServerPlan(plan)] >= serverPlanOrder[required];
+}
+
+async function consumeBillingUsage(env, db, body = {}) {
+  const userId = clean(body.userId).slice(0, 200);
+  const featureKey = clean(body.featureKey);
+  const requestId = normalizeBillingUsageRequestId(body.requestId);
+  const amount = Number(body.amount ?? 1);
+  const policy = billingUsagePolicies[featureKey];
+  if (!userId) {
+    return { ok: false, code: "billing_identity_required", error: "Verified billing identity is required.", httpStatus: 400 };
+  }
+  if (!policy) {
+    return { ok: false, code: "unsupported_usage_feature", error: "Usage feature is not supported.", httpStatus: 400 };
+  }
+  if (!requestId) {
+    return { ok: false, code: "invalid_usage_request_id", error: "A valid idempotency request ID is required.", httpStatus: 400 };
+  }
+  if (!Number.isSafeInteger(amount) || amount < 1 || amount > 100) {
+    return { ok: false, code: "invalid_usage_amount", error: "Usage amount must be an integer from 1 to 100.", httpStatus: 400 };
+  }
+
+  const plan = normaliseServerPlan(await resolvePlanForUserId(env, db, userId));
+  const limit = Number(policy.limits[plan] || 0);
+  const { periodStart, periodEnd } = utcDayPeriod();
+  const responseBase = { userId, featureKey, plan, unit: policy.unit, limit, periodStart, periodEnd };
+  if (!hasServerFeatureAccess(plan, policy.requiredFeature) || limit < amount) {
+    return {
+      ok: true,
+      allowed: false,
+      reason: "subscription_required",
+      requiredPlan: serverFeatureEntitlements[policy.requiredFeature],
+      used: 0,
+      remaining: 0,
+      ...responseBase,
+      httpStatus: 402
+    };
+  }
+
+  const recordId = `usage_${await sha256Hex(`${userId}\u0000${featureKey}\u0000${periodStart}\u0000${requestId}`)}`;
+  const existing = await db.prepare(`
+    SELECT id, amount
+    FROM usage_records
+    WHERE id = ?
+    LIMIT 1
+  `).bind(recordId).first();
+  if (existing) {
+    const used = await readBillingUsage(db, userId, featureKey, periodStart);
+    return { ok: true, allowed: true, idempotent: true, used, remaining: Math.max(0, limit - used), ...responseBase };
+  }
+
+  const inserted = await db.prepare(`
+    INSERT INTO usage_records (id, user_id, feature_key, amount, period_start, period_end)
+    SELECT ?, ?, ?, ?, ?, ?
+    WHERE (
+      SELECT COALESCE(SUM(amount), 0)
+      FROM usage_records
+      WHERE user_id = ? AND feature_key = ? AND period_start = ?
+    ) + ? <= ?
+    ON CONFLICT(id) DO NOTHING
+  `).bind(
+    recordId,
+    userId,
+    featureKey,
+    amount,
+    periodStart,
+    periodEnd,
+    userId,
+    featureKey,
+    periodStart,
+    amount,
+    limit
+  ).run();
+
+  const used = await readBillingUsage(db, userId, featureKey, periodStart);
+  if (!Number(inserted?.meta?.changes || 0)) {
+    const replay = await db.prepare("SELECT id FROM usage_records WHERE id = ? LIMIT 1").bind(recordId).first();
+    if (replay) {
+      return { ok: true, allowed: true, idempotent: true, used, remaining: Math.max(0, limit - used), ...responseBase };
+    }
+    return {
+      ok: true,
+      allowed: false,
+      reason: "quota_exhausted",
+      used,
+      remaining: Math.max(0, limit - used),
+      ...responseBase,
+      httpStatus: 429
+    };
+  }
+
+  return { ok: true, allowed: true, idempotent: false, used, remaining: Math.max(0, limit - used), ...responseBase };
+}
+
+async function readBillingUsage(db, userId, featureKey, periodStart) {
+  const row = await db.prepare(`
+    SELECT COALESCE(SUM(amount), 0) AS used
+    FROM usage_records
+    WHERE user_id = ? AND feature_key = ? AND period_start = ?
+  `).bind(userId, featureKey, periodStart).first();
+  return Math.max(0, Number(row?.used || 0));
+}
+
+function utcDayPeriod(now = new Date()) {
+  const periodStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+  const periodEnd = new Date(periodStart.getTime() + 86_400_000);
+  return { periodStart: periodStart.toISOString(), periodEnd: periodEnd.toISOString() };
+}
+
+function normalizeBillingUsageRequestId(value) {
+  const requestId = clean(value);
+  return /^[A-Za-z0-9._:-]{16,128}$/.test(requestId) ? requestId : "";
+}
+
+async function sha256Hex(value) {
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(value));
+  return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
 }
 
 function requireServerFeatureAccess(plan, featureKey) {

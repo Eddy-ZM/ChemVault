@@ -57,9 +57,11 @@ test("commercial pages expose honest beta access and workflow surfaces", () => {
   assertIncludes("pages/molecular-modeling.html", [
     [/Molecular Modeling/i, "names molecular modeling"],
     [/viewer/i, "contains viewer language"],
-    [/premium/i, "contains premium modeling language"],
-    [/data-feature-key="modeling\.advanced"/, "gates advanced modeling"]
+    [/local engines/i, "separates local engine capability"],
+    [/data-feature-key="modeling\.cloud_quantum"/, "gates optional cloud quantum capacity"],
+    [/20 cloud quantum jobs per day/i, "publishes the Pro daily cloud allowance"]
   ]);
+  assert.doesNotMatch(read("pages/molecular-modeling.html"), /backend exists|No scientific output is generated|data-feature-key="modeling\.advanced"/i, "modeling page does not describe shipped local functionality as an unavailable placeholder");
 
   assertIncludes("pages/mail.html", [
     [/Mail/i, "names mail module"],
@@ -206,7 +208,8 @@ test("commercial schema, env docs and implementation remain aligned", () => {
   assert.match(stagingDocs, /placeholder_checkout/, "staging docs document staging billing placeholder");
   assert.match(commercialDocs, /placeholder/i, "commercial docs explain payment placeholder state");
   assert.match(commercialDocs, /Replace this placeholder|real user\/session\/subscription lookup|real auth/i, "commercial docs explain auth/subscription TODO");
-  assert.match(readme, /deployment-checklist\.md/, "README links deployment checklist");
-  assert.match(readme, /Commercial MVP Foundation/, "README links commercial MVP scope");
+  assert.match(readme, /Public checkout remains disabled/i, "README states the current commercial availability boundary");
+  assert.match(readme, /local engines.*do not consume ChemVault cloud quota/is, "README separates local tools from paid cloud capacity");
+  assert.doesNotMatch(readme, /npm run|deployment-checklist\.md|Commercial MVP Foundation/, "README remains product-facing rather than implementation-facing");
   assert.doesNotMatch(envExample, /sk_live_|sk_test_|whsec_[A-Za-z0-9]/, ".env.example contains no real payment secret");
 });

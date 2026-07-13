@@ -135,7 +135,7 @@
         "CSV/PDF export placeholders",
         "Higher file storage quota",
         "Premium guides and workflows",
-        "More molecular modeling usage",
+        "20 cloud quantum jobs per day",
         "AI paper summaries, tags, and collections",
         "Weekly research and paper briefs"
       ]
@@ -155,7 +155,7 @@
         "Shared team workspace",
         "Shared file library",
         "Shared compounds and projects",
-        "Team molecular modeling projects",
+        "200 cloud quantum jobs per day during Team pilots",
         "Team paper collections",
         "Basic admin controls and invoice support"
       ]
@@ -194,9 +194,10 @@
     "file_library.team_workspace": { minPlan: "team", label: "Shared file workspace" },
     "docs.public": { minPlan: "anonymous", label: "Public documentation" },
     "docs.premium": { minPlan: "pro", label: "Premium professional guides" },
-    "modeling.viewer": { minPlan: "free", label: "Molecule viewer preview", limits: { free: 10, pro: 200, team: 1000, enterprise: null } },
-    "modeling.advanced": { minPlan: "pro", label: "Advanced molecular modeling" },
-    "modeling.export": { minPlan: "pro", label: "Modeling export" },
+    "modeling.viewer": { minPlan: "free", label: "Molecule viewer and public lookups" },
+    "modeling.advanced": { minPlan: "free", label: "Local molecular modeling" },
+    "modeling.export": { minPlan: "free", label: "Local modeling export" },
+    "modeling.cloud_quantum": { minPlan: "pro", label: "Cloud quantum calculation", limits: { free: 0, pro: 20, team: 200, enterprise: 1000 }, unit: "jobs/day" },
     "modeling.high_quota": { minPlan: "team", label: "High modeling quota" },
     "mail.basic": { minPlan: "free", label: "Basic mail and notifications" },
     "mail.templates": { minPlan: "pro", label: "Mail templates" },
@@ -219,7 +220,7 @@
     ["Export", "No", "CSV/PDF placeholder", "Team exports", "Custom exports/API"],
     ["File storage", "100 MB", "10 GB", "100 GB shared", "Custom"],
     ["Premium documentation", "Public docs", "Professional guides", "Team workflows", "Institution guides"],
-    ["Molecular modeling quota", "Preview", "Higher quota", "Team projects", "Custom quota"],
+    ["Molecular modeling", "Viewer, local engines and export", "Free tools + 20 cloud jobs/day", "Free tools + 200 cloud jobs/day", "Managed quota"],
     ["AI paper search", "Preview", "Full search", "Shared collections", "Institution access"],
     ["AI paper summaries", "No", "Included", "Included", "Custom workflows"],
     ["Team workspace", "No", "No", "Included", "Custom"],

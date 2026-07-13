@@ -8,7 +8,8 @@ Status: implementation-ready, not production-enabled.
 | --- | --- | --- |
 | Users can select Pro or Team recurring plans | Server maps plan/interval to four configured Stripe Price IDs and creates Checkout Sessions | Code ready; blocked on real product/price/account configuration |
 | Customers can manage subscriptions | Verified user resolves only their stored Stripe customer and receives a portal session | Code ready; blocked on portal configuration and live canary |
-| Paid access follows payment state | Signed, idempotent, non-stale subscription events update D1; Files storage, Lab analysis, and Mail recipients use server-resolved plans with shadow/enforce rollout modes | Code ready; deployed cross-service canaries remain required |
+| Paid access follows payment state | Signed, idempotent, non-stale subscription events update D1; Files storage, Lab analysis, Mail recipients, and Model cloud quantum use server-resolved plans with shadow/enforce rollout modes | Code ready; deployed cross-service canaries remain required |
+| Metered cloud computation cannot bypass plan limits | Main billing owns a conditional D1 usage insert, Pro/Team/Enterprise daily limits, and idempotent request replay; Model checks it before calling the private engine | Code ready; `0006` migration, shared secret, shadow observation, and deny canaries remain required |
 | Anonymous/client claims cannot unlock paid features | No credential yields Anonymous; request user/plan values are ignored; internal API requires service secret | Automated coverage complete; deployed deny canary still required |
 | Operations can recover from provider failures | Webhook attempts/errors, checkout sessions, subscription timestamps, daily provider reconciliation, runbook, and rollback boundary exist | Code/workflow ready; scheduler secret and alert routing need production wiring |
 | Team billing cannot outrun team provisioning | Team Checkout is independently disabled unless `TEAM_BILLING_ENABLED=true` | Keep disabled until organization membership, seat assignment, and shared-resource authorization are implemented and canaried |
@@ -18,7 +19,7 @@ Status: implementation-ready, not production-enabled.
 
 All boxes are required before public checkout is enabled:
 
-- [ ] D1 production backup and `0005_stripe_billing.sql` migration verified.
+- [ ] D1 production backup and `0005_stripe_billing.sql` plus `0006_billing_usage_enforcement.sql` migrations verified.
 - [ ] Stripe business/account verification, statement descriptor, support contacts, refund policy, cancellation terms, and portal configuration approved.
 - [ ] Pro/Team monthly/yearly Price IDs reviewed against published pricing and tax treatment.
 - [ ] Production secrets configured without exposure; test events rejected in production.
