@@ -6,6 +6,8 @@ ChemVault User is the identity authority. Billing endpoints forward the existing
 
 Authorized suite services may read a user's resolved plan through `/api/internal/billing/entitlements` with `BILLING_SERVICE_SECRET`. Services may supply a canonical User Center ID, or a verified account email that the main API resolves through User Center's minimal internal identity endpoint. The service secret proves service identity only; the calling service must independently prove which end user is making the request.
 
+Billing is a required participant in User Center's distributed account lifecycle. Export returns the user's billing metadata. Delete first retrieves and cancels every non-terminal Stripe subscription, updates local entitlement state, and only then reports success; financial transaction records remain subject to the documented retention policy instead of being silently erased.
+
 Public chemistry records are intentionally public. Form bodies, reply emails, leads, billing customer/subscription IDs, webhook records, admin audit, and replies are private. No browser receives Stripe secret keys, webhook secrets, or the cross-service billing credential.
 
 The repository contains a production-capable billing implementation, but billing remains disabled until Stripe products/prices, secrets, webhook delivery, D1 migration, and live canaries pass the release gate in [Commercial readiness](commercial-readiness.md).

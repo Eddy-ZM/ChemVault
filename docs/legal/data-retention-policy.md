@@ -10,7 +10,8 @@ This policy is a planning document, not a guarantee that every ChemVault service
 
 | Data Category | Examples | Draft Retention Principle | User Control | Notes |
 | --- | --- | --- | --- | --- |
-| Account data | email, name, user id, roles, OAuth links | Retain while account is active; deletion handling to be confirmed | deletion/export request | Cross-service deletion orchestration still needed. |
+| Account data | email, name, user id, roles, OAuth links | Retain while account is active; deletion handling to be confirmed | deletion/export request | Cross-service orchestration exists in code; deployed completion/retry evidence is still required. |
+| Billing and transaction records | plan, Checkout Session, customer/subscription identifiers, payment-state events | Cancel future charges before identity deletion; retain the minimum financial record for the legally required period, still to be confirmed | billing export and account deletion | Do not promise immediate erasure where tax, accounting, chargeback, or fraud obligations require retention. Needs legal review. |
 | Email data | messages, recipients, senders, attachments, raw mail | Retention period to be confirmed before commercial launch | deletion/export request where appropriate | High-risk data. Needs anti-abuse and legal exceptions. |
 | Uploaded files | Files service objects, Extract source documents, metadata | Retain while user/workspace keeps the file; deletion timing to be confirmed | delete file, deletion/export request | Add R2 lifecycle rules and object verification. |
 | AI input/output | prompts, chunks, extracted records, review items | Retention period to be confirmed before commercial launch | deletion/export request | Provider processing terms must be reviewed. |

@@ -21,7 +21,7 @@ class BillingD1Mock {
       },
       run: async () => this.#run(normalized, values),
       first: async () => this.#first(normalized, values),
-      all: async () => ({ results: [] })
+      all: async () => this.#all(normalized, values)
     };
     return statement;
   }
@@ -128,6 +128,16 @@ class BillingD1Mock {
         .sort((left, right) => String(right.updated_at || "").localeCompare(String(left.updated_at || "")))[0] || null;
     }
     return null;
+  }
+
+  #all(sql, values) {
+    if (sql.includes("FROM SUBSCRIPTIONS") && sql.includes("WHERE USER_ID")) {
+      return { results: this.subscriptions.filter((subscription) => subscription.user_id === values[0]) };
+    }
+    if (sql.includes("FROM BILLING_CHECKOUT_SESSIONS") && sql.includes("WHERE USER_ID")) {
+      return { results: this.checkoutSessions.filter((session) => session.user_id === values[0]) };
+    }
+    return { results: [] };
   }
 }
 
@@ -444,4 +454,76 @@ test("subscription webhooks are idempotent and become the source of entitlements
   } finally {
     globalThis.fetch = originalFetch;
   }
+});
+
+test("billing lifecycle exports records and cancels future charges before account deletion", async () => {
+  const db = new BillingD1Mock({
+    subscriptions: [{
+      id: "local_subscription",
+      user_id: "user/lifecycle",
+      provider: "stripe",
+      provider_customer_id: "cus_lifecycle",
+      provider_subscription_id: "sub_lifecycle",
+      plan: "pro",
+      status: "active",
+      price_id: "price_pro_monthly",
+      billing_interval: "monthly",
+      cancel_at_period_end: 0,
+      livemode: 0,
+      created_at: "2026-07-01T00:00:00.000Z",
+      updated_at: "2026-07-13T00:00:00.000Z"
+    }]
+  });
+  const env = { ...billingEnv(db), LIFECYCLE_SERVICE_SECRET: "lifecycle-secret" };
+
+  const exported = await callApi("internal/lifecycle/user%2Flifecycle", {
+    method: "POST",
+    env,
+    headers: { authorization: "Bearer lifecycle-secret", "x-chemvault-lifecycle-request": "job_export" },
+    body: { action: "export", requestId: "job_export", email: "member@example.com" }
+  });
+  assert.equal(exported.response.status, 200);
+  assert.equal(exported.payload.records, 1);
+  assert.equal(exported.payload.subscriptions[0].subscriptionId, "sub_lifecycle");
+
+  const originalFetch = globalThis.fetch;
+  const calls = [];
+  globalThis.fetch = async (url, init = {}) => {
+    calls.push({ url: String(url), init });
+    const subscription = {
+      id: "sub_lifecycle",
+      customer: "cus_lifecycle",
+      status: init.method === "DELETE" ? "canceled" : "active",
+      livemode: false,
+      current_period_end: 1_800_000_000,
+      cancel_at_period_end: false,
+      metadata: { chemvault_user_id: "user/lifecycle", chemvault_plan: "pro", chemvault_billing_interval: "monthly" },
+      items: { data: [{ price: { id: "price_pro_monthly" } }] }
+    };
+    return new Response(JSON.stringify(subscription), { status: 200, headers: { "content-type": "application/json" } });
+  };
+  try {
+    const deleted = await callApi("internal/lifecycle/user%2Flifecycle", {
+      method: "POST",
+      env,
+      headers: { authorization: "Bearer lifecycle-secret", "x-chemvault-lifecycle-request": "job_delete" },
+      body: { action: "delete", requestId: "job_delete", email: "member@example.com" }
+    });
+    assert.equal(deleted.response.status, 200);
+    assert.equal(deleted.payload.canceledSubscriptions, 1);
+    assert.equal(deleted.payload.retainedBillingRecords, 1);
+    assert.deepEqual(calls.map((call) => call.init.method), ["GET", "DELETE"]);
+    assert.equal(new Headers(calls[1].init.headers).get("idempotency-key"), "chemvault:lifecycle:job_delete:sub_lifecycle");
+    assert.equal(db.subscriptions[0].status, "canceled");
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+
+  const unauthorized = await callApi("internal/lifecycle/user%2Flifecycle", {
+    method: "POST",
+    env,
+    headers: { authorization: "Bearer wrong" },
+    body: { action: "delete", requestId: "job_unauthorized" }
+  });
+  assert.equal(unauthorized.response.status, 401);
 });

@@ -349,6 +349,83 @@ export async function handleStripeWebhook(request, env, db, { production = false
   return { ok: true, received: true, duplicate: false, eventId: event.id, eventType: event.type };
 }
 
+export async function handleBillingLifecycle(env, db, userId, body = {}) {
+  const id = clean(userId);
+  const action = clean(body.action).toLowerCase();
+  const requestId = clean(body.requestId).slice(0, 160);
+  if (!id) throw new BillingError("invalid_user_id", "A user ID is required.", 400);
+  if (!requestId) throw new BillingError("invalid_lifecycle_request", "A lifecycle request ID is required.", 400);
+  if (!new Set(["export", "delete"]).has(action)) {
+    throw new BillingError("invalid_lifecycle_action", "Lifecycle action must be export or delete.", 400);
+  }
+
+  await ensureBillingSchema(db);
+  const subscriptionResult = await db.prepare(`
+    SELECT id, provider, provider_customer_id, provider_subscription_id, plan, status, price_id,
+           billing_interval, current_period_end, cancel_at_period_end, livemode, created_at, updated_at
+    FROM subscriptions
+    WHERE user_id = ?
+    ORDER BY created_at ASC
+  `).bind(id).all();
+  const checkoutResult = await db.prepare(`
+    SELECT id, provider_customer_id, provider_subscription_id, plan, billing_interval, price_id,
+           seat_count, status, livemode, created_at, completed_at
+    FROM billing_checkout_sessions
+    WHERE user_id = ?
+    ORDER BY created_at ASC
+  `).bind(id).all();
+  const subscriptions = Array.isArray(subscriptionResult?.results) ? subscriptionResult.results : [];
+  const checkoutSessions = Array.isArray(checkoutResult?.results) ? checkoutResult.results : [];
+
+  if (action === "export") {
+    return {
+      ok: true,
+      action,
+      userId: id,
+      records: subscriptions.length + checkoutSessions.length,
+      subscriptions: subscriptions.map(publicLifecycleSubscription),
+      checkoutSessions: checkoutSessions.map(publicLifecycleCheckout)
+    };
+  }
+
+  const cancellable = subscriptions.filter((subscription) =>
+    clean(subscription.provider).toLowerCase() === "stripe"
+    && clean(subscription.provider_subscription_id)
+    && !new Set(["canceled", "incomplete_expired"]).has(clean(subscription.status).toLowerCase())
+  );
+  if (cancellable.length) assertStripeConfigured(env);
+
+  const canceled = [];
+  for (const subscription of cancellable) {
+    const providerId = clean(subscription.provider_subscription_id);
+    let remote = await stripeRequest(env, `/v1/subscriptions/${encodeURIComponent(providerId)}`, null, { method: "GET" });
+    if (clean(remote?.status).toLowerCase() !== "canceled") {
+      remote = await stripeRequest(env, `/v1/subscriptions/${encodeURIComponent(providerId)}`, null, {
+        method: "DELETE",
+        idempotencyKey: `chemvault:lifecycle:${requestId}:${providerId}`.slice(0, 255)
+      });
+    }
+    if (clean(remote?.status).toLowerCase() !== "canceled") {
+      throw new BillingError("subscription_cancellation_failed", "Stripe did not confirm subscription cancellation.", 502);
+    }
+    await upsertStripeSubscription(db, env, {
+      id: `lifecycle:${requestId}:${providerId}`.slice(0, 255),
+      created: Math.floor(Date.now() / 1000),
+      livemode: Boolean(remote.livemode)
+    }, remote);
+    canceled.push(providerId);
+  }
+
+  return {
+    ok: true,
+    action,
+    userId: id,
+    canceledSubscriptions: canceled.length,
+    retainedBillingRecords: subscriptions.length + checkoutSessions.length,
+    retentionNote: "Billing transaction records are retained under the documented financial-record policy."
+  };
+}
+
 export async function verifyStripeSignature(rawBody, signatureHeader, secret, toleranceSeconds = DEFAULT_SIGNATURE_TOLERANCE_SECONDS, nowMs = Date.now()) {
   const parsed = parseStripeSignature(signatureHeader);
   const tolerance = clampInteger(toleranceSeconds, 30, 900, DEFAULT_SIGNATURE_TOLERANCE_SECONDS);
@@ -509,20 +586,53 @@ function publicSubscription(subscription) {
   };
 }
 
-async function stripeRequest(env, path, body, { idempotencyKey } = {}) {
+function publicLifecycleSubscription(subscription) {
+  return {
+    provider: clean(subscription.provider),
+    customerId: clean(subscription.provider_customer_id) || null,
+    subscriptionId: clean(subscription.provider_subscription_id) || null,
+    plan: normalizePlan(subscription.plan),
+    status: clean(subscription.status),
+    priceId: clean(subscription.price_id) || null,
+    billingInterval: clean(subscription.billing_interval) || null,
+    currentPeriodEnd: subscription.current_period_end || null,
+    cancelAtPeriodEnd: Boolean(subscription.cancel_at_period_end),
+    livemode: Boolean(subscription.livemode),
+    createdAt: subscription.created_at || null,
+    updatedAt: subscription.updated_at || null
+  };
+}
+
+function publicLifecycleCheckout(session) {
+  return {
+    sessionId: clean(session.id),
+    customerId: clean(session.provider_customer_id) || null,
+    subscriptionId: clean(session.provider_subscription_id) || null,
+    plan: normalizePlan(session.plan),
+    billingInterval: clean(session.billing_interval) || null,
+    priceId: clean(session.price_id) || null,
+    seats: Number(session.seat_count || 1),
+    status: clean(session.status),
+    livemode: Boolean(session.livemode),
+    createdAt: session.created_at || null,
+    completedAt: session.completed_at || null
+  };
+}
+
+async function stripeRequest(env, path, body, { idempotencyKey, method = "POST" } = {}) {
   let response;
   try {
     const headers = {
       authorization: `Bearer ${clean(env.STRIPE_SECRET_KEY)}`,
-      "content-type": "application/x-www-form-urlencoded",
       "user-agent": "ChemVault-Billing/1.0"
     };
+    if (body !== null && body !== undefined) headers["content-type"] = "application/x-www-form-urlencoded";
     if (idempotencyKey) headers["idempotency-key"] = idempotencyKey;
     if (clean(env.STRIPE_API_VERSION)) headers["stripe-version"] = clean(env.STRIPE_API_VERSION);
     response = await fetch(`${STRIPE_API_ORIGIN}${path}`, {
-      method: "POST",
+      method,
       headers,
-      body,
+      ...(body === null || body === undefined ? {} : { body }),
       signal: AbortSignal.timeout(DEFAULT_TIMEOUT_MS)
     });
   } catch {

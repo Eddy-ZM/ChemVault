@@ -8,6 +8,7 @@
 | Checkout and portal | Fixed Price IDs, verified customer ownership, idempotency header, safe provider URL | `tests/billing-api.test.mjs` |
 | Webhook integrity | HMAC verification, tolerance, malformed/invalid signatures, duplicate delivery, stale-event suppression | `tests/billing-api.test.mjs` |
 | Entitlements | Active subscription drives browser and internal service plan; anonymous requests stay anonymous | `tests/billing-api.test.mjs`, `tests/commercial-api.test.mjs` |
+| Billing account lifecycle | Export returns billing records; delete uses authenticated Stripe GET/DELETE, an idempotency key, and local cancellation state before success | `tests/billing-api.test.mjs` |
 | Commercial fail-closed behavior | Mock billing/auth disabled in production; client plan cannot unlock export | `tests/commercial-api.test.mjs` |
 | Public record contract | Stable public-only schema; English/Chinese copies align | Contract tests and CI |
 | Forms/leads/admin | Validation, ticket/admin scope, retention, email state, idempotent intake | Forms/leads tests and CI |

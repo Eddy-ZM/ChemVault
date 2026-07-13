@@ -17,6 +17,7 @@ import {
   BillingError,
   createStripeCheckoutSession,
   createStripePortalSession,
+  handleBillingLifecycle,
   handleStripeWebhook,
   isStripeConfigured,
   resolveBillingUserByEmail,
@@ -389,6 +390,18 @@ export async function onRequest(context) {
       }
       const result = await purgeExpiredFormSubmissions(env, hasDb, request, { email: "retention-scheduler" });
       return json(result, result.ok ? 200 : 503);
+    }
+
+    if (segments[0] === "internal" && segments[1] === "lifecycle" && segments[2]) {
+      if (request.method !== "POST") return json({ error: "Method not allowed" }, 405);
+      const expected = clean(env.LIFECYCLE_SERVICE_SECRET);
+      const authorization = clean(request.headers.get("authorization"));
+      if (!expected || authorization !== `Bearer ${expected}`) {
+        return json({ ok: false, error: "Invalid lifecycle service credential." }, 401);
+      }
+      if (!hasDb) return json({ ok: false, error: "Billing storage is unavailable." }, 503);
+      const result = await handleBillingLifecycle(env, env.DB, decodePathSegment(segments[2]), await readJSONBody(request));
+      return json(result);
     }
 
     if (segments[0] === "internal" && segments[1] === "billing" && segments[2] === "entitlements") {
@@ -3458,6 +3471,14 @@ async function readJSONBody(request) {
 function getPathSegments(pathParam) {
   const path = Array.isArray(pathParam) ? pathParam.join("/") : pathParam || "";
   return path.split("/").filter(Boolean);
+}
+
+function decodePathSegment(value) {
+  try {
+    return decodeURIComponent(clean(value));
+  } catch {
+    return "";
+  }
 }
 
 function bindStatement(statement, values) {

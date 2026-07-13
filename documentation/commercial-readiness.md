@@ -12,6 +12,7 @@ Status: implementation-ready, not production-enabled.
 | Anonymous/client claims cannot unlock paid features | No credential yields Anonymous; request user/plan values are ignored; internal API requires service secret | Automated coverage complete; deployed deny canary still required |
 | Operations can recover from provider failures | Webhook attempts/errors, checkout sessions, subscription timestamps, runbook, and rollback boundary exist | Runbook ready; monitoring/alerts need production wiring |
 | Team billing cannot outrun team provisioning | Team Checkout is independently disabled unless `TEAM_BILLING_ENABLED=true` | Keep disabled until organization membership, seat assignment, and shared-resource authorization are implemented and canaried |
+| Account deletion stops future charges | Billing is a required lifecycle service; active Stripe subscriptions are retrieved, canceled idempotently, and persisted before Billing reports delete success | Code ready; deployed cancellation and retry canary required |
 
 ## Release gate
 
