@@ -2,10 +2,10 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { onRequest } from "../functions/api/[[path]].js";
 
-async function callApi(path, { method = "GET", env = {}, body } = {}) {
+async function callApi(path, { method = "GET", env = {}, body, headers = {} } = {}) {
   const request = new Request(`https://chemvault.test/api/${path}`, {
     method,
-    headers: body ? { "content-type": "application/json" } : {},
+    headers: body ? { "content-type": "application/json", ...headers } : headers,
     body: body ? JSON.stringify(body) : undefined
   });
   const response = await onRequest({
@@ -136,8 +136,9 @@ test("production commercial guard disables mock billing and placeholder auth", a
 
   const entitlements = await callApi("entitlements", { env: productionEnv });
   assert.equal(entitlements.response.status, 200);
-  assert.equal(entitlements.payload.plan, "free");
-  assert.equal(entitlements.payload.meta.authMode, "disabled");
+  assert.equal(entitlements.payload.plan, "anonymous");
+  assert.equal(entitlements.payload.meta.authMode, "chemvault-user");
+  assert.equal(entitlements.payload.meta.authenticated, false);
   assert.equal(entitlements.payload.features["compound.search.export"].enabled, false);
 
   const exportAttempt = await callApi("export/compound", {
@@ -147,7 +148,7 @@ test("production commercial guard disables mock billing and placeholder auth", a
   });
   assert.equal(exportAttempt.response.status, 402);
   assert.equal(exportAttempt.payload.ok, false);
-  assert.equal(exportAttempt.payload.currentPlan, "free");
+  assert.equal(exportAttempt.payload.currentPlan, "anonymous");
 });
 
 test("server-side export entitlement does not trust client plan values", async () => {

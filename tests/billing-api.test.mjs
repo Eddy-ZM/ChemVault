@@ -1,0 +1,397 @@
+import assert from "node:assert/strict";
+import { createHmac } from "node:crypto";
+import test from "node:test";
+import { onRequest } from "../functions/api/[[path]].js";
+import { BillingError, verifyStripeSignature } from "../functions/_shared/billing.js";
+
+class BillingD1Mock {
+  constructor({ subscriptions = [] } = {}) {
+    this.subscriptions = subscriptions.map((subscription) => ({ ...subscription }));
+    this.checkoutSessions = [];
+    this.webhookEvents = new Map();
+  }
+
+  prepare(sql) {
+    const normalized = sql.replace(/\s+/g, " ").trim().toUpperCase();
+    let values = [];
+    const statement = {
+      bind: (...nextValues) => {
+        values = nextValues;
+        return statement;
+      },
+      run: async () => this.#run(normalized, values),
+      first: async () => this.#first(normalized, values),
+      all: async () => ({ results: [] })
+    };
+    return statement;
+  }
+
+  #run(sql, values) {
+    if (sql.includes("INSERT OR IGNORE INTO BILLING_CHECKOUT_SESSIONS")) {
+      if (!this.checkoutSessions.some((session) => session.id === values[0])) {
+        this.checkoutSessions.push({
+          id: values[0],
+          user_id: values[1],
+          provider_customer_id: values[2],
+          plan: values[3],
+          billing_interval: values[4],
+          price_id: values[5],
+          seat_count: values[6],
+          status: "created",
+          livemode: values[7]
+        });
+      }
+    } else if (sql.includes("INSERT INTO BILLING_WEBHOOK_EVENTS")) {
+      const existing = this.webhookEvents.get(values[0]);
+      this.webhookEvents.set(values[0], {
+        id: values[0],
+        type: values[1],
+        livemode: values[2],
+        attempts: (existing?.attempts || 0) + 1,
+        processed_at: existing?.processed_at || null,
+        last_error: null
+      });
+    } else if (sql.includes("UPDATE BILLING_WEBHOOK_EVENTS SET PROCESSED_AT")) {
+      const event = this.webhookEvents.get(values[0]);
+      if (event) event.processed_at = new Date().toISOString();
+    } else if (sql.includes("UPDATE BILLING_WEBHOOK_EVENTS SET LAST_ERROR")) {
+      const event = this.webhookEvents.get(values[1]);
+      if (event) event.last_error = values[0];
+    } else if (sql.includes("UPDATE BILLING_CHECKOUT_SESSIONS")) {
+      const session = this.checkoutSessions.find((item) => item.id === values[2] && item.user_id === values[3]);
+      if (session) Object.assign(session, { provider_customer_id: values[0], provider_subscription_id: values[1], status: "completed" });
+    } else if (sql.includes("UPDATE SUBSCRIPTIONS SET")) {
+      const subscription = this.subscriptions.find((item) => item.id === values[11]);
+      if (subscription) {
+        Object.assign(subscription, {
+          user_id: values[0],
+          provider_customer_id: values[1],
+          plan: values[2],
+          status: values[3],
+          price_id: values[4],
+          billing_interval: values[5],
+          current_period_end: values[6],
+          cancel_at_period_end: values[7],
+          livemode: values[8],
+          last_event_id: values[9],
+          last_event_created: values[10],
+          updated_at: new Date().toISOString()
+        });
+      }
+    } else if (sql.includes("INSERT INTO SUBSCRIPTIONS") && sql.includes("PRICE_ID")) {
+      this.subscriptions.push({
+        id: values[0],
+        user_id: values[1],
+        provider: "stripe",
+        provider_customer_id: values[2],
+        provider_subscription_id: values[3],
+        plan: values[4],
+        status: values[5],
+        price_id: values[6],
+        billing_interval: values[7],
+        current_period_end: values[8],
+        cancel_at_period_end: values[9],
+        livemode: values[10],
+        last_event_id: values[11],
+        last_event_created: values[12],
+        updated_at: new Date().toISOString()
+      });
+    } else if (sql.includes("INSERT INTO SUBSCRIPTIONS")) {
+      this.subscriptions.push({
+        id: values[0],
+        user_id: values[1],
+        provider: "stripe",
+        provider_customer_id: values[2],
+        provider_subscription_id: values[3],
+        plan: values[4],
+        status: "checkout_complete",
+        billing_interval: values[5],
+        livemode: values[6],
+        last_event_id: values[7],
+        last_event_created: values[8],
+        updated_at: new Date().toISOString()
+      });
+    }
+    return { success: true, meta: { changes: 1 } };
+  }
+
+  #first(sql, values) {
+    if (sql.includes("FROM BILLING_WEBHOOK_EVENTS WHERE ID")) {
+      return this.webhookEvents.get(values[0]) || null;
+    }
+    if (sql.includes("FROM SUBSCRIPTIONS WHERE PROVIDER_SUBSCRIPTION_ID")) {
+      return this.subscriptions.find((subscription) => subscription.provider_subscription_id === values[0]) || null;
+    }
+    if (sql.includes("FROM SUBSCRIPTIONS") && sql.includes("WHERE USER_ID")) {
+      return this.subscriptions
+        .filter((subscription) => subscription.user_id === values[0])
+        .sort((left, right) => String(right.updated_at || "").localeCompare(String(left.updated_at || "")))[0] || null;
+    }
+    return null;
+  }
+}
+
+async function callApi(path, { method = "GET", env = {}, body, rawBody, headers = {} } = {}) {
+  const payload = rawBody ?? (body === undefined ? undefined : JSON.stringify(body));
+  const request = new Request(`https://chemvault.test/api/${path}`, {
+    method,
+    headers: payload === undefined ? headers : { "content-type": "application/json", ...headers },
+    body: payload
+  });
+  const response = await onRequest({ request, env, params: { path: path.split("?", 1)[0] } });
+  return { response, payload: await response.json() };
+}
+
+function billingEnv(db) {
+  return {
+    DB: db,
+    PAYMENT_PROVIDER: "stripe",
+    STRIPE_SECRET_KEY: "sk_test_server_only",
+    STRIPE_WEBHOOK_SECRET: "whsec_test_secret",
+    STRIPE_PRO_MONTHLY_PRICE_ID: "price_pro_monthly",
+    STRIPE_PRO_YEARLY_PRICE_ID: "price_pro_yearly",
+    STRIPE_TEAM_MONTHLY_PRICE_ID: "price_team_monthly",
+    STRIPE_TEAM_YEARLY_PRICE_ID: "price_team_yearly",
+    PUBLIC_APP_URL: "https://chemvault.science",
+    USER_SYSTEM_ORIGIN: "https://user.chemvault.science"
+  };
+}
+
+function identityResponse() {
+  return new Response(JSON.stringify({
+    user: { id: "user_verified", email: "verified@example.com", role: "user", systemRole: "user" }
+  }), { status: 200, headers: { "content-type": "application/json" } });
+}
+
+function stripeSignature(rawBody, secret, timestamp = Math.floor(Date.now() / 1000)) {
+  const digest = createHmac("sha256", secret).update(`${timestamp}.${rawBody}`).digest("hex");
+  return `t=${timestamp},v1=${digest}`;
+}
+
+test("configured checkout fails closed before contacting identity or Stripe without credentials", async () => {
+  const db = new BillingD1Mock();
+  const originalFetch = globalThis.fetch;
+  let fetchCalls = 0;
+  globalThis.fetch = async () => {
+    fetchCalls += 1;
+    throw new Error("fetch should not be called");
+  };
+  try {
+    const result = await callApi("billing/checkout", {
+      method: "POST",
+      env: billingEnv(db),
+      body: { planId: "pro", billingInterval: "monthly", userId: "attacker_supplied" }
+    });
+    assert.equal(result.response.status, 401);
+    assert.equal(result.payload.code, "authentication_required");
+    assert.equal(fetchCalls, 0);
+    assert.equal(db.checkoutSessions.length, 0);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
+test("checkout uses verified identity, fixed Stripe prices and a recorded idempotent session", async () => {
+  const db = new BillingD1Mock();
+  const env = billingEnv(db);
+  const originalFetch = globalThis.fetch;
+  const calls = [];
+  globalThis.fetch = async (url, init = {}) => {
+    calls.push({ url: String(url), init });
+    if (String(url).endsWith("/api/auth/me")) return identityResponse();
+    if (String(url).endsWith("/v1/checkout/sessions")) {
+      return new Response(JSON.stringify({
+        id: "cs_test_verified",
+        url: "https://checkout.stripe.com/c/pay/cs_test_verified",
+        customer: null,
+        livemode: false
+      }), { status: 200, headers: { "content-type": "application/json" } });
+    }
+    throw new Error(`Unexpected fetch: ${url}`);
+  };
+  try {
+    const result = await callApi("billing/checkout", {
+      method: "POST",
+      env,
+      headers: { cookie: "chemvault_session=signed", "idempotency-key": "checkout_attempt_0001" },
+      body: { planId: "team", billingInterval: "yearly", seats: 7, userId: "attacker_supplied" }
+    });
+    assert.equal(result.response.status, 200);
+    assert.equal(result.payload.code, "checkout_session_created");
+    assert.equal(result.payload.sessionId, "cs_test_verified");
+    assert.equal(result.payload.seats, 7);
+
+    const stripeCall = calls.find((call) => call.url.endsWith("/v1/checkout/sessions"));
+    const params = new URLSearchParams(String(stripeCall.init.body));
+    assert.equal(params.get("client_reference_id"), "user_verified");
+    assert.equal(params.get("customer_email"), "verified@example.com");
+    assert.equal(params.get("line_items[0][price]"), "price_team_yearly");
+    assert.equal(params.get("line_items[0][quantity]"), "7");
+    assert.equal(params.get("metadata[chemvault_user_id]"), "user_verified");
+    assert.equal(new Headers(stripeCall.init.headers).get("authorization"), "Bearer sk_test_server_only");
+    assert.equal(new Headers(stripeCall.init.headers).get("idempotency-key"), "chemvault:checkout_attempt_0001");
+    assert.equal(db.checkoutSessions[0].user_id, "user_verified");
+    assert.equal(db.checkoutSessions[0].price_id, "price_team_yearly");
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
+test("billing portal only opens for the verified account's Stripe customer", async () => {
+  const db = new BillingD1Mock({
+    subscriptions: [{
+      id: "local_subscription",
+      user_id: "user_verified",
+      provider_customer_id: "cus_verified",
+      provider_subscription_id: "sub_verified",
+      plan: "pro",
+      status: "active",
+      updated_at: "2026-07-13T00:00:00.000Z"
+    }]
+  });
+  const originalFetch = globalThis.fetch;
+  let portalParams;
+  globalThis.fetch = async (url, init = {}) => {
+    if (String(url).endsWith("/api/auth/me")) return identityResponse();
+    if (String(url).endsWith("/v1/billing_portal/sessions")) {
+      portalParams = new URLSearchParams(String(init.body));
+      return new Response(JSON.stringify({ url: "https://billing.stripe.com/p/session/test" }), {
+        status: 200,
+        headers: { "content-type": "application/json" }
+      });
+    }
+    throw new Error(`Unexpected fetch: ${url}`);
+  };
+  try {
+    const result = await callApi("billing/portal", {
+      method: "POST",
+      env: billingEnv(db),
+      headers: { cookie: "chemvault_session=signed" },
+      body: { userId: "different_user" }
+    });
+    assert.equal(result.response.status, 200);
+    assert.equal(result.payload.code, "billing_portal_created");
+    assert.equal(portalParams.get("customer"), "cus_verified");
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
+test("Stripe signature verification accepts current signatures and rejects invalid or stale signatures", async () => {
+  const rawBody = JSON.stringify({ id: "evt_signature", type: "test.event", data: { object: {} } });
+  const timestamp = 1_800_000_000;
+  await assert.doesNotReject(verifyStripeSignature(
+    rawBody,
+    stripeSignature(rawBody, "whsec_unit", timestamp),
+    "whsec_unit",
+    300,
+    timestamp * 1000
+  ));
+  await assert.rejects(
+    verifyStripeSignature(rawBody, `t=${timestamp},v1=${"0".repeat(64)}`, "whsec_unit", 300, timestamp * 1000),
+    (error) => error instanceof BillingError && error.code === "invalid_webhook_signature"
+  );
+  await assert.rejects(
+    verifyStripeSignature(rawBody, stripeSignature(rawBody, "whsec_unit", timestamp), "whsec_unit", 300, (timestamp + 301) * 1000),
+    (error) => error instanceof BillingError && error.code === "expired_webhook_signature"
+  );
+});
+
+test("subscription webhooks are idempotent and become the source of entitlements", async () => {
+  const db = new BillingD1Mock();
+  const env = {
+    ...billingEnv(db),
+    BILLING_SERVICE_SECRET: "service_secret",
+    ENVIRONMENT: "production",
+    COMMERCIAL_MODE: "production",
+    ALLOW_STRIPE_TEST_EVENTS: "true"
+  };
+  const event = {
+    id: "evt_subscription_active",
+    type: "customer.subscription.updated",
+    livemode: false,
+    created: 1_800_000_100,
+    data: {
+      object: {
+        id: "sub_active",
+        customer: "cus_active",
+        status: "active",
+        cancel_at_period_end: false,
+        current_period_end: 1_800_000_000,
+        metadata: {
+          chemvault_user_id: "user_verified",
+          chemvault_plan: "pro",
+          chemvault_billing_interval: "monthly"
+        },
+        items: { data: [{ price: { id: "price_pro_monthly" } }] }
+      }
+    }
+  };
+  const rawBody = JSON.stringify(event);
+  const signature = stripeSignature(rawBody, env.STRIPE_WEBHOOK_SECRET);
+
+  const first = await callApi("billing/webhook", {
+    method: "POST",
+    env,
+    rawBody,
+    headers: { "stripe-signature": signature }
+  });
+  assert.equal(first.response.status, 200);
+  assert.equal(first.payload.duplicate, false);
+  assert.equal(db.subscriptions.length, 1);
+  assert.equal(db.subscriptions[0].status, "active");
+
+  const duplicate = await callApi("billing/webhook", {
+    method: "POST",
+    env,
+    rawBody,
+    headers: { "stripe-signature": signature }
+  });
+  assert.equal(duplicate.response.status, 200);
+  assert.equal(duplicate.payload.duplicate, true);
+  assert.equal(db.subscriptions.length, 1);
+
+  const staleEvent = {
+    ...event,
+    id: "evt_subscription_stale",
+    type: "customer.subscription.deleted",
+    created: 1_800_000_000,
+    data: { object: { ...event.data.object, status: "canceled" } }
+  };
+  const staleRawBody = JSON.stringify(staleEvent);
+  const stale = await callApi("billing/webhook", {
+    method: "POST",
+    env,
+    rawBody: staleRawBody,
+    headers: { "stripe-signature": stripeSignature(staleRawBody, env.STRIPE_WEBHOOK_SECRET) }
+  });
+  assert.equal(stale.response.status, 200);
+  assert.equal(db.subscriptions[0].status, "active");
+  assert.equal(db.subscriptions[0].last_event_id, "evt_subscription_active");
+
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = async (url) => {
+    if (String(url).endsWith("/api/auth/me")) return identityResponse();
+    throw new Error(`Unexpected fetch: ${url}`);
+  };
+  try {
+    const entitlements = await callApi("entitlements", {
+      env,
+      headers: { cookie: "chemvault_session=signed" }
+    });
+    assert.equal(entitlements.response.status, 200);
+    assert.equal(entitlements.payload.plan, "pro");
+    assert.equal(entitlements.payload.meta.subscription.status, "active");
+    assert.equal(entitlements.payload.features["compound.search.export"].enabled, true);
+
+    const internal = await callApi("internal/billing/entitlements?userId=user_verified", {
+      env,
+      headers: { authorization: "Bearer service_secret" }
+    });
+    assert.equal(internal.response.status, 200);
+    assert.equal(internal.payload.plan, "pro");
+    assert.equal(internal.payload.features["compound.search.export"], true);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});

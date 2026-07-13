@@ -1,14 +1,17 @@
 # Architecture
 
-ChemVault is the public knowledge/search/product-navigation site and the suite authority for public form intake, lead/newsletter records, private form administration, and related notification email. Static pages and generated public-record JSON are served by Cloudflare Pages; Pages Functions use D1 and server-only provider credentials. Form submissions use a D1-backed unique idempotency key so safe client retries return the original private ticket instead of creating another record.
+ChemVault is the suite's public chemistry knowledge/search site and the server authority for public intake, billing subscriptions, plan entitlements, private form administration, and related notification email. Cloudflare Pages serves static pages and generated public-record JSON. Pages Functions keep D1 and provider credentials server-side.
 
-Public chemistry records are intentionally public. Form bodies, reply emails, leads, admin audit, and replies are private. Administrator identity is resolved through User Center/Access and explicit allowlists; development headers and legacy tokens are not production authority.
+ChemVault User is the identity authority. Billing endpoints forward the existing session credential to User Center `/api/auth/me`; client-provided user IDs and plan names are never billing authority. Stripe is the payment-state authority. Signed `customer.subscription.*` events update D1, and the main site resolves the effective plan from the verified user plus the latest entitled subscription. Older webhook events cannot overwrite newer subscription state.
 
-Known risks: public content must never include internal paths/private material; commercial plan UI is not entitlement; generated indexes must be reproducible; retention/email failures must stay visible.
+Authorized suite services may read a user's resolved plan through `/api/internal/billing/entitlements` with `BILLING_SERVICE_SECRET`. The service secret proves service identity only; the calling service must independently prove which end user is making the request.
 
-There is no embedded AI. Form retention is in `cron.md`, notification mail in `emails.md`, and public indexing in `seo.md`.
+Public chemistry records are intentionally public. Form bodies, reply emails, leads, billing customer/subscription IDs, webhook records, admin audit, and replies are private. No browser receives Stripe secret keys, webhook secrets, or the cross-service billing credential.
+
+The repository contains a production-capable billing implementation, but billing remains disabled until Stripe products/prices, secrets, webhook delivery, D1 migration, and live canaries pass the release gate in [Commercial readiness](commercial-readiness.md).
 
 ## Related documents
 
-- [Flows](flows.md) · [Permissions](permissions.md) · [Variables](variables.md) · [Tests](tests.md)
+- [Critical flows](flows.md) · [Permissions](permissions.md) · [Runtime variables](variables.md) · [Verification](tests.md)
+- [Billing runbook](billing-runbook.md) · [Commercial readiness](commercial-readiness.md)
 - [Retention](cron.md) · [Email](emails.md) · [SEO/public data](seo.md)

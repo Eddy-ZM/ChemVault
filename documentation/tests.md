@@ -1,22 +1,26 @@
 # Verification Map
 
-## Existing coverage
+## Automated coverage
 
-| Use case | Rule/negative case | Evidence/status |
+| Use case | Rule or negative case | Evidence |
 | --- | --- | --- |
-| Public record contract | Stable public-only schema; English/Chinese copies align | contract tests; CI required |
-| Forms/leads/admin | Validation, ticket/admin scope, retention, email state, and duplicate `Idempotency-Key` reuse without a second D1 row | Node tests, including `tests/forms-api.test.mjs`; CI required |
-| Reproducible build | Public index uses input commit or `SOURCE_DATE_EPOCH` | build twice plus clean-worktree check proposed below |
-| Static/public build | Links, sitemap, record pages and generated output | `npm test`, `npm run build` |
+| Billing identity | No credential fails before any User Center/Stripe request; request user ID is ignored | `tests/billing-api.test.mjs` |
+| Checkout and portal | Fixed Price IDs, verified customer ownership, idempotency header, safe provider URL | `tests/billing-api.test.mjs` |
+| Webhook integrity | HMAC verification, tolerance, malformed/invalid signatures, duplicate delivery, stale-event suppression | `tests/billing-api.test.mjs` |
+| Entitlements | Active subscription drives browser and internal service plan; anonymous requests stay anonymous | `tests/billing-api.test.mjs`, `tests/commercial-api.test.mjs` |
+| Commercial fail-closed behavior | Mock billing/auth disabled in production; client plan cannot unlock export | `tests/commercial-api.test.mjs` |
+| Public record contract | Stable public-only schema; English/Chinese copies align | Contract tests and CI |
+| Forms/leads/admin | Validation, ticket/admin scope, retention, email state, idempotent intake | Forms/leads tests and CI |
+| Static/public build | Links, sitemap, record pages, generated output | `npm test`, `npm run build` |
 
-## Proposed tests
+## Required guarded live canaries
 
-- Automated: build twice and require identical `public-record-index.json` plus `git diff --exit-code`.
-- Guarded live: submit → ticket lookup → admin reply → retention expiry canary.
-- Guarded live: Resend/provider confirmation and admin notice without logging form body.
+- Stripe test mode: sign in → Checkout → completed webhook → Pro entitlement → Portal → cancel-at-period-end update.
+- Stripe production: one low-risk live transaction, refund/cancel verification, event log inspection, and audit record retention.
+- D1: migration snapshot/restore rehearsal and duplicate/out-of-order webhook replay.
+- Cross-service: a Free user is denied a paid operation, a paid user succeeds, and an invalid service secret is denied.
+- Forms: submit → ticket lookup → admin reply → retention expiry, without logging form bodies.
 
-## Gaps
+## Remaining external evidence
 
-- Provider delivery, Cloudflare bindings, and scheduled notifications require deployed evidence.
-- Local idempotency tests use a D1 mock; concurrent replay against the deployed D1 binding remains a guarded canary.
-- Legal/privacy wording and retention durations require compliance-owner approval.
+Provider delivery, Cloudflare production bindings, Stripe account configuration, tax settings, and live money movement require deployed evidence. Local D1 mocks prove application behavior but do not replace a guarded canary against the deployed binding.

@@ -2,7 +2,7 @@
 
 Do not commit real keys, tokens, private keys, certificates, provisioning profiles, or `.env` files. Store production secrets in Cloudflare, GitHub Actions, Xcode Cloud, App Store Connect, Resend, Stripe, or the relevant provider secret store.
 
-Last reviewed: July 3, 2026
+Last reviewed: July 13, 2026
 
 | Variable | Purpose | Required locally | Required in production | Sensitive | Example placeholder | Notes |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -14,6 +14,7 @@ Last reviewed: July 3, 2026
 | `DEFAULT_USER_PLAN` | Local/staging plan placeholder | No | No | No | `free` | Do not use for production entitlement logic. |
 | `CHEMVAULT_ADMIN_EMAILS` | Allowed main-site administrator emails | No | Yes for `/admin/*` | Moderate | `ziwen.mu@chemvault.science,admin@chemvault.science` | Used after Cloudflare Access or ChemVault User authentication. Email is not enough by itself; the request must also be authenticated. |
 | `USER_SYSTEM_ORIGIN` | ChemVault User Center origin for permission checks | No | Recommended | No | `https://user.chemvault.science` | Main site calls `/api/access/check` with the user session cookie when available. |
+| `BILLING_SERVICE_SECRET` | Bearer credential for suite services reading server-resolved entitlements | No | Yes for cross-service plan enforcement | Yes | `replace_with_billing_service_secret` | Store the same rotated secret only in the main site and authorized ChemVault services. Never expose it to browsers. |
 | `CHEMVAULT_ADMIN_TOKEN` | Legacy main admin fallback token | No | Emergency fallback only | Yes | `replace_with_secure_token` | Store only as a Cloudflare secret. Prefer Cloudflare Access or ChemVault User permissions. |
 | `CHEMVAULT_ADMIN_TOKEN_FALLBACK` | Enables legacy admin-token fallback | No | Optional emergency only | No | `false` | Keep `false` in production unless a temporary break-glass token window is explicitly needed. |
 | `CLOUDFLARE_API_TOKEN` | Cloudflare deployment/API access | No | Yes for deploy | Yes | `your_cloudflare_api_token_here` | Store in GitHub Secrets or Cloudflare. Rotate if exposed. |
@@ -25,6 +26,11 @@ Last reviewed: July 3, 2026
 | `PAYMENT_PROVIDER` | Payment provider selector | No | If billing enabled | No | `stripe` | Empty/placeholder keeps billing disabled. |
 | `STRIPE_SECRET_KEY` | Stripe server secret key | No | If Stripe enabled | Yes | `your_stripe_secret_key_here` | Never expose to browser code. |
 | `STRIPE_WEBHOOK_SECRET` | Stripe webhook signing secret | No | If Stripe enabled | Yes | `replace_with_stripe_webhook_secret` | Required for webhook verification. |
+| `STRIPE_API_VERSION` | Optional pinned Stripe API version | No | Recommended if Stripe enabled | No | `your_confirmed_stripe_api_version` | Set only to a version confirmed in the Stripe account; otherwise the account default is used. |
+| `STRIPE_AUTOMATIC_TAX` | Enables Stripe Checkout automatic tax | No | Optional | No | `false` | Enable only after Stripe Tax registrations and product tax codes are reviewed. |
+| `STRIPE_WEBHOOK_TOLERANCE_SECONDS` | Maximum accepted Stripe signature age | No | Optional | No | `300` | Runtime clamps this value to 30-900 seconds. |
+| `ALLOW_STRIPE_TEST_EVENTS` | Allows test-mode Stripe events in production runtime | No | No | No | `false` | Keep false in production; use only for a controlled pre-launch canary. |
+| `BILLING_PAST_DUE_GRACE` | Keeps paid access during `past_due` | No | Optional | No | `false` | Defaults to fail closed. Enable only with an explicit collections/grace policy. |
 | `STRIPE_PRO_MONTHLY_PRICE_ID` | Stripe Pro monthly price identifier | No | If Stripe enabled | Low | `your_stripe_pro_monthly_price_id_here` | Operational config, not a secret. |
 | `STRIPE_PRO_YEARLY_PRICE_ID` | Stripe Pro yearly price identifier | No | If Stripe enabled | Low | `your_stripe_pro_yearly_price_id_here` | Operational config, not a secret. |
 | `STRIPE_TEAM_MONTHLY_PRICE_ID` | Stripe Team monthly price identifier | No | If Stripe enabled | Low | `your_stripe_team_monthly_price_id_here` | Operational config, not a secret. |
@@ -128,6 +134,7 @@ Rotate immediately if exposed or possibly exposed:
 - `RESEND_API_KEY`;
 - `OPENAI_API_KEY`;
 - `STRIPE_SECRET_KEY`;
+- `STRIPE_WEBHOOK_SECRET` and `BILLING_SERVICE_SECRET`;
 - OAuth client secrets;
 - internal worker/gateway tokens;
 - database and R2/S3 credentials.

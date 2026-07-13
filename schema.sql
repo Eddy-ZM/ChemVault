@@ -88,9 +88,40 @@ CREATE TABLE IF NOT EXISTS subscriptions (
   provider_subscription_id TEXT,
   plan TEXT NOT NULL,
   status TEXT NOT NULL,
+  price_id TEXT,
+  billing_interval TEXT,
   current_period_end TEXT,
+  cancel_at_period_end INTEGER NOT NULL DEFAULT 0,
+  livemode INTEGER NOT NULL DEFAULT 0,
+  last_event_id TEXT,
+  last_event_created INTEGER,
   created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS billing_checkout_sessions (
+  id TEXT PRIMARY KEY,
+  user_id TEXT NOT NULL,
+  provider_customer_id TEXT,
+  provider_subscription_id TEXT,
+  plan TEXT NOT NULL,
+  billing_interval TEXT NOT NULL,
+  price_id TEXT NOT NULL,
+  seat_count INTEGER NOT NULL DEFAULT 1,
+  status TEXT NOT NULL DEFAULT 'created',
+  livemode INTEGER NOT NULL DEFAULT 0,
+  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  completed_at TEXT
+);
+
+CREATE TABLE IF NOT EXISTS billing_webhook_events (
+  id TEXT PRIMARY KEY,
+  type TEXT NOT NULL,
+  livemode INTEGER NOT NULL DEFAULT 0,
+  attempts INTEGER NOT NULL DEFAULT 0,
+  last_error TEXT,
+  received_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  processed_at TEXT
 );
 
 CREATE TABLE IF NOT EXISTS feature_entitlements (
@@ -205,6 +236,11 @@ CREATE INDEX IF NOT EXISTS newsletter_subscribers_token_idx ON newsletter_subscr
 CREATE INDEX IF NOT EXISTS organizations_plan_idx ON organizations (plan);
 CREATE INDEX IF NOT EXISTS memberships_user_idx ON memberships (user_id);
 CREATE INDEX IF NOT EXISTS subscriptions_plan_idx ON subscriptions (plan);
+CREATE INDEX IF NOT EXISTS subscriptions_user_status_idx ON subscriptions (user_id, status);
+CREATE INDEX IF NOT EXISTS subscriptions_customer_idx ON subscriptions (provider_customer_id);
+CREATE UNIQUE INDEX IF NOT EXISTS subscriptions_provider_id_idx ON subscriptions (provider_subscription_id) WHERE provider_subscription_id IS NOT NULL;
+CREATE INDEX IF NOT EXISTS billing_checkout_user_idx ON billing_checkout_sessions (user_id, created_at);
+CREATE INDEX IF NOT EXISTS billing_webhook_processed_idx ON billing_webhook_events (processed_at);
 CREATE INDEX IF NOT EXISTS feature_entitlements_plan_idx ON feature_entitlements (plan);
 CREATE INDEX IF NOT EXISTS usage_records_feature_idx ON usage_records (feature_key);
 CREATE UNIQUE INDEX IF NOT EXISTS resources_slug_idx ON resources (slug);

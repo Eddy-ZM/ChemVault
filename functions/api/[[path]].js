@@ -13,8 +13,17 @@ import {
   legacyAdminTokenEnabled,
   requireAdminAccess
 } from "../_shared/admin-auth.js";
+import {
+  BillingError,
+  createStripeCheckoutSession,
+  createStripePortalSession,
+  handleStripeWebhook,
+  isStripeConfigured,
+  resolvePlanForUserId,
+  resolveSubscriptionContext
+} from "../_shared/billing.js";
 
-const API_VERSION = "0.5.1";
+const API_VERSION = "0.6.0";
 let schemaReady = false;
 let formsSchemaReady = false;
 const rateLimitStore = new Map();
@@ -265,7 +274,9 @@ export async function onRequest(context) {
           leadStorage: hasDb,
           formsStorage: hasDb,
           formsMailer: Boolean(env?.RESEND_API_KEY),
-          paymentPlaceholder: true
+          paymentPlaceholder: !isStripeConfigured(env),
+          subscriptionBilling: isStripeConfigured(env) && hasDb,
+          signedBillingWebhooks: Boolean(env?.STRIPE_WEBHOOK_SECRET) && hasDb
         },
         commercial: {
           environment: runtime.environment,
@@ -279,7 +290,8 @@ export async function onRequest(context) {
 
     if (segments[0] === "entitlements") {
       if (request.method !== "GET") return json({ error: "Method not allowed" }, 405);
-      const plan = resolveServerPlan(request, env);
+      const commercial = await resolveServerContext(request, env, hasDb ? env.DB : null);
+      const plan = commercial.plan;
       return json({
         source: "server",
         plan,
@@ -294,10 +306,14 @@ export async function onRequest(context) {
           version: API_VERSION,
           environment: runtime.environment,
           commercialMode: runtime.commercialMode,
-          authMode: runtime.mockAuthEnabled ? "placeholder" : "disabled",
+          authMode: commercial.authMode,
+          authenticated: Boolean(commercial.identity),
+          subscription: commercial.subscription,
           message: runtime.mockAuthEnabled
-            ? "Development/staging placeholder auth is enabled. Replace with real auth/subscription before production."
-            : "Placeholder auth is disabled; server-side entitlements default to Free."
+            ? "Development/staging placeholder auth is enabled."
+            : commercial.identity
+              ? "Plan resolved from the verified ChemVault User identity and billing subscription."
+              : "No verified ChemVault User session; only anonymous features are enabled."
         }
       });
     }
@@ -372,6 +388,27 @@ export async function onRequest(context) {
       }
       const result = await purgeExpiredFormSubmissions(env, hasDb, request, { email: "retention-scheduler" });
       return json(result, result.ok ? 200 : 503);
+    }
+
+    if (segments[0] === "internal" && segments[1] === "billing" && segments[2] === "entitlements") {
+      if (request.method !== "GET") return json({ error: "Method not allowed" }, 405);
+      const expected = clean(env.BILLING_SERVICE_SECRET);
+      const authorization = clean(request.headers.get("authorization"));
+      if (!expected || authorization !== `Bearer ${expected}`) {
+        return json({ ok: false, error: "Invalid billing service credential." }, 401);
+      }
+      if (!hasDb) return json({ ok: false, error: "Billing storage is unavailable." }, 503);
+      const userId = clean(url.searchParams.get("userId"));
+      const plan = await resolvePlanForUserId(env, env.DB, userId);
+      return json({
+        ok: true,
+        userId,
+        plan,
+        features: Object.fromEntries(Object.keys(serverFeatureEntitlements).map((featureKey) => [
+          featureKey,
+          hasServerFeatureAccess(plan, featureKey)
+        ]))
+      });
     }
 
     if (segments[0] === "admin") {
@@ -449,22 +486,31 @@ export async function onRequest(context) {
 
     if (segments[0] === "billing") {
       if (request.method !== "POST") return json({ error: "Method not allowed" }, 405);
+      if (segments[1] === "webhook") {
+        const result = await handleStripeWebhook(request, env, hasDb ? env.DB : null, { production: runtime.production });
+        return json(result, 200);
+      }
       if (segments[1] === "checkout") {
-        const result = await createCheckoutPlaceholder(env, await readJSONBody(request));
+        const body = await readJSONBody(request);
+        const result = isStripeConfigured(env)
+          ? await createStripeCheckoutSession(request, env, hasDb ? env.DB : null, body)
+          : await createCheckoutPlaceholder(env, body);
         return json(stripHttpStatus(result), result.httpStatus || (result.ok ? 200 : 400));
       }
       if (segments[1] === "portal") {
-        const result = await createBillingPortalPlaceholder(env, await readJSONBody(request));
+        const result = isStripeConfigured(env)
+          ? await createStripePortalSession(request, env, hasDb ? env.DB : null)
+          : await createBillingPortalPlaceholder(env, await readJSONBody(request));
         return json(stripHttpStatus(result), result.httpStatus || (result.ok ? 200 : 400));
       }
-      return json({ error: "Not found", routes: ["/api/billing/checkout", "/api/billing/portal"] }, 404);
+      return json({ error: "Not found", routes: ["/api/billing/checkout", "/api/billing/portal", "/api/billing/webhook"] }, 404);
     }
 
     if (segments[0] === "export") {
       if (request.method !== "POST") return json({ error: "Method not allowed" }, 405);
       const limited = checkRateLimit(request, "export", rateLimitPolicies.export);
       if (!limited.ok) return rateLimitResponse(limited);
-      const plan = resolveServerPlan(request, env);
+      const plan = await resolveServerPlan(request, env, hasDb ? env.DB : null);
       const access = requireServerFeatureAccess(plan, "compound.search.export");
       if (!access.ok) return json(access, 402);
       return json({
@@ -495,9 +541,12 @@ export async function onRequest(context) {
       return json(await getFacets(env, hasDb));
     }
 
-    return json({ error: "Not found", routes: ["/api/health", "/api/entitlements", "/api/leads", "/api/newsletter/unsubscribe", "/api/forms/submit", "/api/forms/lookup", "/api/feedback", "/api/account/deletion-request", "/api/account/export-request", "/api/billing/checkout", "/api/export/compound", "/api/records", "/api/records/:type/:id", "/api/enrich", "/api/facets"] }, 404);
+    return json({ error: "Not found", routes: ["/api/health", "/api/entitlements", "/api/leads", "/api/newsletter/unsubscribe", "/api/forms/submit", "/api/forms/lookup", "/api/feedback", "/api/account/deletion-request", "/api/account/export-request", "/api/billing/checkout", "/api/billing/portal", "/api/billing/webhook", "/api/export/compound", "/api/records", "/api/records/:type/:id", "/api/enrich", "/api/facets"] }, 404);
   } catch (error) {
-    if (segments[0] === "forms" || segments[0] === "feedback" || segments[0] === "leads" || segments[0] === "newsletter" || segments[0] === "admin" || segments[0] === "internal") {
+    if (error instanceof BillingError) {
+      return json({ ok: false, code: error.code, error: error.message }, error.status);
+    }
+    if (segments[0] === "forms" || segments[0] === "feedback" || segments[0] === "leads" || segments[0] === "newsletter" || segments[0] === "admin" || segments[0] === "internal" || segments[0] === "billing") {
       return json({
         ok: false,
         error: "Request failed. Internal details were suppressed."
@@ -3251,15 +3300,23 @@ function redactMetadata(value) {
   }));
 }
 
-function resolveServerPlan(request, env) {
-  // TODO: Replace this placeholder with ChemVault User session lookup and subscription state.
+async function resolveServerContext(request, env, db) {
   const runtime = commercialRuntime(env);
-  if (!runtime.mockAuthEnabled) return "free";
+  if (!runtime.mockAuthEnabled) {
+    const context = await resolveSubscriptionContext(request, env, db);
+    return { ...context, authMode: "chemvault-user" };
+  }
 
   const auth = request.headers.get("authorization") || "";
   const token = clean(env.CHEMVAULT_ADMIN_TOKEN);
-  if (token && auth === `Bearer ${token}`) return "admin";
-  return normaliseServerPlan(env.DEFAULT_USER_PLAN || "free");
+  const plan = token && auth === `Bearer ${token}`
+    ? "admin"
+    : normaliseServerPlan(env.DEFAULT_USER_PLAN || "free");
+  return { identity: null, plan, subscription: null, authMode: "placeholder" };
+}
+
+async function resolveServerPlan(request, env, db) {
+  return (await resolveServerContext(request, env, db)).plan;
 }
 
 function normaliseServerPlan(value) {
