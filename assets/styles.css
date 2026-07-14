@@ -231,19 +231,14 @@ html.theme-switching :where(
   .site-nav a,
   .nav-more > summary,
   .nav-more-menu,
-  .home-search-card,
-  .portal-card,
-  .page-panel,
-  .record-panel,
   input,
   select,
   textarea
 ) {
   transition:
-    background-color 260ms var(--ease-out),
-    color 260ms var(--ease-out),
-    border-color 260ms var(--ease-out),
-    box-shadow 260ms var(--ease-out);
+    background-color 180ms var(--ease-out),
+    color 180ms var(--ease-out),
+    border-color 180ms var(--ease-out);
 }
 
 html.theme-switching::before {
@@ -257,8 +252,9 @@ html.theme-switching::before {
     rgba(16, 17, 20, 0.22);
   opacity: 0;
   transform: translateZ(0);
+  contain: strict;
   will-change: opacity;
-  animation: chemvault-theme-reveal 360ms var(--ease-out) both;
+  animation: chemvault-theme-reveal 220ms var(--ease-out) both;
 }
 
 html.theme-switching[data-theme-target="light"]::before {
@@ -3987,4 +3983,528 @@ body.page-shell:not([data-boot-label="Search"]) :where(
   .record-trust-card p
 ) {
   color: var(--muted);
+}
+
+/* Molecular Exhibition: final public inner-page layer.
+   Shared here so every public route receives the selected system without
+   duplicating page markup. The homepage loads home-exhibition.css afterwards. */
+@font-face {
+  font-family: "CV Inter";
+  src: url("/assets/fonts/inter-400.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "CV Inter";
+  src: url("/assets/fonts/inter-500.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "CV Inter";
+  src: url("/assets/fonts/inter-600.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "CV Newsreader";
+  src: url("/assets/fonts/newsreader-400.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "CV Newsreader";
+  src: url("/assets/fonts/newsreader-500.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+}
+
+html body.page-shell.page-shell {
+  --bg: #f4f1e9 !important;
+  --bg-2: #fffdf8 !important;
+  --surface: #fffdf8 !important;
+  --surface-2: #f8f5ee !important;
+  --surface-3: #ece8df !important;
+  --text: #10203a !important;
+  --muted: #647084 !important;
+  --line: rgba(16, 32, 58, 0.15) !important;
+  --strong-line: rgba(16, 32, 58, 0.32) !important;
+  --amber: #155eef !important;
+  --teal: #0e7490 !important;
+  --blue: #155eef !important;
+  --shadow: none !important;
+  --radius: 10px !important;
+  --font-display: "CV Newsreader", Georgia, serif !important;
+  --font-body: "CV Inter", Arial, sans-serif !important;
+  min-height: 100%;
+  background: #f4f1e9 !important;
+  color: #10203a !important;
+  font-family: var(--font-body) !important;
+}
+
+html.dark-mode body.page-shell.page-shell,
+body.dark-mode.page-shell.page-shell {
+  --bg: #0c1420 !important;
+  --bg-2: #111d2c !important;
+  --surface: #111d2c !important;
+  --surface-2: #162438 !important;
+  --surface-3: #1b2c43 !important;
+  --text: #f7f4ec !important;
+  --muted: #aebbc9 !important;
+  --line: rgba(255, 255, 255, 0.14) !important;
+  --strong-line: rgba(87, 188, 255, 0.42) !important;
+  background: #0c1420 !important;
+  color: #f7f4ec !important;
+}
+
+html body.page-shell.page-shell main,
+html body.page-shell.page-shell :is(
+  .page-hero,
+  .academic-page-hero,
+  .workbench-hero,
+  .cv-commercial-hero,
+  .forms-hero,
+  .framework-hero,
+  .section,
+  .section-tint,
+  .academic-section,
+  .workbench-section,
+  .cv-section,
+  .forms-section,
+  .framework-section,
+  .apple-board-section,
+  .apple-profile-section,
+  .search-studio-section
+) {
+  background-color: var(--bg) !important;
+  background-image: none !important;
+  color: var(--text) !important;
+  box-shadow: none !important;
+}
+
+html body.page-shell.page-shell :is(
+  .page-hero,
+  .academic-page-hero,
+  .workbench-hero,
+  .cv-commercial-hero,
+  .forms-hero,
+  .framework-hero
+) {
+  border-bottom: 1px solid var(--line) !important;
+}
+
+html body.page-shell.page-shell :is(h1, h2, h3, .display-heading) {
+  color: var(--text) !important;
+  font-family: var(--font-display) !important;
+  font-weight: 500 !important;
+  letter-spacing: -0.015em !important;
+}
+
+html body.page-shell.page-shell :is(
+  .page-panel,
+  .page-index-card,
+  .page-index-panel,
+  .portal-card,
+  .academic-panel,
+  .academic-note-card,
+  .apple-profile-card,
+  .contact-card,
+  .feature-card,
+  .platform-capability-card,
+  .project-card,
+  .cv-feature-panel,
+  .cv-lead-panel,
+  .forms-panel,
+  .vision-panel,
+  .data-window,
+  .detail-card,
+  .compare-card,
+  .table-card,
+  .calculator-shell,
+  .calc-panel,
+  .quiz-card,
+  .notes-panel,
+  .safety-section,
+  .source-card,
+  .method-card,
+  .source-browser-card,
+  .route-network article,
+  .local-result-card,
+  .external-source-card,
+  .fallback-source-card,
+  .live-card,
+  .workbench-window,
+  .workbench-canvas-panel,
+  .workbench-command-card,
+  .workbench-detail-card,
+  .workbench-list-panel,
+  .workbench-tab-panel,
+  .route-card,
+  .mechanism-audit-card,
+  .material-interface-card,
+  .related-record-card,
+  .record-panel,
+  .record-trust-card,
+  .graph-board,
+  .network-board,
+  .imported-records-panel,
+  .local-results-panel,
+  .nih-import-panel,
+  .note-panel,
+  .result-panel,
+  .search-control-panel,
+  .session-import-panel
+) {
+  border: 1px solid var(--line) !important;
+  border-radius: 10px !important;
+  background: var(--surface) !important;
+  background-image: none !important;
+  color: var(--text) !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+
+html body.page-shell.page-shell :is(
+  .page-panel,
+  .page-index-card,
+  .page-index-panel,
+  .portal-card,
+  .academic-panel,
+  .academic-note-card,
+  .apple-profile-card,
+  .contact-card,
+  .feature-card,
+  .platform-capability-card,
+  .project-card,
+  .cv-feature-panel,
+  .cv-lead-panel,
+  .forms-panel,
+  .vision-panel,
+  .data-window,
+  .source-browser-card,
+  .local-result-card,
+  .external-source-card,
+  .fallback-source-card,
+  .workbench-command-card,
+  .route-card,
+  .mechanism-audit-card,
+  .material-interface-card,
+  .related-record-card,
+  .record-panel,
+  .record-trust-card
+)::before,
+html body.page-shell.page-shell :is(
+  .page-panel,
+  .page-index-card,
+  .page-index-panel,
+  .portal-card,
+  .academic-panel,
+  .academic-note-card,
+  .apple-profile-card,
+  .contact-card,
+  .feature-card,
+  .platform-capability-card,
+  .project-card,
+  .cv-feature-panel,
+  .cv-lead-panel,
+  .forms-panel,
+  .vision-panel,
+  .data-window,
+  .source-browser-card,
+  .local-result-card,
+  .external-source-card,
+  .fallback-source-card,
+  .workbench-command-card,
+  .route-card,
+  .mechanism-audit-card,
+  .material-interface-card,
+  .related-record-card,
+  .record-panel,
+  .record-trust-card
+)::after {
+  background: none !important;
+  box-shadow: none !important;
+  filter: none !important;
+}
+
+html body.page-shell.page-shell :is(
+  .primary-button,
+  .academic-button.primary,
+  .commercial-button.primary,
+  .forms-button.primary
+) {
+  border-color: #155eef !important;
+  background: #155eef !important;
+  background-image: none !important;
+  color: #ffffff !important;
+  box-shadow: none !important;
+}
+
+html body.page-shell.page-shell :is(
+  .secondary-button,
+  .small-button,
+  .text-button,
+  .academic-button.ghost,
+  .commercial-button.secondary,
+  .tag
+) {
+  border-color: rgba(21, 94, 239, 0.32) !important;
+  background: rgba(21, 94, 239, 0.08) !important;
+  background-image: none !important;
+  color: #155eef !important;
+  box-shadow: none !important;
+}
+
+html.dark-mode body.page-shell.page-shell :is(
+  .secondary-button,
+  .small-button,
+  .text-button,
+  .academic-button.ghost,
+  .commercial-button.secondary,
+  .tag
+),
+body.dark-mode.page-shell.page-shell :is(
+  .secondary-button,
+  .small-button,
+  .text-button,
+  .academic-button.ghost,
+  .commercial-button.secondary,
+  .tag
+) {
+  border-color: rgba(87, 188, 255, 0.38) !important;
+  background: rgba(87, 188, 255, 0.1) !important;
+  color: #75c9ff !important;
+}
+
+html body.page-shell.page-shell .site-header {
+  min-height: 74px !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.13) !important;
+  background: #07111f !important;
+  background-image: none !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+
+html body.page-shell.page-shell .nav-shell {
+  min-height: 74px !important;
+  padding-top: 8px !important;
+  padding-bottom: 8px !important;
+}
+
+html body.page-shell.page-shell .site-header :is(.brand, .brand strong, .site-nav a, .nav-more > summary) {
+  color: #f7f4ec !important;
+}
+
+html body.page-shell.page-shell .site-header :is(.brand small, .search-shell, .search-shell input) {
+  color: #aebbc9 !important;
+}
+
+html body.page-shell.page-shell .site-nav {
+  border-color: rgba(255, 255, 255, 0.13) !important;
+  background: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+
+html body.page-shell.page-shell .site-nav::before {
+  background: #57bcff !important;
+  box-shadow: none !important;
+}
+
+html body.page-shell.page-shell .site-header :is(.search-shell, .theme-toggle, .icon-button) {
+  border-color: rgba(255, 255, 255, 0.17) !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+  background-image: none !important;
+  box-shadow: none !important;
+}
+
+html body.page-shell.page-shell .site-header .header-actions .small-button {
+  height: 44px !important;
+  min-height: 44px !important;
+  border-color: rgba(87, 188, 255, 0.38) !important;
+  background: rgba(87, 188, 255, 0.1) !important;
+  color: #dff4ff !important;
+}
+
+html body.page-shell.page-shell .site-header :is(.nav-more-menu, .shell-search-results) {
+  border: 1px solid rgba(255, 255, 255, 0.16) !important;
+  border-radius: 10px !important;
+  background: #0b1b2d !important;
+  background-image: none !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+
+html body.page-shell.page-shell .site-header .nav-more-menu::before {
+  background: #0b1b2d !important;
+}
+
+html body.page-shell.page-shell .site-footer,
+html body.page-shell.page-shell .footer-panel {
+  border-top-color: rgba(255, 255, 255, 0.12) !important;
+  background: #07111f !important;
+  background-image: none !important;
+  color: #c4cfda !important;
+  box-shadow: none !important;
+}
+
+html body.page-shell.page-shell .footer-ambient {
+  display: none !important;
+}
+
+html body.page-shell.page-shell :is(.footer-column, .footer-brand-mark, .footer-social, .footer-version) {
+  border-radius: 10px !important;
+  background-image: none !important;
+  box-shadow: none !important;
+}
+
+html body.page-shell.page-shell .footer-column {
+  background: rgba(255, 255, 255, 0.035) !important;
+}
+
+html body.page-shell.page-shell .footer-column::before {
+  background: #57bcff !important;
+  box-shadow: none !important;
+}
+
+html body.page-shell.page-shell .site-footer :is(a, strong, h2, h3) {
+  color: #fffdf8 !important;
+}
+
+/* Downstream cascade lock.
+   Supplemental route sheets load after this shared file, so the route identity
+   attributes provide enough specificity for this deliberate final theme. */
+html body.page-shell.page-shell[class][data-boot-label] {
+  background: var(--bg) !important;
+  color: var(--text) !important;
+  font-family: var(--font-body) !important;
+}
+
+html body.page-shell.page-shell[class][data-boot-label] main,
+html body.page-shell.page-shell[class][data-boot-label] main :is(
+  section,
+  [class$="-section"],
+  [class*="-section "]
+) {
+  background-color: var(--bg) !important;
+  background-image: none !important;
+  color: var(--text) !important;
+  box-shadow: none !important;
+}
+
+html body.page-shell.page-shell[class][data-boot-label] main :is(
+  [class$="-hero"],
+  [class*="-hero "]
+) {
+  border-bottom-color: var(--line) !important;
+  background-color: var(--bg) !important;
+  background-image: none !important;
+  color: var(--text) !important;
+  box-shadow: none !important;
+}
+
+html body.page-shell.page-shell[class][data-boot-label] main :is(h1, h2, h3, .display-heading) {
+  color: var(--text) !important;
+  font-family: var(--font-display) !important;
+  font-weight: 500 !important;
+  letter-spacing: -0.015em !important;
+}
+
+html body.page-shell.page-shell[class][data-boot-label] main :is(
+  [class$="-card"],
+  [class*="-card "],
+  [class$="-panel"],
+  [class*="-panel "],
+  [class$="-window"],
+  [class*="-window "],
+  [class$="-board"],
+  [class*="-board "],
+  .calculator-shell,
+  .safety-section,
+  .route-network article
+) {
+  border-color: var(--line) !important;
+  border-radius: 10px !important;
+  background: var(--surface) !important;
+  background-image: none !important;
+  color: var(--text) !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+
+html body.page-shell.page-shell[class][data-boot-label] main :is(
+  [class$="-card"],
+  [class*="-card "],
+  [class$="-panel"],
+  [class*="-panel "],
+  [class$="-window"],
+  [class*="-window "],
+  [class$="-board"],
+  [class*="-board "]
+)::before,
+html body.page-shell.page-shell[class][data-boot-label] main :is(
+  [class$="-card"],
+  [class*="-card "],
+  [class$="-panel"],
+  [class*="-panel "],
+  [class$="-window"],
+  [class*="-window "],
+  [class$="-board"],
+  [class*="-board "]
+)::after {
+  background: none !important;
+  box-shadow: none !important;
+  filter: none !important;
+}
+
+html body.page-shell.page-shell[class][data-boot-label] .site-header {
+  min-height: 74px !important;
+  border-bottom-color: rgba(255, 255, 255, 0.13) !important;
+  background: #07111f !important;
+  background-image: none !important;
+  color: #f7f4ec !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+
+html body.page-shell.page-shell[class][data-boot-label] .site-header :is(
+  .brand,
+  .brand strong,
+  .site-nav a,
+  .nav-more > summary
+) {
+  color: #f7f4ec !important;
+}
+
+html body.page-shell.page-shell[class][data-boot-label] .site-header :is(
+  .site-nav,
+  .search-shell,
+  .theme-toggle,
+  .icon-button
+) {
+  background-image: none !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+
+html body.page-shell.page-shell[class][data-boot-label] :is(.site-footer, .footer-panel) {
+  border-top-color: rgba(255, 255, 255, 0.12) !important;
+  background: #07111f !important;
+  background-image: none !important;
+  color: #c4cfda !important;
+  box-shadow: none !important;
+}
+
+html body.page-shell.page-shell[class][data-boot-label] .site-footer :is(a, strong, h2, h3) {
+  color: #fffdf8 !important;
 }

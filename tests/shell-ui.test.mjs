@@ -88,20 +88,24 @@ test("site navigation exposes core destinations through categorized disclosure g
   assert.match(shell, /function injectProductSwitcher/, "runtime shell injects the product app switcher");
   assert.match(shell, /productModules\(\)/, "runtime shell can populate app switcher links from the commercial module config");
 
-  for (const file of pageFiles) {
+  for (const file of pageFiles.filter((file) => file !== "index.html")) {
     const html = read(file);
     const nav = navMarkup(html);
 
     assert.match(nav, />Home</, `${file} keeps Home reachable in the static navigation`);
     assert.match(nav, /(Compound Search|Compounds|Search)/, `${file} keeps compound/search access reachable in the static navigation`);
-    if (file === "index.html") {
-      assert.match(nav, /AI Paper Search/, "index.html exposes the commercial product navigation directly");
-      assert.match(nav, /Pricing/, "index.html exposes pricing directly");
-      assert.match(html, /commercial-ui\.js\?v=(?!20260603a)\d+/, "index.html loads commercial UI behavior directly");
-    } else {
-      assert.match(html, /site-shell\.js\?v=(?!20260603a)\d+/, `${file} loads the runtime shell that normalizes commercial navigation`);
-    }
+    assert.match(html, /site-shell\.js\?v=(?!20260603a)\d+/, `${file} loads the runtime shell that normalizes commercial navigation`);
   }
+
+  const home = read("index.html");
+  const exhibitionNav = home.match(/<nav class="exhibition-nav"[\s\S]*?<\/nav>/)?.[0] || "";
+  assert.match(exhibitionNav, />Mission</, "home navigation starts with the institutional mission");
+  assert.match(exhibitionNav, />Research</, "home navigation keeps research visible");
+  assert.match(exhibitionNav, />Knowledge</, "home navigation explains the knowledge layer");
+  assert.match(exhibitionNav, />Resources</, "home navigation keeps documentation reachable");
+  assert.match(exhibitionNav, />About</, "home navigation keeps the initiative story reachable");
+  assert.doesNotMatch(exhibitionNav, /AI Paper Search|Pricing|File Library/, "home navigation does not present the sub-products as one application");
+  assert.doesNotMatch(home, /commercial-ui\.js/, "home does not load application navigation behavior");
 });
 
 test("search page keeps long-tail filters behind a collapsed advanced disclosure", () => {
@@ -140,30 +144,30 @@ test("search page paginates local results instead of rendering the full default 
   assert.match(styles, /\.search-pagination-link\[aria-current="page"\]/, "current pagination page is visually distinguished");
 });
 
-test("home page search uses a clearable icon input adapted from the template", () => {
+test("home page uses the selected exhibition concept with accessible interactions", () => {
   const html = read("index.html");
-  const script = read("scripts/home.js");
-  const styles = read("assets/portal.css");
+  const script = read("scripts/home-exhibition.js");
+  const styles = read("assets/home-exhibition.css");
 
-  assert.match(html, /portal\.css\?v=(?!20260619c)\d+[a-z]?/, "home page refreshes the portal stylesheet for the search input");
-  assert.match(html, /home\.js\?v=(?!20260603a)\d+/, "home page uses a non-stale search interaction script");
-  assert.match(html, /id="homeSearchForm"/, "home page keeps the compound search form");
-  assert.match(html, /id="homeSearch"/, "home page keeps the home compound search input");
-  assert.match(html, /class="quick-searches"/, "home page keeps quick compound search suggestions");
+  assert.match(html, /home-exhibition\.css\?v=20260713a/, "home loads its dedicated exhibition design layer");
+  assert.match(html, /home-exhibition\.js\?v=20260713a/, "home loads its focused interaction layer");
+  assert.match(html, /home-molecular-exhibition\.png/, "home displays the generated exhibition panorama");
+  assert.match(html, /id="exhibition-title"/, "home exposes a single primary page title");
+  assert.match(html, /id="mission"/, "primary calls to action lead to the mission");
+  assert.match(html, /id="principles"/, "research principles have a stable anchor");
+  assert.doesNotMatch(html, /homeSearchForm|data-render="app-modules"|commercial-ui\.js/, "home does not load compound-search or product-dashboard UI");
 
-  assert.match(script, /function wireHomeSearchInput/, "home script wires the clearable input behavior");
-  assert.match(script, /data-home-search-clear/, "home script targets the clear button");
-  assert.match(script, /home-search-input/, "home script toggles value state on the input shell");
-  assert.match(script, /input\.value = ""/, "clear action resets the search input");
-  assert.match(script, /function initSearch/, "home script still owns the compound search submit workflow");
-  assert.match(script, /pages\/search\.html/, "home search still routes queries to compound search");
+  assert.match(script, /function setMenu/, "home script owns the mobile navigation state");
+  assert.match(script, /aria-expanded/, "mobile navigation publishes its expanded state");
+  assert.match(script, /event\.key !== "Escape"/, "Escape closes the mobile navigation");
+  assert.match(script, /prefers-reduced-motion: reduce/, "hero depth respects reduced-motion preferences");
+  assert.match(script, /pointer: fine/, "pointer depth only runs for precise pointing devices");
 
-  assert.match(styles, /\.home-search-input\s*{[\s\S]*position:\s*relative/, "home input shell positions icon and clear controls");
-  assert.match(styles, /\.home-search-icon\s*{[\s\S]*position:\s*absolute/, "search icon is inset inside the input");
-  assert.match(styles, /\.home-search-clear\s*{[\s\S]*position:\s*absolute/, "clear button is inset inside the input");
-  assert.match(styles, /\.home-search-clear\[hidden\]/, "hidden clear button stays out of the accessible layout");
-  assert.match(styles, /\.home-search-input input::-webkit-search-cancel-button/, "native search clear button is hidden so only the template clear control appears");
-  assert.match(styles, /\.home-search-input\.has-value \.home-search-clear/, "clear button appears only when there is input text");
+  assert.match(styles, /@font-face[\s\S]*font-family:\s*"Newsreader"/, "home ships its editorial display type locally");
+  assert.match(styles, /\.exhibition-hero\s*{[\s\S]*min-height:\s*600px/, "desktop hero matches the gallery-scale composition");
+  assert.match(styles, /\.exhibition-hero-media img\s*{[\s\S]*object-fit:\s*cover/, "desktop panorama fills the selected visual slot");
+  assert.match(styles, /@media \(max-width:\s*820px\)[\s\S]*\.exhibition-menu-toggle\s*{[\s\S]*display:\s*inline-flex/, "mobile navigation exposes its menu control");
+  assert.match(styles, /@media \(prefers-reduced-motion:\s*reduce\)/, "home provides a static reduced-motion profile");
 });
 
 test("topbar search opens without resizing the navigation tabs", () => {
@@ -226,13 +230,17 @@ test("home reveal orchestration keeps section titles ahead of body content", () 
 });
 
 test("startup welcome assets use a fresh cache key on every HTML entry", () => {
-  for (const file of bootHtmlFiles) {
+  for (const file of bootHtmlFiles.filter((file) => file !== "index.html")) {
     const html = read(file);
 
     assert.match(html, /boot\.js\?v=20260705a/, `${file} references startup welcome boot`);
     assert.match(html, /styles\.css\?v=(?!20260603a)\d+/, `${file} references non-stale shared styles`);
     assert.match(html, /motion\.js\?v=20260705a/, `${file} references startup welcome motion`);
   }
+
+  const home = read("index.html");
+  assert.match(home, /home-exhibition\.js\?v=20260713a/, "home uses the exhibition entrance instead of the application boot sequence");
+  assert.doesNotMatch(home, /boot\.js|motion\.js/, "home does not show the application welcome overlay");
 });
 
 test("public contact references use confirmed ChemVault mailboxes", () => {
@@ -292,7 +300,6 @@ test("footer uses a ChemVault sticky footer adapted from the template", () => {
   const styles = read("assets/styles.css");
 
   for (const [file, source] of [
-    ["index.html", index],
     ["404.html", notFound],
     ["scripts/site-shell.js", shell]
   ]) {
@@ -308,6 +315,12 @@ test("footer uses a ChemVault sticky footer adapted from the template", () => {
     assert.match(source, /ChemVault v0\.2\.4/, `${file} exposes the current site version in the footer`);
     assert.match(source, /class="[^"]*footer-mobile-compact/, `${file} includes a dedicated compact mobile footer`);
   }
+
+  const exhibitionStyles = read("assets/home-exhibition.css");
+  assert.match(index, /class="site-footer exhibition-footer"/, "home uses the simple institutional exhibition footer");
+  assert.match(index, /class="exhibition-shell exhibition-footer-grid"/, "home footer keeps a restrained identity, statement, and navigation grid");
+  assert.doesNotMatch(index, /footer-sticky-layer/, "home footer stays in document flow instead of using the application reveal treatment");
+  assert.match(exhibitionStyles, /\.home-exhibition \.exhibition-footer\s*{[\s\S]*position:\s*relative/, "home footer explicitly overrides the shared sticky-footer positioning");
 
   assert.match(styles, /body\s*{[\s\S]*position:\s*relative/, "page body creates a root layer for the reveal footer");
   assert.match(styles, /body\s*{[\s\S]*isolation:\s*isolate/, "page body isolates the reveal stacking context");
@@ -366,12 +379,17 @@ test("site navigation uses a 21st.dev-inspired spotlight tab treatment", () => {
   assert.match(shell, /pointerFocusUntil/, "runtime shell ignores pointer-created focus when positioning the spotlight");
   assert.match(commercialUi, /focusout[\s\S]*stateTarget\(false\)/, "commercial homepage returns the spotlight to the current page after focus leaves navigation");
 
-  for (const file of bootHtmlFiles) {
+  for (const file of bootHtmlFiles.filter((file) => file !== "index.html")) {
     const html = read(file);
 
     navMarkup(html);
     assert.match(html, /styles\.css\?v=(?!20260603a)\d+/, `${file} references non-stale spotlight navigation styles`);
   }
+
+  const home = read("index.html");
+  const exhibitionStyles = read("assets/home-exhibition.css");
+  assert.match(home, /class="exhibition-nav"/, "home uses the selected minimal institutional navigation");
+  assert.match(exhibitionStyles, /\.exhibition-nav\s*{[\s\S]*justify-content:\s*center/, "home navigation is centered like the selected exhibition concept");
 
   assert.match(styles, /\.site-nav\s*{[\s\S]*--nav-indicator-x:\s*8px/, "navigation container exposes spotlight indicator variables");
   assert.match(styles, /\.site-nav\s*{[\s\S]*backdrop-filter:\s*blur\(20px\)/, "navigation rail uses translucent glass");
@@ -389,12 +407,18 @@ test("theme switch presents a stable, resolved light/dark control", () => {
     assert.match(script, /button\.dataset\.themeState = mode/, `${scriptFile} exposes the resolved light/dark state to the control`);
     assert.match(script, /return resolveTheme\(normaliseTheme\(setting\)\) === "dark" \? "light" : "dark"/, `${scriptFile} toggles directly between light and dark`);
     assert.match(script, /theme active\. Switch to/, `${scriptFile} gives the toggle an accessible active-state label`);
+    assert.doesNotMatch(script, /offsetWidth/, `${scriptFile} avoids forced layout reads during theme switching`);
+    assert.match(script, /!root\.classList\.contains\("theme-switching"\)/, `${scriptFile} avoids restarting the transition class on rapid toggles`);
+    assert.match(script, /setTimeout\(\(\) => \{[\s\S]*root\.classList\.remove\("theme-switching"\);[\s\S]*\}, 240\)/, `${scriptFile} keeps the theme transition short`);
   }
 
   assert.match(styles, /\.theme-toggle\s*{[\s\S]*width:\s*64px[\s\S]*border-radius:\s*999px/, "theme control uses a compact switch rail");
   assert.match(styles, /\.theme-toggle\[data-theme-state="dark"\] \.theme-toggle__icon\s*{[\s\S]*translateX\(30px\)/, "dark mode moves the switch thumb to the active side");
   assert.match(styles, /\.theme-toggle\[data-theme-state="light"\] \.theme-toggle__icon::before/, "light mode renders the sun state");
   assert.doesNotMatch(styles, /\.theme-toggle\[data-theme-state="system"\]/, "theme control no longer renders a visually ambiguous system state");
+  assert.doesNotMatch(styles, /html\.theme-switching[\s\S]*box-shadow 260ms/, "theme switching avoids expensive shadow interpolation");
+  assert.match(styles, /html\.theme-switching::before\s*{[\s\S]*contain:\s*strict/, "theme overlay is paint-contained");
+  assert.match(styles, /animation:\s*chemvault-theme-reveal 220ms/, "theme overlay animation stays brief");
 });
 
 function escapeRegex(value) {

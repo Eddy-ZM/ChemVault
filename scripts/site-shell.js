@@ -464,13 +464,11 @@
     root.style.setProperty("--theme-x", rect ? `${rect.left + rect.width / 2}px` : "50%");
     root.style.setProperty("--theme-y", rect ? `${rect.top + rect.height / 2}px` : "50%");
     root.dataset.themeTarget = targetMode;
-    root.classList.remove("theme-switching");
-    void root.offsetWidth;
-    root.classList.add("theme-switching");
     window.clearTimeout(window.CHEMVAULT_THEME_TIMER);
+    if (!root.classList.contains("theme-switching")) root.classList.add("theme-switching");
     window.CHEMVAULT_THEME_TIMER = window.setTimeout(() => {
       root.classList.remove("theme-switching");
-    }, 380);
+    }, 240);
   }
 
   function readThemeSetting() {

@@ -84,16 +84,13 @@ test("compound search keeps free search without selling unshipped export control
   assert.doesNotMatch(html, /data-feature-key="compound\.search\.export"|Export results|Save search/, "search page does not sell unshipped export or save actions");
 });
 
-test("commercial forms and client logic provide validation and clear states", () => {
+test("pricing forms and client logic provide validation and clear states", () => {
   const pricing = read("pages/pricing.html");
-  const home = read("index.html");
   const ui = read("scripts/commercial-ui.js");
 
-  for (const html of [pricing, home]) {
-    assert.match(html, /type="email"/, "lead forms use email inputs");
-    assert.match(html, /name="consent" required/, "lead forms require consent");
-    assert.match(html, /data-form-status/, "lead forms expose status regions");
-  }
+  assert.match(pricing, /type="email"/, "lead forms use email inputs");
+  assert.match(pricing, /name="consent" required/, "lead forms require consent");
+  assert.match(pricing, /data-form-status/, "lead forms expose status regions");
 
   assert.match(ui, /function isEmail/, "commercial UI validates email format before submission");
   assert.match(ui, /Enter a valid email address/, "commercial UI reports invalid email");
@@ -104,7 +101,6 @@ test("commercial forms and client logic provide validation and clear states", ()
 
 test("commercial plan scripts use the current cache key on every product entry", () => {
   for (const page of [
-    "index.html",
     "pages/ai-paper-search.html",
     "pages/dashboard.html",
     "pages/docs.html",
@@ -121,26 +117,25 @@ test("commercial plan scripts use the current cache key on every product entry",
   }
 });
 
-test("home lead forms use compact CTA layout and checkbox-safe controls", () => {
+test("home is a focused institutional promotion surface", () => {
   const home = read("index.html");
-  const commercialStyles = read("assets/commercial.css");
+  const exhibitionStyles = read("assets/home-exhibition.css");
 
-  assert.match(home, /class="cv-section cv-lead-section"/, "home renders the updated lead section shell");
-  assert.match(home, /cv-lead-panel--newsletter/, "newsletter card gets its own visual treatment");
-  assert.match(home, /cv-lead-panel--beta/, "AI beta card gets its own visual treatment");
-  assert.match(commercialStyles, /\.cv-lead-panel input:not\(\[type="checkbox"\]\)/, "full-width input styling excludes checkboxes");
-  assert.match(commercialStyles, /\.cv-check-row input\[type="checkbox"\][\s\S]*width:\s*18px/, "checkboxes keep compact consent-row dimensions");
+  assert.match(home, /class="exhibition-hero"/, "home opens with the selected exhibition hero");
+  assert.match(home, /home-molecular-exhibition\.png/, "home uses the generated molecular exhibition artwork");
+  assert.match(home, /A living knowledge(?:<br \/>)?layer for chemistry\./, "home leads with the institutional positioning statement");
+  assert.match(home, /id="mission"/, "home keeps the mission reachable from the primary call to action");
+  assert.doesNotMatch(home, /type="email"|cv-lead|data-render="app-modules"|homeSearchForm/, "home does not mix lead capture or product-app surfaces into the brand story");
+  assert.match(exhibitionStyles, /\.exhibition-hero\s*\{[\s\S]*min-height:/, "exhibition styling gives the hero a deliberate gallery-scale canvas");
 });
 
-test("home modules use real service routes and keep Team workspace pilot-only", () => {
+test("commercial modules keep real service routes while home remains product-neutral", () => {
   const home = read("index.html");
   const config = read("scripts/commercial-config.js");
   const ui = read("scripts/commercial-ui.js");
   const commercialStyles = read("assets/commercial.css");
 
-  assert.match(home, /data-render="app-modules" data-module-layout="categorized"/, "home asks the shared UI to render categorized modules");
-  assert.match(home, /Team workspaces are not self-service yet/i, "home publishes the Team pilot boundary");
-  assert.doesNotMatch(home, /pages\/dashboard\.html#team-workspace|Preview Teams/, "home does not expose a simulated Team workspace");
+  assert.doesNotMatch(home, /data-render="app-modules"|Team workspaces are not self-service yet|Preview Teams/, "home does not expose the application inventory or pilot workspace messaging");
   assert.doesNotMatch(config, /id:\s*"team_workspace"/, "commercial config does not expose an unimplemented Team module");
   assert.match(config, /route:\s*"https:\/\/file\.chemvault\.science\/"/, "commercial config opens the real Files service");
   assert.match(config, /route:\s*"https:\/\/mail\.chemvault\.science\/"/, "commercial config opens the real Mail service");
