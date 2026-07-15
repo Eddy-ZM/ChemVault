@@ -7,6 +7,7 @@
   let shellSearchFrame = 0;
 
   document.addEventListener("DOMContentLoaded", () => {
+    normalizePublicMarketingHeader();
     ensureCommercialStyles();
     wireShellNav();
     wireShellTheme();
@@ -15,10 +16,37 @@
     upgradeAcademicNavigation();
     injectProductSwitcher();
     markActivePage();
+    normalizePublicMarketingHeader();
     wireNavigationHighlight();
     adaptShellLayout();
     ensureDeveloperFooter();
   });
+
+  function normalizePublicMarketingHeader() {
+    const body = document.body;
+    const header = document.querySelector(".site-header");
+    if (!body || !header || body.classList.contains("forms-admin-shell")) return;
+    const shell = header.querySelector(".nav-shell");
+    const brand = shell?.querySelector(".brand");
+    const nav = shell?.querySelector(".site-nav");
+    const actions = shell?.querySelector(".header-actions");
+    if (!shell || !brand || !nav || !actions) return;
+
+    const absolutePrefix = location.pathname.includes("/pages/") ? "../" : "/";
+    header.dataset.marketingNav = "true";
+    brand.setAttribute("href", `${absolutePrefix}index.html`);
+    brand.setAttribute("aria-label", "ChemVault home");
+    brand.innerHTML = "<span><strong>ChemVault</strong></span>";
+    nav.innerHTML = `
+      <a href="${absolutePrefix}index.html#mission">Mission</a>
+      <a href="${absolutePrefix}pages/research.html">Research</a>
+      <a href="${absolutePrefix}pages/platform.html">Knowledge</a>
+      <a href="https://docs.chemvault.science/" target="_blank" rel="noopener noreferrer">Resources</a>
+      <a href="${absolutePrefix}pages/about.html">About</a>
+    `;
+    actions.innerHTML = `<a class="small-button public-header-cta" href="${absolutePrefix}index.html#mission">Explore ChemVault</a>`;
+    header.querySelector("#shellSearchResults")?.remove();
+  }
 
   function wireShellNav() {
     const header = document.querySelector(".site-header");
@@ -369,6 +397,7 @@
   }
 
   function injectProductSwitcher() {
+    if (document.querySelector(".site-header")?.dataset.marketingNav === "true") return;
     if (document.querySelector(".cv-app-switcher")) return;
     const actions = document.querySelector(".site-header .header-actions");
     if (!actions) return;
