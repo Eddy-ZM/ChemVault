@@ -700,3 +700,14 @@ body.home-exhibition main {
     transform: none;
   }
 }
+
+.exhibition-brand,
+.exhibition-nav a,
+.exhibition-header-cta,
+.exhibition-button,
+.exhibition-footer a {
+  min-width: 44px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}

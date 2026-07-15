@@ -4508,3 +4508,123 @@ html body.page-shell.page-shell[class][data-boot-label] :is(.site-footer, .foote
 html body.page-shell.page-shell[class][data-boot-label] .site-footer :is(a, strong, h2, h3) {
   color: #fffdf8 !important;
 }
+
+/* SaaS delivery touch-target guard for the shared public shell. */
+html body :is(
+  .brand,
+  .brand-mark,
+  .site-nav a,
+  .nav-more > summary,
+  .nav-more-menu a,
+  .menu-toggle,
+  .theme-toggle,
+  .icon-button,
+  .search-shell button,
+  .search-shell input,
+  .footer a,
+  .site-footer a,
+  .footer-column a,
+  .footer-social,
+  .page-actions a,
+  .hero-actions a,
+  .portal-card a,
+  .app-card a,
+  .secondary-button,
+  .primary-button,
+  .academic-button,
+  .chip,
+  .filter-chip,
+  .pagination button
+) {
+  min-width: 44px;
+  min-height: 46px;
+}
+
+html body :is(
+  .brand,
+  .brand-mark,
+  .site-nav a,
+  .nav-more > summary,
+  .nav-more-menu a,
+  .footer a,
+  .site-footer a,
+  .footer-column a,
+  .page-actions a,
+  .hero-actions a,
+  .portal-card a,
+  .app-card a
+) {
+  display: inline-flex;
+  align-items: center;
+}
+
+html body :is(.menu-toggle, .theme-toggle, .icon-button, .pagination button) {
+  width: auto;
+  min-width: 46px !important;
+  min-height: 46px !important;
+}
+
+html body :is(input[type="checkbox"], input[type="radio"]) {
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
+  min-height: 20px;
+}
+
+html body :is(.checkbox-label, .radio-label) {
+  min-height: 44px;
+  align-items: center;
+}
+
+html body :is(
+  button,
+  select,
+  input:not([type="checkbox"]):not([type="radio"]),
+  .filter-chip,
+  .source-filter,
+  .command-tab,
+  .segment-button,
+  .pagination button,
+  .result-pagination button,
+  .platform-link-list a,
+  .service-link-list a,
+  .related-links a,
+  .portal-actions a,
+  .record-actions a
+) {
+  min-width: 46px !important;
+  min-height: 46px !important;
+}
+
+html body :is(
+  .platform-link-list a,
+  .service-link-list a,
+  .related-links a,
+  .portal-actions a,
+  .record-actions a
+) {
+  display: inline-flex;
+  align-items: center;
+}
+
+html body.page-shell main a[href],
+html body.home-exhibition main a[href] {
+  min-width: 46px;
+  min-height: 46px;
+  display: inline-flex;
+  align-items: center;
+}
+
+html body :is(.checkbox-label, .radio-label, label:has(input[type="checkbox"]), label:has(input[type="radio"])) {
+  min-height: 46px !important;
+  display: flex;
+  align-items: center;
+}
+
+html body .admin-check-target {
+  min-width: 46px !important;
+  min-height: 46px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
