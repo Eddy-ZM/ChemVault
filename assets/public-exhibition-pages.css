@@ -547,6 +547,35 @@ html body.page-shell:not(.forms-admin-shell) :where(img, canvas, svg) {
   max-width: 100%;
 }
 
+html body.page-shell:not(.forms-admin-shell) .site-footer {
+  height: auto !important;
+  clip-path: none !important;
+  view-timeline-name: none !important;
+}
+
+html body.page-shell:not(.forms-admin-shell) .footer-sticky-layer {
+  position: relative !important;
+  inset: auto !important;
+  z-index: auto !important;
+  height: auto !important;
+  pointer-events: auto !important;
+}
+
+html body.page-shell:not(.forms-admin-shell) .footer-sticky-shell {
+  position: relative !important;
+  top: auto !important;
+  height: auto !important;
+  overflow: visible !important;
+}
+
+html body.page-shell:not(.forms-admin-shell) .footer-panel,
+html body.page-shell:not(.forms-admin-shell) .footer-reveal {
+  animation: none !important;
+  filter: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+}
+
 @media (max-width: 720px) {
   html body.page-shell:not(.forms-admin-shell) .site-header[data-marketing-nav="true"] {
     min-height: 64px;
