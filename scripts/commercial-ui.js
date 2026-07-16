@@ -23,6 +23,14 @@
   });
 
   async function hydrateServerEntitlements() {
+    if (!shouldHydrateServerEntitlements()) {
+      commercial().setServerEntitlements({
+        plan: "free",
+        features: {},
+        meta: { environment: "static-preview", authMode: "unavailable", authenticated: false }
+      }, false);
+      return;
+    }
     try {
       const response = await fetch("/api/entitlements", {
         method: "GET",
@@ -40,6 +48,11 @@
         meta: { environment: "unavailable", authMode: "unavailable", authenticated: false }
       }, false);
     }
+  }
+
+  function shouldHydrateServerEntitlements() {
+    if (window.CHEMVAULT_ENABLE_ENTITLEMENTS === true) return true;
+    return /(^|\.)chemvault\.science$/i.test(location.hostname) || /(^|\.)pages\.dev$/i.test(location.hostname);
   }
 
   window.addEventListener("chemvault:planchange", () => {

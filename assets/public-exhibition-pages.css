@@ -1,0 +1,465 @@
+/* Public inner-page exhibition layer.
+   Loaded after route-specific CSS by site-shell.js so public pages match the
+   homepage's dark exhibition language without rewriting every static page. */
+
+html body.page-shell:not(.forms-admin-shell) {
+  --bg: #060a0f !important;
+  --bg-2: #0a111a !important;
+  --surface: rgba(10, 17, 26, 0.78) !important;
+  --surface-2: rgba(15, 25, 38, 0.82) !important;
+  --surface-3: rgba(21, 34, 50, 0.88) !important;
+  --text: #f8f6f1 !important;
+  --muted: #b8c2cf !important;
+  --line: rgba(255, 255, 255, 0.13) !important;
+  --strong-line: rgba(121, 166, 255, 0.44) !important;
+  --blue: #79a6ff !important;
+  --blue-strong: #9fbfff !important;
+  --amber: #79a6ff !important;
+  --teal: #79d9df !important;
+  --shadow: 0 24px 70px rgba(0, 0, 0, 0.36) !important;
+  min-width: 320px;
+  background:
+    radial-gradient(circle at 18% 10%, rgba(23, 105, 255, 0.24), transparent 28rem),
+    radial-gradient(circle at 84% 12%, rgba(121, 217, 223, 0.12), transparent 30rem),
+    linear-gradient(180deg, #060a0f 0%, #07101a 46%, #0a111a 100%) !important;
+  color: var(--text) !important;
+}
+
+html body.page-shell:not(.forms-admin-shell)::before {
+  content: "";
+  position: fixed;
+  inset: 74px 0 auto;
+  z-index: -1;
+  height: min(520px, 58vh);
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(6, 10, 15, 0.22), #060a0f 88%),
+    url("/assets/home-molecular-exhibition.png") center top / cover no-repeat;
+  opacity: 0.28;
+}
+
+html body.page-shell:not(.forms-admin-shell) main {
+  position: relative;
+  z-index: 1;
+  background: transparent !important;
+  color: var(--text) !important;
+}
+
+html body.page-shell:not(.forms-admin-shell) :where(
+  .page-hero,
+  .academic-page-hero,
+  .workbench-hero,
+  .cv-commercial-hero,
+  .forms-hero,
+  .framework-hero,
+  .section,
+  .section-tint,
+  .academic-section,
+  .workbench-section,
+  .cv-section,
+  .forms-section,
+  .framework-section,
+  .apple-board-section,
+  .apple-profile-section,
+  .search-studio-section
+) {
+  border-color: var(--line) !important;
+  background: transparent !important;
+  background-image: none !important;
+  color: var(--text) !important;
+}
+
+html body.page-shell:not(.forms-admin-shell) :where(
+  .page-hero,
+  .academic-page-hero,
+  .workbench-hero,
+  .cv-commercial-hero,
+  .forms-hero,
+  .framework-hero
+) {
+  overflow: hidden;
+  border-bottom: 1px solid var(--line) !important;
+  background:
+    linear-gradient(180deg, rgba(6, 10, 15, 0.66), rgba(6, 10, 15, 0.92)),
+    radial-gradient(circle at 72% 24%, rgba(121, 217, 223, 0.13), transparent 26rem) !important;
+}
+
+html body.page-shell:not(.forms-admin-shell) :where(
+  .page-hero,
+  .academic-page-hero,
+  .workbench-hero,
+  .cv-commercial-hero,
+  .forms-hero,
+  .framework-hero
+) > .container {
+  min-height: clamp(250px, 32vw, 390px);
+  align-items: center;
+}
+
+html body.page-shell:not(.forms-admin-shell) :where(
+  .public-main,
+  main > .section,
+  main > .academic-section,
+  main > .workbench-section,
+  main > .cv-section,
+  main > .forms-section,
+  main > .framework-section
+) {
+  padding-top: clamp(3rem, 6vw, 5.5rem) !important;
+  padding-bottom: clamp(3rem, 6vw, 5.5rem) !important;
+}
+
+html body.page-shell:not(.forms-admin-shell) :where(
+  h1,
+  h2,
+  h3,
+  .display-heading,
+  .page-hero h1,
+  .academic-page-hero h1,
+  .cv-commercial-hero h1,
+  .workbench-hero h1,
+  .framework-hero h1,
+  .section-heading h2,
+  .page-panel h2,
+  .page-panel h3
+) {
+  color: #f8f6f1 !important;
+  font-family: "CV Newsreader", "Newsreader", Georgia, serif !important;
+  font-weight: 500 !important;
+  letter-spacing: -0.02em !important;
+}
+
+html body.page-shell:not(.forms-admin-shell) :where(
+  .page-hero h1,
+  .academic-page-hero h1,
+  .cv-commercial-hero h1,
+  .workbench-hero h1,
+  .framework-hero h1
+) {
+  font-size: clamp(2.5rem, 6vw, 5.25rem) !important;
+  line-height: 0.96 !important;
+}
+
+html body.page-shell:not(.forms-admin-shell) :where(
+  p,
+  li,
+  dd,
+  small,
+  .lead,
+  .muted,
+  .page-hero p,
+  .academic-page-hero p,
+  .section-heading p,
+  .portal-card p,
+  .record-lead,
+  .live-card p,
+  .search-note p,
+  .record-panel p
+) {
+  color: var(--muted) !important;
+}
+
+html body.page-shell:not(.forms-admin-shell) :where(
+  .section-kicker,
+  .eyebrow,
+  .kicker,
+  .stat-label,
+  .record-meta,
+  .record-kind,
+  .tag,
+  .badge
+) {
+  color: #79d9df !important;
+}
+
+html body.page-shell:not(.forms-admin-shell) :where(
+  .page-panel,
+  .page-index-card,
+  .page-index-panel,
+  .portal-card,
+  .portal-card-featured,
+  .academic-panel,
+  .academic-note-card,
+  .apple-profile-card,
+  .contact-card,
+  .feature-card,
+  .platform-capability-card,
+  .project-card,
+  .cv-feature-panel,
+  .cv-lead-panel,
+  .forms-panel,
+  .vision-panel,
+  .data-window,
+  .detail-card,
+  .compare-card,
+  .table-card,
+  .calculator-shell,
+  .calc-panel,
+  .quiz-card,
+  .notes-panel,
+  .safety-section,
+  .source-card,
+  .method-card,
+  .instrument-card,
+  .material-preview-card,
+  .source-browser-card,
+  .route-network article,
+  .local-result-card,
+  .external-source-card,
+  .fallback-source-card,
+  .live-card,
+  .workbench-window,
+  .workbench-canvas-panel,
+  .workbench-command-card,
+  .workbench-detail-card,
+  .workbench-list-panel,
+  .workbench-tab-panel,
+  .route-card,
+  .mechanism-audit-card,
+  .material-interface-card,
+  .related-record-card,
+  .record-panel,
+  .record-trust-card,
+  .graph-board,
+  .network-board,
+  .imported-records-panel,
+  .local-results-panel,
+  .nih-import-panel,
+  .note-panel,
+  .result-panel,
+  .search-control-panel,
+  .session-import-panel,
+  .footer-panel
+) {
+  border: 1px solid var(--line) !important;
+  border-radius: 18px !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.035)) !important;
+  color: var(--text) !important;
+  box-shadow: none !important;
+  backdrop-filter: blur(16px);
+}
+
+html body.page-shell:not(.forms-admin-shell) :where(
+  .page-index-panel,
+  .page-index-card,
+  .portal-card,
+  .academic-note-card,
+  .record-trust-card
+) :where(span, li) {
+  border-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+html body.page-shell:not(.forms-admin-shell) :where(
+  .page-index-panel,
+  .page-index-card,
+  .portal-card,
+  .academic-panel,
+  .academic-note-card,
+  .platform-capability-card,
+  .project-card,
+  .source-card,
+  .method-card,
+  .record-panel,
+  .record-trust-card,
+  .local-result-card,
+  .external-source-card,
+  .fallback-source-card,
+  .result-panel,
+  .search-control-panel
+) :where(strong, h2, h3, h4, dt, b) {
+  color: #f8f6f1 !important;
+}
+
+html body.page-shell:not(.forms-admin-shell) :where(
+  .page-index-panel,
+  .page-index-card,
+  .portal-card,
+  .academic-panel,
+  .academic-note-card,
+  .platform-capability-card,
+  .project-card,
+  .source-card,
+  .method-card,
+  .record-panel,
+  .record-trust-card,
+  .local-result-card,
+  .external-source-card,
+  .fallback-source-card,
+  .result-panel,
+  .search-control-panel
+) :where(p, span, li, dd, small) {
+  color: var(--muted) !important;
+}
+
+html body.page-shell:not(.forms-admin-shell) :where(
+  .library-toolbar,
+  .live-enrichment-status,
+  .result-toolbar,
+  .result-header,
+  .search-status,
+  .tab-list,
+  .tab-strip
+) {
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  background: rgba(255, 255, 255, 0.055) !important;
+  color: var(--muted) !important;
+}
+
+html body.page-shell:not(.forms-admin-shell) :where(
+  input,
+  select,
+  textarea,
+  .toolbar-select,
+  .filter-select,
+  .search-input,
+  .field,
+  .compound-search-input
+) {
+  border-color: rgba(255, 255, 255, 0.16) !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: #f8f6f1 !important;
+  box-shadow: none !important;
+}
+
+html body.page-shell:not(.forms-admin-shell) :where(input, textarea)::placeholder {
+  color: rgba(248, 246, 241, 0.58) !important;
+}
+
+html body.page-shell:not(.forms-admin-shell) :where(
+  button,
+  .button,
+  .primary-button,
+  .secondary-button,
+  .text-button,
+  .small-button,
+  .tab-button,
+  .filter-chip,
+  .chip,
+  .source-pill,
+  .quick-filter
+) {
+  border-color: rgba(255, 255, 255, 0.16) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.045)) !important;
+  color: #f8f6f1 !important;
+  box-shadow: none !important;
+}
+
+html body.page-shell:not(.forms-admin-shell) :where(
+  button:hover,
+  .button:hover,
+  .tab-button:hover,
+  .filter-chip:hover,
+  .quick-filter:hover,
+  button[aria-selected="true"],
+  .tab-button[aria-selected="true"],
+  .filter-chip.active,
+  .quick-filter.active
+) {
+  border-color: rgba(121, 166, 255, 0.68) !important;
+  background:
+    linear-gradient(180deg, rgba(43, 113, 255, 0.34), rgba(43, 113, 255, 0.16)) !important;
+  color: #fff !important;
+}
+
+html body.page-shell:not(.forms-admin-shell) :where(
+  .primary-button,
+  .button.primary,
+  .button--primary,
+  .search-submit,
+  .cta-button,
+  [data-action="search"],
+  button[type="submit"]
+) {
+  border-color: rgba(68, 132, 255, 0.88) !important;
+  background: #1769ff !important;
+  color: #fff !important;
+}
+
+html body.page-shell:not(.forms-admin-shell) :where(
+  .page-panel a,
+  .page-index-panel a,
+  .page-index-card a,
+  .academic-section a,
+  .section a,
+  .page-hero a,
+  .hero-summary a,
+  .summary-card a,
+  .capability-card a,
+  .portal-card a,
+  .record-panel a,
+  .source-card a,
+  .footer-panel a
+) {
+  color: #aecaFF !important;
+  text-decoration-color: rgba(174, 202, 255, 0.45) !important;
+}
+
+html body.page-shell:not(.forms-admin-shell) .page-index-panel > a,
+html body.page-shell:not(.forms-admin-shell) .page-index-card > a {
+  color: #aecaFF !important;
+  text-decoration-color: rgba(174, 202, 255, 0.45) !important;
+}
+
+html body.page-shell:not(.forms-admin-shell) :where(
+  .page-panel a:hover,
+  .page-index-panel a:hover,
+  .page-index-card a:hover,
+  .academic-section a:hover,
+  .section a:hover,
+  .page-hero a:hover,
+  .hero-summary a:hover,
+  .summary-card a:hover,
+  .capability-card a:hover,
+  .portal-card a:hover,
+  .record-panel a:hover,
+  .source-card a:hover,
+  .footer-panel a:hover
+) {
+  color: #dbe7ff !important;
+}
+
+html body.page-shell:not(.forms-admin-shell) :where(table, thead, tbody, tr, th, td) {
+  border-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+html body.page-shell:not(.forms-admin-shell) :where(th, td) {
+  color: var(--text) !important;
+}
+
+html body.page-shell:not(.forms-admin-shell) :where(img, canvas, svg) {
+  max-width: 100%;
+}
+
+@media (max-width: 720px) {
+  html body.page-shell:not(.forms-admin-shell)::before {
+    top: 66px;
+    height: 420px;
+    opacity: 0.2;
+  }
+
+  html body.page-shell:not(.forms-admin-shell) :where(
+    .page-hero,
+    .academic-page-hero,
+    .workbench-hero,
+    .cv-commercial-hero,
+    .forms-hero,
+    .framework-hero
+  ) > .container {
+    min-height: 250px;
+  }
+
+  html body.page-shell:not(.forms-admin-shell) :where(
+    .public-main,
+    main > .section,
+    main > .academic-section,
+    main > .workbench-section,
+    main > .cv-section,
+    main > .forms-section,
+    main > .framework-section
+  ) {
+    padding-top: 3rem !important;
+    padding-bottom: 3rem !important;
+  }
+}

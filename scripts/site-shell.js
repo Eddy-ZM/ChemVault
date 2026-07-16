@@ -6,6 +6,8 @@
   let shellSearchImportSignature = "";
   let shellSearchFrame = 0;
 
+  ensurePublicExhibitionPageStyles();
+
   document.addEventListener("DOMContentLoaded", () => {
     normalizePublicMarketingHeader();
     ensureCommercialStyles();
@@ -21,6 +23,18 @@
     adaptShellLayout();
     ensureDeveloperFooter();
   });
+
+  function ensurePublicExhibitionPageStyles() {
+    const body = document.body;
+    if (!body?.classList.contains("page-shell") || body.classList.contains("forms-admin-shell")) return;
+    if (location.pathname.includes("/admin/")) return;
+    if (document.querySelector("link[data-public-exhibition-pages]")) return;
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = "/assets/public-exhibition-pages.css?v=20260715a";
+    link.dataset.publicExhibitionPages = "true";
+    document.head.append(link);
+  }
 
   function normalizePublicMarketingHeader() {
     const body = document.body;
