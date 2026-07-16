@@ -31,7 +31,7 @@
     if (document.querySelector("link[data-public-exhibition-pages]")) return;
     const link = document.createElement("link");
     link.rel = "stylesheet";
-    link.href = "/assets/public-exhibition-pages.css?v=20260715a";
+    link.href = "/assets/public-exhibition-pages.css?v=20260716a";
     link.dataset.publicExhibitionPages = "true";
     document.head.append(link);
   }
@@ -48,6 +48,11 @@
 
     const absolutePrefix = location.pathname.includes("/pages/") ? "../" : "/";
     header.dataset.marketingNav = "true";
+    header.classList.add("exhibition-header", "public-exhibition-header");
+    shell.classList.add("exhibition-shell", "exhibition-nav-shell");
+    brand.classList.add("exhibition-brand");
+    nav.classList.add("exhibition-nav");
+    actions.classList.add("exhibition-header-actions");
     brand.setAttribute("href", `${absolutePrefix}index.html`);
     brand.setAttribute("aria-label", "ChemVault home");
     brand.innerHTML = "<span><strong>ChemVault</strong></span>";
@@ -58,7 +63,7 @@
       <a href="https://docs.chemvault.science/" target="_blank" rel="noopener noreferrer">Resources</a>
       <a href="${absolutePrefix}pages/about.html">About</a>
     `;
-    actions.innerHTML = `<a class="small-button public-header-cta" href="${absolutePrefix}index.html#mission">Explore ChemVault</a>`;
+    actions.innerHTML = `<a class="small-button public-header-cta exhibition-header-cta" href="${absolutePrefix}index.html#mission">Explore ChemVault</a>`;
     header.querySelector("#shellSearchResults")?.remove();
   }
 
@@ -347,6 +352,7 @@
   }
 
   function upgradeAcademicNavigation() {
+    if (document.querySelector(".site-header")?.dataset.marketingNav === "true") return;
     const nav = document.querySelector(".site-nav");
     if (!nav) return;
     nav.innerHTML = `

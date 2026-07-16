@@ -254,6 +254,7 @@
   }
 
   function injectAppSwitcher() {
+    if ($(".site-header")?.dataset.marketingNav === "true") return;
     if ($(".cv-app-switcher")) return;
     const actions = $(".site-header .header-actions");
     if (!actions) return;

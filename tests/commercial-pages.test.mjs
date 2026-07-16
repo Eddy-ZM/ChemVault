@@ -112,7 +112,7 @@ test("commercial plan scripts use the current cache key on every product entry",
   ]) {
     const html = read(page);
     assert.match(html, /commercial-config\.js\?v=20260713a/, `${page} loads the current plan configuration`);
-    assert.match(html, /commercial-ui\.js\?v=20260713a/, `${page} loads the authoritative-plan UI`);
+    assert.match(html, /commercial-ui\.js\?v=20260716a/, `${page} loads the authoritative-plan UI`);
     assert.doesNotMatch(html, /commercial-(?:config|ui)\.js\?v=20260705b/, `${page} does not retain the stale browser-plan bundle`);
   }
 });
@@ -123,7 +123,7 @@ test("home is a focused institutional promotion surface", () => {
 
   assert.match(home, /class="exhibition-hero"/, "home opens with the selected exhibition hero");
   assert.match(home, /home-molecular-exhibition\.png/, "home uses the generated molecular exhibition artwork");
-  assert.match(home, /A living knowledge(?:<br \/>)?layer for chemistry\./, "home leads with the institutional positioning statement");
+  assert.match(home, /A living knowledge\s*(?:<br \/>)?\s*layer for chemistry\./, "home leads with the institutional positioning statement");
   assert.match(home, /id="mission"/, "home keeps the mission reachable from the primary call to action");
   assert.doesNotMatch(home, /type="email"|cv-lead|data-render="app-modules"|homeSearchForm/, "home does not mix lead capture or product-app surfaces into the brand story");
   assert.match(exhibitionStyles, /\.exhibition-hero\s*\{[\s\S]*min-height:/, "exhibition styling gives the hero a deliberate gallery-scale canvas");
