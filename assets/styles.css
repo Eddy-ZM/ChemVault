@@ -1336,9 +1336,10 @@ body.startup-welcome-active {
   place-items: center;
   padding: 24px;
   background:
-    radial-gradient(circle at 50% 42%, rgba(0, 113, 227, 0.12), transparent 34%),
-    rgba(245, 245, 247, 0.92);
-  backdrop-filter: blur(22px) saturate(150%);
+    radial-gradient(circle at 50% 38%, rgba(0, 113, 227, 0.13), transparent 30%),
+    radial-gradient(circle at 48% 56%, rgba(255, 184, 28, 0.08), transparent 24%),
+    rgba(247, 246, 241, 0.94);
+  backdrop-filter: blur(24px) saturate(145%);
   opacity: 1;
   visibility: visible;
   transition: opacity 260ms ease, visibility 260ms ease;
@@ -1352,20 +1353,25 @@ body.startup-welcome-active {
 .site-boot-loader__panel {
   display: grid;
   justify-items: center;
-  gap: 12px;
-  width: min(360px, calc(100vw - 48px));
+  gap: 14px;
+  width: min(180px, calc(100vw - 48px));
   color: var(--text);
 }
 
 .site-boot-loader__logo {
   display: block;
-  width: 62px;
-  height: 62px;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  border-radius: 18px;
-  background: #ffffff;
-  padding: 8px;
-  box-shadow: 0 22px 48px rgba(0, 43, 84, 0.16);
+  width: 74px;
+  height: 74px;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: 24px;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.92), rgba(248, 250, 252, 0.72)),
+    radial-gradient(circle at 30% 18%, rgba(0, 113, 227, 0.12), transparent 45%);
+  padding: 13px;
+  object-fit: contain;
+  box-shadow:
+    0 24px 60px rgba(0, 43, 84, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.75);
   animation: chemvault-boot-logo 820ms var(--ease-out) both;
 }
 
@@ -1380,11 +1386,12 @@ body.startup-welcome-active {
 .site-boot-loader__rail {
   position: relative;
   display: block;
-  width: 100%;
-  height: 5px;
+  width: 96px;
+  height: 4px;
   overflow: hidden;
   border-radius: 999px;
-  background: rgba(0, 0, 0, 0.08);
+  background: rgba(15, 23, 42, 0.1);
+  box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.08);
 }
 
 .site-boot-loader__bar {
@@ -1392,7 +1399,7 @@ body.startup-welcome-active {
   inset: 0 auto 0 0;
   width: 100%;
   border-radius: inherit;
-  background: linear-gradient(90deg, #003c70, #0071e3, var(--amber));
+  background: linear-gradient(90deg, #274263, #4f9bff, var(--amber));
   transform: scaleX(0.1);
   transform-origin: left center;
   animation: chemvault-boot-progress 920ms var(--ease-out) forwards;
