@@ -6,7 +6,16 @@
   const navigation = header?.querySelector(".exhibition-nav");
   const hero = document.querySelector(".exhibition-hero");
   const heroImage = hero?.querySelector(".exhibition-hero-media img");
+  const homeBootLoader = document.querySelector("[data-home-boot-loader]");
   const reducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)");
+  let homeBootDismissed = false;
+
+  function dismissHomeBootLoader() {
+    if (!homeBootLoader || homeBootDismissed) return;
+    homeBootDismissed = true;
+    homeBootLoader.classList.add("is-hidden");
+    window.setTimeout(() => homeBootLoader.remove(), 320);
+  }
 
   function setMenu(open, options = {}) {
     if (!header || !menuButton) return;
@@ -77,11 +86,20 @@
   }
 
   function revealPage() {
-    requestAnimationFrame(() => root.classList.add("exhibition-ready"));
+    requestAnimationFrame(() => {
+      root.classList.add("exhibition-ready");
+      dismissHomeBootLoader();
+    });
   }
 
   wireMenu();
   wireHeaderState();
   wireHeroDepth();
-  revealPage();
+
+  if (document.readyState === "complete") {
+    revealPage();
+  } else {
+    window.addEventListener("load", revealPage, { once: true });
+    window.setTimeout(revealPage, 1800);
+  }
 })();

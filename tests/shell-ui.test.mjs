@@ -149,8 +149,9 @@ test("home page uses the selected exhibition concept with accessible interaction
   const script = read("scripts/home-exhibition.js");
   const styles = read("assets/home-exhibition.css");
 
-  assert.match(html, /home-exhibition\.css\?v=20260713a/, "home loads its dedicated exhibition design layer");
-  assert.match(html, /home-exhibition\.js\?v=20260713a/, "home loads its focused interaction layer");
+  assert.match(html, /home-exhibition\.css\?v=20260717b/, "home loads its dedicated exhibition design layer");
+  assert.match(html, /home-exhibition\.js\?v=20260717b/, "home loads its focused interaction layer");
+  assert.match(html, /data-home-boot-loader/, "home owns its dedicated first-paint loading layer");
   assert.match(html, /home-molecular-exhibition\.png/, "home displays the generated exhibition panorama");
   assert.match(html, /id="exhibition-title"/, "home exposes a single primary page title");
   assert.match(html, /id="mission"/, "primary calls to action lead to the mission");
@@ -162,8 +163,11 @@ test("home page uses the selected exhibition concept with accessible interaction
   assert.match(script, /event\.key !== "Escape"/, "Escape closes the mobile navigation");
   assert.match(script, /prefers-reduced-motion: reduce/, "hero depth respects reduced-motion preferences");
   assert.match(script, /pointer: fine/, "pointer depth only runs for precise pointing devices");
+  assert.match(script, /function dismissHomeBootLoader/, "home removes its first-paint loading layer after the page is ready");
 
   assert.match(styles, /@font-face[\s\S]*font-family:\s*"Newsreader"/, "home ships its editorial display type locally");
+  assert.match(styles, /\.home-boot-loader\s*{[\s\S]*linear-gradient\(145deg, #05090e/, "home loading uses a dark exhibition-specific treatment");
+  assert.doesNotMatch(styles, /\.home-boot-loader[\s\S]*chemvault-logo-mark/, "home loading does not reuse the old square logo image");
   assert.match(styles, /\.exhibition-hero\s*{[\s\S]*min-height:\s*600px/, "desktop hero matches the gallery-scale composition");
   assert.match(styles, /\.exhibition-hero-media img\s*{[\s\S]*object-fit:\s*cover/, "desktop panorama fills the selected visual slot");
   assert.match(styles, /@media \(max-width:\s*820px\)[\s\S]*\.exhibition-menu-toggle\s*{[\s\S]*display:\s*inline-flex/, "mobile navigation exposes its menu control");
@@ -239,7 +243,7 @@ test("startup welcome assets use a fresh cache key on every HTML entry", () => {
   }
 
   const home = read("index.html");
-  assert.match(home, /home-exhibition\.js\?v=20260713a/, "home uses the exhibition entrance instead of the application boot sequence");
+  assert.match(home, /home-exhibition\.js\?v=20260717b/, "home uses the exhibition entrance instead of the application boot sequence");
   assert.doesNotMatch(home, /boot\.js|motion\.js/, "home does not show the application welcome overlay");
 });
 
