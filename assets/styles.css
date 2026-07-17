@@ -175,9 +175,10 @@ html.motion-boot:not(.motion-boot-timeout) body:not(.page-ready)::before {
   inset: 0;
   z-index: 1100;
   background:
-    radial-gradient(circle at 50% 42%, rgba(0, 113, 227, 0.12), transparent 34%),
-    rgba(245, 245, 247, 0.94);
-  backdrop-filter: blur(22px) saturate(150%);
+    radial-gradient(circle at 50% 38%, rgba(0, 113, 227, 0.13), transparent 30%),
+    radial-gradient(circle at 48% 56%, rgba(255, 184, 28, 0.08), transparent 24%),
+    rgba(247, 246, 241, 0.94);
+  backdrop-filter: blur(24px) saturate(145%);
 }
 
 html.motion-boot:not(.motion-boot-timeout) body:not(.page-ready)::after {
@@ -187,12 +188,18 @@ html.motion-boot:not(.motion-boot-timeout) body:not(.page-ready)::after {
   top: 50%;
   z-index: 1101;
   display: block;
-  width: 104px;
-  height: 70px;
+  width: 96px;
+  height: 96px;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: 28px;
   background:
-    url("/assets/chemvault-logo-mark.png") center top / 48px 48px no-repeat,
-    linear-gradient(90deg, #003c70, #0071e3, var(--amber)) left bottom / 12% 3px no-repeat;
-  filter: drop-shadow(0 12px 28px rgba(0, 43, 84, 0.16));
+    url("/assets/chemvault-logo-mark.png") center 16px / 54px 54px no-repeat,
+    linear-gradient(90deg, #274263, #4f9bff, var(--amber)) 50% 78px / 56px 4px no-repeat,
+    linear-gradient(145deg, rgba(255, 255, 255, 0.92), rgba(248, 250, 252, 0.72)),
+    radial-gradient(circle at 30% 18%, rgba(0, 113, 227, 0.12), transparent 45%);
+  box-shadow:
+    0 24px 60px rgba(0, 43, 84, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.75);
   transform: translate(-50%, -50%) scale(0.98);
   animation:
     chemvault-boot-card 620ms var(--ease-out) both,
