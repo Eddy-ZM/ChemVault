@@ -11,6 +11,9 @@ const pageFiles = [
     .map((file) => path.join("pages", file))
 ].sort();
 const bootHtmlFiles = ["404.html", ...pageFiles].sort();
+const standaloneLegalPageFiles = [path.join("pages", "privacy.html"), path.join("pages", "terms.html")];
+const shellPageFiles = pageFiles.filter((file) => !standaloneLegalPageFiles.includes(file));
+const shellBootHtmlFiles = bootHtmlFiles.filter((file) => !standaloneLegalPageFiles.includes(file));
 
 function read(file) {
   return fs.readFileSync(file, "utf8");
@@ -88,7 +91,7 @@ test("site navigation exposes core destinations through categorized disclosure g
   assert.match(shell, /function injectProductSwitcher/, "runtime shell injects the product app switcher");
   assert.match(shell, /productModules\(\)/, "runtime shell can populate app switcher links from the commercial module config");
 
-  for (const file of pageFiles.filter((file) => file !== "index.html")) {
+  for (const file of shellPageFiles.filter((file) => file !== "index.html")) {
     const html = read(file);
     const nav = navMarkup(html);
 
@@ -233,8 +236,8 @@ test("home reveal orchestration keeps section titles ahead of body content", () 
   assert.match(effects, /window\.addEventListener\('DOMContentLoaded', stageAwareReveal\)/, "dynamic homepage content is re-queued after commercial UI rendering");
 });
 
-test("startup welcome assets use a fresh cache key on every HTML entry", () => {
-  for (const file of bootHtmlFiles.filter((file) => file !== "index.html")) {
+test("startup welcome assets use a fresh cache key on every shell HTML entry", () => {
+  for (const file of shellBootHtmlFiles.filter((file) => file !== "index.html")) {
     const html = read(file);
 
     assert.match(html, /boot\.js\?v=20260705a/, `${file} references startup welcome boot`);
@@ -361,6 +364,10 @@ test("footer uses a ChemVault sticky footer adapted from the template", () => {
   for (const file of ["404.html", ...pageFiles]) {
     const html = read(file);
     assert.doesNotMatch(html, /class="site-version"/, `${file} removes the original standalone version strip`);
+  }
+
+  for (const file of ["404.html", ...shellPageFiles]) {
+    const html = read(file);
     assert.match(html, /styles\.css\?v=(?!20260603a)\d+/, `${file} references non-stale sticky footer styles`);
     if (file !== "index.html") {
       assert.match(html, /site-shell\.js\?v=(?!20260603a)\d+/, `${file} references sticky footer shell markup`);
@@ -383,7 +390,7 @@ test("site navigation uses a 21st.dev-inspired spotlight tab treatment", () => {
   assert.match(shell, /pointerFocusUntil/, "runtime shell ignores pointer-created focus when positioning the spotlight");
   assert.match(commercialUi, /focusout[\s\S]*stateTarget\(false\)/, "commercial homepage returns the spotlight to the current page after focus leaves navigation");
 
-  for (const file of bootHtmlFiles.filter((file) => file !== "index.html")) {
+  for (const file of shellBootHtmlFiles.filter((file) => file !== "index.html")) {
     const html = read(file);
 
     navMarkup(html);
@@ -400,6 +407,22 @@ test("site navigation uses a 21st.dev-inspired spotlight tab treatment", () => {
   assert.match(styles, /\.site-nav::before\s*{[\s\S]*bottom:\s*5px[\s\S]*transform:\s*translate3d\(var\(--nav-indicator-x\), 0, 0\)/, "navigation rail draws the moving underline spotlight");
   assert.match(styles, /\.nav-more > summary::before\s*{[\s\S]*border-right:\s*1\.5px solid currentColor/, "category summaries use a chevron affordance");
   assert.match(styles, /\.nav-more-menu\s*{[\s\S]*grid-template-columns:\s*repeat\(auto-fit, minmax\(180px, 1fr\)\)/, "category menus render as responsive option grids");
+});
+
+test("legal pages remain standalone, printable, and non-graphical", () => {
+  for (const file of standaloneLegalPageFiles) {
+    const html = read(file);
+
+    assert.match(html, /<main\b/, `${file} exposes a document main region`);
+    assert.match(html, /Effective date:<\/strong> 20 July 2026/, `${file} states the effective date`);
+    assert.match(html, /Last updated:<\/strong> 20 July 2026/, `${file} states the revision date`);
+    assert.match(html, /Service or Asset Management Database/, `${file} defines service or asset management data`);
+    assert.match(html, /Service Management Reference/, `${file} defines service management reference material`);
+    assert.match(html, /@media print/, `${file} provides print-document styling`);
+    assert.doesNotMatch(html, /<(?:script|img|svg|canvas|aside)\b/i, `${file} contains no scripted or graphical content`);
+    assert.doesNotMatch(html, /class="[^"]*(?:site-nav|academic-page-hero|page-index-panel|\bcard\b|\bpanel\b)[^"]*"/i, `${file} does not render graphical shell classes`);
+    assert.doesNotMatch(html, /site-shell\.js/i, `${file} does not load the graphical site shell`);
+  }
 });
 
 test("theme switch presents a stable, resolved light/dark control", () => {

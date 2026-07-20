@@ -4,90 +4,456 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Privacy Policy | ChemVault</title>
-  <meta name="description" content="Draft ChemVault privacy policy for account, mail, files, AI extraction, Apple apps and related services." />
-  <meta name="theme-color" content="#07111f" />
-  <script src="/scripts/boot.js?v=20260705a"></script>
+  <meta name="description" content="ChemVault Privacy Policy governing personal information, user content, service or asset management database records, and service management references." />
   <link rel="canonical" href="https://chemvault.science/privacy" />
   <link rel="icon" href="/favicon.ico?v=20260628a" sizes="any" />
   <link rel="icon" href="/assets/chemvault-logo-mark.png?v=20260628a" type="image/png" sizes="512x512" />
   <link rel="apple-touch-icon" href="/assets/chemvault-apple-touch-icon.png?v=20260628a" />
-  <link rel="manifest" href="/site.webmanifest" />
-  <link rel="stylesheet" href="../assets/styles.css?v=20260717b" />
-  <link rel="stylesheet" href="../assets/portal.css?v=20260702b" />
-  <link rel="stylesheet" href="../assets/academic.css?v=20260705a" />
-  <script src="../data/chem-data.js?v=20260603a" defer></script>
-  <script src="../data/reagent-extension.js?v=20260603a" defer></script>
-  <script src="../data/research-data.js?v=20260603a" defer></script>
-  <script src="../data/dossier-data.js?v=20260603a" defer></script>
-  <script src="../data/method-data.js?v=20260603a" defer></script>
-  <script src="../data/spectroscopy-data.js?v=20260603a" defer></script>
-  <script src="../data/materials-data.js?v=20260603a" defer></script>
-  <script src="../data/database-expansion.js?v=20260603a" defer></script>
-  <script src="../data/reagent-megalibrary.js?v=20260603a" defer></script>
-  <script src="../data/knowledge-expansion.js?v=20260603a" defer></script>
-  <script src="../data/local-catalog-10000.js?v=20260603a" defer></script>
-  <script src="../data/external-sources.js?v=20260603a" defer></script>
-  <script src="../scripts/record-utils.js?v=20260603a" defer></script>
-  <script src="../scripts/search-intent.js?v=20260608a" defer></script>
-  <script src="../scripts/api.js?v=20260603a" defer></script>
-  <script src="../scripts/motion.js?v=20260705a" defer></script>
-  <script src="../scripts/site-shell.js?v=20260716a" defer></script>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: Georgia, "Times New Roman", serif;
+      color: #191919;
+      background: #ffffff;
+      font-synthesis: none;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background: #ffffff;
+      color: #191919;
+      font-size: 17px;
+      line-height: 1.72;
+    }
+
+    main {
+      width: min(100% - 40px, 900px);
+      margin: 0 auto;
+      padding: 64px 0 88px;
+    }
+
+    header {
+      padding-bottom: 28px;
+      border-bottom: 1px solid #8a8a8a;
+      margin-bottom: 38px;
+    }
+
+    h1,
+    h2,
+    h3 {
+      color: #111111;
+      font-weight: 600;
+      line-height: 1.28;
+    }
+
+    h1 {
+      margin: 0 0 18px;
+      font-size: clamp(2.25rem, 6vw, 3.35rem);
+      letter-spacing: -0.025em;
+    }
+
+    h2 {
+      margin: 48px 0 14px;
+      padding-bottom: 7px;
+      border-bottom: 1px solid #b8b8b8;
+      font-size: 1.48rem;
+    }
+
+    h3 {
+      margin: 30px 0 10px;
+      font-size: 1.12rem;
+    }
+
+    p,
+    ul {
+      margin: 0 0 16px;
+    }
+
+    ul {
+      padding-left: 1.55rem;
+    }
+
+    li {
+      margin-bottom: 7px;
+    }
+
+    a {
+      color: #174f78;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 0.16em;
+    }
+
+    .document-type {
+      margin: 0 0 6px;
+      color: #4d4d4d;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 0.76rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .dates {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 0.92rem;
+      line-height: 1.65;
+    }
+
+    .publication-status {
+      margin-top: 28px;
+      padding-top: 20px;
+      border-top: 1px solid #d0d0d0;
+      font-size: 0.96rem;
+    }
+
+    .contact {
+      margin-top: 20px;
+    }
+
+    footer {
+      margin-top: 54px;
+      padding-top: 18px;
+      border-top: 1px solid #8a8a8a;
+      color: #4a4a4a;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 0.82rem;
+    }
+
+    @media (max-width: 600px) {
+      body {
+        font-size: 16px;
+      }
+
+      main {
+        width: min(100% - 28px, 900px);
+        padding: 38px 0 60px;
+      }
+
+      h2 {
+        margin-top: 40px;
+      }
+    }
+
+    @media print {
+      body {
+        color: #000000;
+        font-size: 11pt;
+      }
+
+      main {
+        width: 100%;
+        padding: 0;
+      }
+
+      h2,
+      h3 {
+        break-after: avoid;
+      }
+
+      p,
+      li {
+        orphans: 3;
+        widows: 3;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+    }
+  </style>
 </head>
-<body class="page-shell academic-site academic-page" data-boot-label="Privacy">
-  <a class="skip-link" href="#main">Skip to content</a>
-  <header class="site-header">
-    <div class="container nav-shell">
-      <a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true"><img src="../assets/chemvault-logo-mark.png" alt="" /></span><span><strong>ChemVault</strong><small>privacy policy</small></span></a>
-      <button class="icon-button menu-toggle" type="button" aria-label="Open navigation" aria-expanded="false"><span></span><span></span><span></span></button>
-      <nav class="site-nav" aria-label="Main navigation"><a href="../index.html">Home</a><a href="search.html">Compound Search</a><a href="platform.html">Platform</a><a href="contact.html">Contact</a></nav>
-      <div class="header-actions"><label class="search-shell" for="shellSearch"><span>Search</span><input id="shellSearch" type="search" placeholder="Search compounds..." /></label><button class="theme-toggle" type="button" data-shell-action="theme" aria-label="Switch theme"><span class="theme-toggle__icon" aria-hidden="true"></span></button></div>
-    </div>
-    <div class="container shell-search-results" id="shellSearchResults" aria-live="polite"></div>
-  </header>
+<body>
   <main id="main">
-    <section class="academic-page-hero">
-      <div class="container">
-        <div>
-          <span class="section-kicker">Draft legal document</span>
-          <h1>ChemVault Privacy Policy</h1>
-          <p><strong>Draft only. This document is not legal advice and must be reviewed before commercial launch.</strong></p>
-          <p>This page is synchronized from <code>docs/legal/privacy-policy.md</code> for public review.</p>
-          <p>This draft is a transparency notice, not a certification that ChemVault satisfies every privacy, security, App Store, email, research, export-control, or sector-specific legal requirement.</p>
-        </div>
-        <aside class="page-index-panel">
-          <strong>User controls</strong>
-          <a href="/account/delete">Request account deletion</a>
-          <a href="/account/export">Request data export</a>
-          <a href="/security">Security / abuse reporting</a>
-          <a href="/terms">Terms of Service</a>
-        </aside>
-      </div>
+    <header>
+      <p class="document-type">Legal document</p>
+      <h1>ChemVault Privacy Policy</h1>
+      <p class="dates"><strong>Effective date:</strong> 20 July 2026<br /><strong>Last updated:</strong> 20 July 2026</p>
+    </header>
+
+    <section aria-labelledby="section-1">
+      <h2 id="section-1">1. Scope and Application</h2>
+      <p>This Privacy Policy explains how ChemVault collects, receives, uses, stores, discloses, transfers, retains, and deletes information in connection with the ChemVault website and associated services, including ChemVault Mail, the User System, Docs, the File System, the Notification System, Molecule Model and Molecule Studio, Extract and other artificial-intelligence-assisted scientific data services, Apple native applications and TestFlight builds, application programming interfaces, integrations, and related support or administrative functions (collectively, the <strong>Services</strong>).</p>
+      <p>This Privacy Policy applies to visitors, account holders, authorized users of an organization, developers using ChemVault APIs, and persons who communicate with ChemVault. A separate written agreement, order form, enterprise agreement, data processing addendum, deployment notice, or product-specific notice may supplement this Privacy Policy. If a separate agreement validly establishes different data-handling terms for a particular organization or deployment, that agreement will govern to the extent of the conflict.</p>
+      <p>Third-party websites, systems, applications, repositories, or services that link to or integrate with the Services are governed by their own privacy practices. This Privacy Policy does not apply to information processed independently by those third parties.</p>
     </section>
-    <section class="academic-section">
-      <div class="container page-panel">
-        <h2>Information ChemVault may collect</h2>
-        <p>ChemVault may process account and profile information, login and session data, email content and metadata, uploaded files, AI inputs and outputs, molecule data, notification data, contact or lead forms, device/browser information, IP addresses, logs, and Apple TestFlight or App Store information where applicable.</p>
-        <h2>Sensitive and regulated data</h2>
-        <p>ChemVault is not currently documented as approved for protected health information, clinical care, regulated submissions, GxP records, export-controlled data, payment card storage, school records, children's data, or other specially regulated information unless a separate written agreement or deployment notice expressly says so.</p>
-        <h2>How information is used</h2>
-        <p>Information may be used to operate accounts, permissions, mail, file storage, AI extraction, notifications, support, commercial interest forms, abuse prevention, audit logging, service reliability, and legal or security response workflows.</p>
-        <h2>AI and scientific data</h2>
-        <p>AI features may process submitted text, files, extracted content, prompts, molecule data, or outputs through third-party AI services. Do not submit sensitive personal information, confidential data, or content you do not have permission to process. AI outputs may be inaccurate, incomplete, or unsuitable for important decisions and should be reviewed before use.</p>
-        <h2>Email and files</h2>
-        <p>ChemVault Mail may process message bodies, headers, recipients, subjects, attachments, delivery metadata, app password activity, and audit events. File services may process uploaded files, file names, sizes, MIME types, storage keys, checksums, sharing tokens, previews, and activity logs.</p>
-        <h2>Third-party services</h2>
-        <p>ChemVault may use Cloudflare, Resend or SMTP providers, OpenAI or other AI providers, Apple, GitHub, Supabase, OAuth providers, and payment processors if billing is enabled. Provider configuration, contracts, retention settings, subprocessors, and international transfer terms need legal review.</p>
-        <h2>Retention and user rights</h2>
-        <p>Retention periods are not final. ChemVault should keep data only as long as reasonably necessary for service operation, security, abuse prevention, legal compliance, and support. Users may request deletion or export through the links on this page, but cross-service automation is still a pending request baseline and may require identity verification, administrator review, and manual processing.</p>
-        <h2>Security</h2>
-        <p>ChemVault uses reasonable safeguards such as authentication, role checks, hashed tokens, encrypted secrets where implemented, audit logs, and Cloudflare infrastructure. No security measure is absolute, and ChemVault cannot guarantee that unauthorized access, data loss, provider outages, vulnerabilities, or configuration mistakes will never occur.</p>
-        <h2>Children and education users</h2>
-        <p>ChemVault is not currently documented as directed to children. Use by minors, schools, universities, or education programs may trigger additional obligations and needs legal review.</p>
-        <h2>Contact</h2>
-        <p>Contact: <a href="mailto:contact@chemvault.science">contact@chemvault.science</a>. Security and abuse reports can also use <a href="https://forms.chemvault.science/security-report">forms.chemvault.science/security-report</a>.</p>
-        <p><strong>Last updated:</strong> July 8, 2026</p>
-      </div>
+
+    <section aria-labelledby="section-2">
+      <h2 id="section-2">2. Identity of the Responsible Entity</h2>
+      <p>ChemVault is the name used for the Services. Where an order form, enterprise agreement, service notice, or other written contract identifies the legal entity responsible for a particular deployment or contracted service, that entity is responsible for the processing governed by that instrument.</p>
+      <p>The current contact channel for controller-identity questions, privacy inquiries, and data-rights requests is <a href="mailto:contact@chemvault.science">contact@chemvault.science</a>. ChemVault will provide additional controller, representative, or data protection officer information through an applicable agreement or service notice where required by law.</p>
     </section>
+
+    <section aria-labelledby="section-3">
+      <h2 id="section-3">3. Definitions</h2>
+      <p>For purposes of this Privacy Policy:</p>
+      <ul>
+        <li><strong>Personal Information</strong> means information that identifies, relates to, describes, is reasonably capable of being associated with, or could reasonably be linked with an individual or household, as defined by applicable law.</li>
+        <li><strong>User Content</strong> means information, files, messages, records, prompts, instructions, datasets, references, and other materials submitted to, stored in, generated through, or transmitted using the Services by or on behalf of a user or organization.</li>
+        <li><strong>Service or Asset Management Database</strong> means a user-controlled or third-party structured or unstructured collection used to administer services, assets, equipment, facilities, inventory, maintenance, support, operations, or related workflows. Reference data a user chooses to submit, attach, link, or connect from such a database may include database records, asset registers, equipment details, identifiers, ownership or custody information, service requests, incidents, tickets, work orders, change records, maintenance histories, status records, notes, photographs, attachments, logs, and linked metadata.</li>
+        <li><strong>Service Management Reference</strong> means material used to inform or support a service or asset-management activity, including manuals, standard operating procedures, maintenance instructions, service histories, vendor materials, safety information, knowledge articles, diagrams, specifications, checklists, and other reference documents.</li>
+        <li><strong>Organization</strong> means a business, university, laboratory, institution, or other entity that provides or manages access to the Services for its authorized users.</li>
+        <li><strong>Processor</strong> or <strong>Service Provider</strong> means a third party that processes information on ChemVault's behalf to provide infrastructure, communications, storage, security, support, AI, payment, or other operational services.</li>
+      </ul>
+    </section>
+
+    <section aria-labelledby="section-4">
+      <h2 id="section-4">4. Information We Collect or Receive</h2>
+      <p>The categories of information processed depend on the Services selected, the applicable deployment, organization settings, user choices, and enabled integrations.</p>
+
+      <h3>4.1 Account and Profile Information</h3>
+      <p>ChemVault may process names, display names, email addresses, institutions, organizations, roles, fields of interest, websites, avatars, account status, memberships, permissions, preferences, and related account settings.</p>
+
+      <h3>4.2 Authentication and Security Information</h3>
+      <p>ChemVault may process password hashes, OAuth or single sign-on identifiers, session tokens and token hashes, app-password records, connected-service records, API-key identifiers and hashes, IP addresses, user-agent information, timestamps, login history, device information, and security or authentication events.</p>
+      <p>ChemVault does not intend to store plain-text account passwords. Password, token, API-key, and OAuth implementations remain subject to technical and security review, and no method of authentication or storage can be guaranteed to be completely secure.</p>
+
+      <h3>4.3 Email and Communication Information</h3>
+      <p>ChemVault Mail may process sender and recipient addresses, subjects, message bodies, HTML content, headers, attachments, delivery status, mailbox paths, routing details, message identifiers, spam or abuse indicators, app-password activity, audit events, and mail-account settings.</p>
+      <p>When a person contacts ChemVault, joins a waitlist, requests enterprise access, submits a form, or requests support, ChemVault may process the person's name, email address, organization, role, team information, interests, message content, attachments, and related communication metadata.</p>
+      <p>Contact, commercial-interest, and lead submissions may be stored in D1-backed form or lead records. Relevant fields may include the submitter's name, email address, organization, role, team size, interests, message, submission category, status, timestamps, and related request metadata.</p>
+      <p>If the contact or lead API is unavailable, the website may store the complete submitted payload in browser local storage as a delivery fallback. This fallback can hold up to 50 submissions and does not apply an automatic expiration period. A person with access to the browser profile may be able to view that stored information, and the user can remove it by clearing the relevant website data in the browser. Users should not submit secrets or highly sensitive information through an ordinary form.</p>
+
+      <h3>4.4 Files and General User Content</h3>
+      <p>The Services may process uploaded files, file names, file sizes, media or MIME types, storage identifiers, checksums, folder and project metadata, sharing links or tokens, preview data, download or access records, activity logs, and other information contained in or associated with a file.</p>
+      <p>Files and User Content may contain Personal Information or confidential, proprietary, scientific, or regulated information. Users must evaluate whether the relevant Service, deployment, provider configuration, and contract are suitable before submitting such information.</p>
+
+      <h3>4.5 Service or Asset Management Database and Service Management Reference Data</h3>
+      <p>Only where an applicable feature or integration is enabled and a user or Organization chooses to submit, attach, link, or connect the material, the Services may process reference data from a Service or Asset Management Database and Service Management References. These materials may include Personal Information about employees, contractors, customers, suppliers, asset custodians, requestors, approvers, support personnel, or other individuals.</p>
+      <p>Only in that context, ChemVault may process database schema information, source-system identifiers, object relationships, record history, tags, field mappings, import status, validation results, access-control metadata, and integration logs necessary to receive, organize, display, search, analyze, secure, troubleshoot, or export those records and references.</p>
+      <p>These definitions identify categories and sources of User Content only. They do not represent that ChemVault provides a configuration management database, IT service management or IT asset management system, asset discovery, database synchronization, maintenance scheduling, monitoring, or an authoritative system-of-record function.</p>
+      <p>Section 8 contains additional terms that apply specifically to these materials.</p>
+
+      <h3>4.6 Scientific, Molecular, and AI Information</h3>
+      <p>ChemVault Extract and other AI-assisted or scientific features may process uploaded papers and documents, extracted text and document chunks, tables, metadata, prompts, user instructions, model inputs and outputs, citations, review decisions, correction history, exports, cost or usage records, molecule identifiers, SMILES strings, PDB identifiers, spectra, generated molecular structures, and job or provider-response metadata.</p>
+      <p>AI output may be incomplete, inaccurate, non-deterministic, or unsuitable for scientific, medical, legal, regulatory, financial, operational, or safety-critical use without independent human review.</p>
+
+      <h3>4.7 Notification, API, and Integration Information</h3>
+      <p>ChemVault may process notification content, push-subscription endpoints and keys, device or browser details, project messages, message-read status, webhook payloads and delivery results, API usage, API-key prefixes and hashes, integration configuration, connected-service identifiers, and related activity or audit logs.</p>
+
+      <h3>4.8 Device, Browser, Usage, and Log Information</h3>
+      <p>ChemVault may automatically receive IP addresses, browser and device type, operating system, app version, language or region settings, request metadata, route or feature access, timestamps, errors, diagnostics, performance information, service-usage records, entitlement checks, security events, and infrastructure, operational, or audit logs.</p>
+      <p>Apple native applications may store information such as language settings, cached region selection, API base URLs, authentication tokens in Keychain, local molecule-library entries, and other local app state. Apple may separately process TestFlight participation, device information, diagnostics, crash information, or app analytics depending on the applicable Apple settings and app configuration.</p>
+      <p>For region detection or service routing, an Apple application may request the user's public IP address or approximate country or region from ipapi.co, ipwho.is, ipinfo.io, or Cloudflare trace services, depending on availability and configuration. Those providers receive network request information, including the requesting IP address, and process it under their own terms.</p>
+
+      <h3>4.9 Cookies and Local Technologies</h3>
+      <p>ChemVault may use cookies, local storage, session storage, Keychain, UserDefaults, and similar technologies to authenticate users, maintain sessions, remember preferences, secure the Services, cache app state, and support product functions.</p>
+      <p>Depending on the feature, browser local storage may also contain usage counters, saved research items, research notes, and the contact or lead fallback submissions described in Section 4.3. This information remains associated with the relevant browser profile until the Service removes it or the user clears the website's stored data.</p>
+      <p>Any deployment of non-essential analytics, advertising, marketing cookies, cross-site tracking, session replay, or similar technology must be reflected in an updated notice and, where required, an appropriate consent or opt-out mechanism.</p>
+      <p>The current website application code covered by this Policy does not include a third-party analytics SDK. Infrastructure providers, platform settings, deployed configurations, diagnostics, or later releases may involve additional telemetry, which must be reflected in this Policy where it materially changes the processing described here.</p>
+
+      <h3>4.10 Payment and Subscription Information</h3>
+      <p>If billing is enabled, a payment provider may process payment-card and transaction information under its own privacy terms. ChemVault may process provider customer or subscription identifiers, plan and status information, checkout or portal references, billing-event metadata, metered usage, entitlement information, and reconciliation records. ChemVault does not intend to store full payment-card numbers.</p>
+    </section>
+
+    <section aria-labelledby="section-5">
+      <h2 id="section-5">5. Sources of Information</h2>
+      <p>ChemVault may obtain information:</p>
+      <ul>
+        <li>directly from a user, including through registration, forms, files, messages, prompts, imports, and support requests;</li>
+        <li>from an Organization, account administrator, project owner, or another authorized user;</li>
+        <li>automatically from browsers, devices, applications, APIs, cookies, local technologies, logs, and security systems;</li>
+        <li>from connected services and systems selected or authorized by the user or Organization, including email, identity, storage, repository, service management, asset management, and other enterprise systems;</li>
+        <li>from infrastructure, communications, AI, payment, authentication, app-distribution, and other Service Providers; and</li>
+        <li>from public, licensed, institutional, or third-party sources identified or supplied by a user.</li>
+      </ul>
+      <p>Where information originates from a third party, the user or Organization supplying or connecting that information is responsible for ensuring that it has the rights, permissions, notices, consents, contracts, and lawful basis necessary for ChemVault to process the information as instructed.</p>
+      <p>When a user performs a scientific or compound search, ChemVault may send the search term, identifier, or related query parameters to PubChem, PubMed, NCBI, or another source selected or configured for that search. Those services receive network and query information and process it under their own terms.</p>
+    </section>
+
+    <section aria-labelledby="section-6">
+      <h2 id="section-6">6. Purposes of Processing</h2>
+      <p>ChemVault may process information to:</p>
+      <ul>
+        <li>provide, operate, maintain, support, and improve the Services;</li>
+        <li>create and administer accounts, sessions, roles, memberships, permissions, and entitlements;</li>
+        <li>authenticate users, protect accounts, and manage connected services;</li>
+        <li>send, receive, route, store, display, search, and administer email and other communications;</li>
+        <li>store, preview, organize, search, share, download, transform, and export files and User Content;</li>
+        <li>only where an applicable feature or integration is enabled and the user submits or connects the material, import, map, validate, index, search, analyze, relate, report on, and export reference data from a Service or Asset Management Database and Service Management References;</li>
+        <li>process scientific documents, molecular information, AI-assisted tasks, extraction results, review workflows, and exports;</li>
+        <li>deliver notifications, webhooks, transactional messages, security alerts, and service communications;</li>
+        <li>provide support, diagnose errors, respond to inquiries, and administer enterprise or commercial-interest requests;</li>
+        <li>measure capacity, performance, reliability, feature usage, and service integrity;</li>
+        <li>maintain security, operational, and audit records;</li>
+        <li>detect, prevent, investigate, and respond to fraud, spam, abuse, unauthorized access, safety risks, and security incidents;</li>
+        <li>enforce applicable agreements, policies, and usage restrictions;</li>
+        <li>comply with law, preserve legal claims, respond to lawful requests, and protect the rights, safety, and property of ChemVault, users, Organizations, Service Providers, and the public; and</li>
+        <li>carry out another purpose disclosed at collection or authorized by the user or Organization.</li>
+      </ul>
+      <p>ChemVault will not treat access to the Services as authorization to use User Content for an unrelated purpose. Before materially changing the purpose for which Personal Information is processed, ChemVault will provide additional notice and obtain authorization where required by applicable law or contract.</p>
+    </section>
+
+    <section aria-labelledby="section-7">
+      <h2 id="section-7">7. Legal Bases for Processing</h2>
+      <p>Where applicable law requires a legal basis, ChemVault may rely on one or more of the following:</p>
+      <ul>
+        <li><strong>performance of a contract</strong>, where processing is necessary to provide requested Services or administer the user or Organization relationship;</li>
+        <li><strong>legitimate interests</strong>, including operating and improving the Services, maintaining security and reliability, preventing abuse, supporting users, protecting legal rights, and administering business operations, where those interests are not overridden by applicable privacy rights;</li>
+        <li><strong>consent</strong>, where ChemVault requests and receives valid consent for a particular activity;</li>
+        <li><strong>compliance with legal obligations</strong>, including responding to binding legal process and meeting accounting, security, or regulatory requirements; and</li>
+        <li><strong>protection of vital interests or other bases recognized by law</strong>, in the limited circumstances in which they apply.</li>
+      </ul>
+      <p>The applicable legal basis depends on the context, jurisdiction, relationship, and requested processing. An Organization may be the controller or business for Personal Information that it submits to the Services, with ChemVault acting as its processor or service provider under the applicable contract. These roles must be confirmed for each enterprise deployment.</p>
+    </section>
+
+    <section aria-labelledby="section-8">
+      <h2 id="section-8">8. Service or Asset Management Database and Service Management Reference Data</h2>
+
+      <h3>8.1 User and Organization Ownership</h3>
+      <p>Where a user submits or connects reference data from a Service or Asset Management Database or submits a Service Management Reference, as between ChemVault and the user or Organization, the user or Organization retains its rights, title, and interest in that material and other User Content, subject to any rights held by third-party licensors, source-system operators, individuals, or other owners. ChemVault does not acquire ownership of those materials merely because they are submitted to or processed through the Services.</p>
+      <p>Only where the user submits or connects the material through an applicable enabled feature or integration, the user or Organization grants ChemVault and its authorized Service Providers a limited right to host, reproduce, transmit, index, convert, map, analyze, display, and otherwise process it as necessary to provide, secure, support, maintain, and improve the requested Services, follow documented instructions, comply with applicable law, and enforce applicable agreements.</p>
+
+      <h3>8.2 Processing Purpose and Scope</h3>
+      <p>If a user submits the reference data, or if a compatible function or connection is made available and enabled, ChemVault may process the records and references to perform user-directed import, normalization, field mapping, validation, deduplication, relationship analysis, search, reporting, classification, summarization, AI-assisted analysis, workflow support, export, troubleshooting, and audit functions. ChemVault will limit processing to the enabled Services and purposes selected or reasonably expected by the user or Organization, except where additional processing is required by law or separately authorized.</p>
+
+      <h3>8.3 Confidentiality and Access</h3>
+      <p>Reference data submitted or connected from a Service or Asset Management Database and submitted Service Management References will be treated as User Content and may be confidential where their nature or the circumstances reasonably indicate confidentiality. Access may be provided to the user, authorized members and administrators of the relevant Organization, personnel or contractors who require access to operate or support the Services, and authorized Service Providers subject to appropriate obligations.</p>
+      <p>ChemVault may access such materials when reasonably necessary to provide support requested by the user or Organization, investigate security or abuse, maintain service integrity, comply with law, or exercise or defend legal rights. Users must not submit passwords, private keys, recovery codes, unprotected credentials, or specially regulated information unless the applicable Service and written agreement expressly authorize that use.</p>
+      <p>No transmission, storage, or access-control method is completely secure. A confidentiality commitment in a signed agreement may impose additional or more specific requirements and will govern to the extent of a conflict.</p>
+
+      <h3>8.4 Disclosure and Sharing</h3>
+      <p>ChemVault may disclose these records and references:</p>
+      <ul>
+        <li>to infrastructure, storage, database, security, communications, support, AI, and integration providers to the extent necessary to provide enabled functions;</li>
+        <li>to persons and systems designated, connected, or authorized by the user or Organization;</li>
+        <li>to Organization administrators who control the relevant workspace, account, or deployment;</li>
+        <li>in connection with a merger, financing, acquisition, reorganization, insolvency, sale of assets, or similar transaction, subject to applicable confidentiality and legal requirements;</li>
+        <li>to comply with law, regulation, court order, or other binding legal process; or</li>
+        <li>where reasonably necessary to protect rights, safety, service integrity, or security, or to investigate fraud, abuse, or unlawful activity.</li>
+      </ul>
+      <p>An AI provider will receive relevant records or references only where an AI-enabled function is selected, configured, or otherwise used in a manner that requires provider processing. Users should review the notice presented for the relevant AI feature and avoid submitting information that the active provider terms and configuration are not authorized to process.</p>
+
+      <h3>8.5 Retention, Deletion, and Export</h3>
+      <p>ChemVault retains these records and references for no longer than reasonably necessary for the purposes described in this Privacy Policy, taking account of account status, Organization instructions, feature configuration, contractual requirements, security and audit needs, dispute preservation, and legal obligations. Retention periods vary across Services and deployments, so no single fixed period applies to every record or reference.</p>
+      <p>A user or Organization may request deletion or export using available account controls or by contacting ChemVault. ChemVault may verify identity and authority before acting on a request. Deletion may be limited or delayed where information must be preserved for security, fraud prevention, legal compliance, dispute resolution, audit integrity, or the establishment, exercise, or defense of legal claims.</p>
+      <p>Residual copies may remain temporarily in backups, disaster-recovery systems, caches, immutable security records, or logs until they are overwritten or removed under applicable operational schedules. ChemVault may retain information that has been aggregated or de-identified so that it no longer identifies an individual or reveals the confidential source record, subject to applicable law and contract.</p>
+      <p>Deleting information from ChemVault does not delete the original record in a connected source system or copies previously exported, disclosed, or shared at the user's or Organization's direction. Users and Organizations are responsible for managing those systems and recipients separately.</p>
+
+      <h3>8.6 Third-Party Sources and User Responsibilities</h3>
+      <p>Users and Organizations are responsible for:</p>
+      <ul>
+        <li>having the authority to access, copy, connect, upload, analyze, share, and instruct ChemVault to process the relevant records and references;</li>
+        <li>complying with source-system terms, database rights, intellectual property rights, confidentiality obligations, employment or monitoring rules, procurement restrictions, and applicable data-protection law;</li>
+        <li>providing required notices and obtaining required consents or other lawful bases from individuals whose Personal Information appears in the materials;</li>
+        <li>configuring permissions, field selection, sharing, integrations, and retention settings appropriately;</li>
+        <li>maintaining the accuracy, quality, legality, and relevance of submitted information;</li>
+        <li>avoiding the submission of secrets, credentials, excessive Personal Information, or specially regulated information that is not necessary and expressly authorized; and</li>
+        <li>reviewing outputs, mappings, classifications, recommendations, and exports before relying on or distributing them.</li>
+      </ul>
+      <p>ChemVault does not independently verify that a user or Organization owns or is authorized to use third-party records. ChemVault may suspend processing, restrict access, or remove materials where reasonably necessary to address a credible rights, privacy, security, or legal concern.</p>
+    </section>
+
+    <section aria-labelledby="section-9">
+      <h2 id="section-9">9. AI and Automated Processing</h2>
+      <p>Where a user invokes or enables an AI-assisted function and submits or connects the relevant material, ChemVault may transmit documents, text, prompts, molecular information, reference data from a Service or Asset Management Database, Service Management References, or other inputs to an AI provider or internal AI system to generate extraction results, summaries, classifications, embeddings, structured data, relationships, or other outputs.</p>
+      <p>Provider handling of those inputs and outputs depends on the provider, contract, account settings, deployment, region, and feature configuration. ChemVault does not promise that a provider will not retain, review, or use submitted information unless the active provider terms and configuration support that statement.</p>
+      <p>AI output is provided to assist human review. It must not be treated as verified scientific, medical, legal, regulatory, financial, operational, security, or safety advice. Users remain responsible for validating outputs and for decisions made using them.</p>
+      <p>ChemVault will disclose and obtain authorization where required before using Personal Information to make a decision that produces legal or similarly significant effects solely by automated means. The presently described AI features are intended as assistive tools, not as a substitute for qualified professional judgment.</p>
+    </section>
+
+    <section aria-labelledby="section-10">
+      <h2 id="section-10">10. Disclosure to Third Parties</h2>
+      <p>ChemVault may disclose information to:</p>
+      <ul>
+        <li>Cloudflare or other providers used for hosting, routing, databases, object storage, security, logs, and edge infrastructure;</li>
+        <li>Resend, SMTP, DNS, or other providers used for email sending, receiving, and routing;</li>
+        <li>OpenAI or other AI providers used for enabled AI and extraction features;</li>
+        <li>PubChem, PubMed, NCBI, or other scientific information sources selected or configured for a search;</li>
+        <li>Apple for App Store, TestFlight, Sign in with Apple, diagnostics, and developer services;</li>
+        <li>ipapi.co, ipwho.is, ipinfo.io, or Cloudflare trace services where an Apple application uses them for public-IP or approximate region detection;</li>
+        <li>OAuth or identity providers, such as Apple, Google, GitHub, or Microsoft, where enabled;</li>
+        <li>GitHub for source-control, workflow, issue, or repository functions where applicable;</li>
+        <li>Supabase or other database and notification providers where configured;</li>
+        <li>Stripe or another payment provider if billing is enabled;</li>
+        <li>professional advisers, auditors, insurers, and contractors subject to appropriate obligations;</li>
+        <li>an Organization and its administrators for accounts managed by that Organization;</li>
+        <li>authorities, courts, regulators, or other parties where disclosure is required or permitted by law; and</li>
+        <li>a successor or relevant counterparty in a corporate transaction, subject to applicable protections.</li>
+      </ul>
+      <p>The specific provider list may change as the Services evolve. ChemVault will update this Privacy Policy or provide another appropriate notice where a provider change materially affects the processing described here and additional notice is required. Depending on the integration, a third party may act as a Processor for ChemVault or may process information independently under its own terms, configuration, and privacy notice.</p>
+      <p>ChemVault may also disclose information at a user's direction, including through sharing links, exports, webhooks, connected applications, repositories, email recipients, or Organization workspaces. The user is responsible for reviewing the destination, permissions, and consequences before directing such disclosure.</p>
+    </section>
+
+    <section aria-labelledby="section-11">
+      <h2 id="section-11">11. International Processing and Transfers</h2>
+      <p>ChemVault and its Service Providers may process information in more than one country or region. The applicable locations and transfer mechanisms depend on the deployed infrastructure, provider settings, contract, Organization instructions, and user location.</p>
+      <p>ChemVault does not promise a particular data-residency location or legal transfer mechanism unless it is expressly stated in a written agreement and supported by the active technical configuration. Where applicable law requires safeguards for an international transfer, ChemVault and the relevant Organization must confirm and implement an appropriate mechanism before the affected processing occurs.</p>
+    </section>
+
+    <section aria-labelledby="section-12">
+      <h2 id="section-12">12. Retention of Other Information</h2>
+      <p>ChemVault retains Personal Information and User Content only for as long as reasonably necessary to provide the Services, maintain accounts, secure and audit systems, prevent abuse, resolve disputes, enforce agreements, meet contractual requirements, and comply with law.</p>
+      <p>Retention may vary by information category, feature, Organization instruction, provider setting, account status, and legal requirement. Closed, non-security submissions stored through the forms service use a configurable retention setting with a current default of 90 days and an allowed configuration range of 30 to 730 days. This setting does not establish the retention period for open submissions, security reports, separate lead or newsletter records, billing records, audit records, privacy-rights requests, browser fallback copies, provider records, or backups.</p>
+      <p>No single product-wide retention period applies to account data, mail, files, AI inputs and outputs, logs, backups, audit records, notifications, push subscriptions, API keys, webhooks, payment or usage records, security reports, lead or newsletter records, and rights requests. ChemVault therefore does not state one fixed period for those categories in this Policy.</p>
+      <p>When information is no longer required, ChemVault will delete, de-identify, or otherwise dispose of it in accordance with the applicable operational process, contract, and law. Information may remain in backups, provider systems, security records, or legal archives until removal is technically feasible or the applicable preservation requirement ends.</p>
+    </section>
+
+    <section aria-labelledby="section-13">
+      <h2 id="section-13">13. Security and Confidentiality</h2>
+      <p>ChemVault uses technical and organizational measures intended to protect information, which may include authentication, role and permission checks, token hashing, encryption for certain secrets, access controls, audit logging, infrastructure security services, and restricted secret handling.</p>
+      <p>The safeguards applied depend on the Service and deployment. ChemVault cannot guarantee that unauthorized access, disclosure, alteration, loss, provider failure, vulnerability, or configuration error will never occur. Users are responsible for protecting their credentials, using appropriate access settings, maintaining secure devices and connected systems, and promptly reporting suspected unauthorized activity.</p>
+      <p>Information submitted through ordinary contact channels should not include passwords, API keys, private keys, recovery codes, or other authentication secrets. Security or abuse reports should use the published reporting channel where available.</p>
+    </section>
+
+    <section aria-labelledby="section-14">
+      <h2 id="section-14">14. Privacy Rights and Choices</h2>
+      <p>Depending on the person's location, relationship with ChemVault, and applicable law, the person may have rights to:</p>
+      <ul>
+        <li>request access to or a copy of Personal Information;</li>
+        <li>request correction of inaccurate Personal Information;</li>
+        <li>request deletion of Personal Information;</li>
+        <li>request restriction of or object to certain processing;</li>
+        <li>request portability of information in an applicable format;</li>
+        <li>withdraw consent for future processing where consent is the applicable basis;</li>
+        <li>opt out of certain targeted advertising, sale, sharing, profiling, or marketing activities if such processing applies and the law grants that right;</li>
+        <li>appeal a decision concerning a privacy request where applicable; and</li>
+        <li>lodge a complaint with a competent data-protection or consumer-protection authority.</li>
+      </ul>
+      <p>Requests may be submitted through available account deletion or export functions or by email to <a href="mailto:contact@chemvault.science">contact@chemvault.science</a>. The deletion and export entry points record a pending request; they do not establish that deletion or export is completed immediately or automatically across every ChemVault service. ChemVault may require identity and authority verification, administrator review, and manual or service-specific processing before completing a request.</p>
+      <p>Rights are not absolute. A request may be limited or denied where permitted by law, including to protect other persons, preserve security and audit integrity, comply with legal obligations, prevent fraud or abuse, protect confidential information, or establish, exercise, or defend legal claims. ChemVault will not discriminate against a person for exercising a privacy right where prohibited by law.</p>
+      <p>For an Organization-managed account, the Organization may control the account and submitted information. ChemVault may refer the request to that Organization or act on its documented instructions where the Organization is responsible for the processing.</p>
+    </section>
+
+    <section aria-labelledby="section-15">
+      <h2 id="section-15">15. Children and Specially Regulated Information</h2>
+      <p>The Services are not intended to be directed to children, and ChemVault does not knowingly invite children to create accounts without authorization required by applicable law. If ChemVault learns that Personal Information was submitted by a child without required authorization, ChemVault may restrict the account and take reasonable steps to delete the information, subject to legal and technical limitations.</p>
+      <p>Users must not submit protected health information, patient records, clinical-care data, regulated submissions, GxP records, export-controlled information, controlled-substances records, payment-card data, school records, children's data, biometric data, government identifiers, or other specially regulated information unless a separate written agreement and the applicable deployment expressly authorize that processing.</p>
+      <p>Use by minors, schools, universities, healthcare entities, regulated laboratories, government bodies, or other regulated Organizations may require additional notices, agreements, safeguards, permissions, or legal review.</p>
+    </section>
+
+    <section aria-labelledby="section-16">
+      <h2 id="section-16">16. Organization Accounts and Administrators</h2>
+      <p>An Organization that provides access to the Services may administer accounts, control permissions, configure integrations, access Organization workspaces and User Content, establish retention or export settings, and receive account or activity information. Users should direct questions about an Organization's independent privacy practices to that Organization.</p>
+      <p>ChemVault processes Organization-managed information according to the applicable agreement and documented instructions, subject to legal, security, and service-integrity requirements.</p>
+    </section>
+
+    <section aria-labelledby="section-17">
+      <h2 id="section-17">17. Changes to This Privacy Policy</h2>
+      <p>ChemVault may update this Privacy Policy to reflect changes in the Services, providers, legal requirements, contracts, or information-handling practices. The revised policy will state its effective date and last-updated date.</p>
+      <p>Where required by law or contract, ChemVault will provide additional notice of a material change through reasonable means, which may include a website notice, in-product notice, account communication, email, or release note. Continued use after an update will have only the effect permitted by applicable law and agreement.</p>
+    </section>
+
+    <section aria-labelledby="section-18">
+      <h2 id="section-18">18. Contact</h2>
+      <p>Questions, privacy requests, and concerns may be directed to:</p>
+      <p class="contact"><strong>ChemVault</strong><br />Email: <a href="mailto:contact@chemvault.science">contact@chemvault.science</a></p>
+      <p>Security or abuse reports may also be submitted through <a href="https://forms.chemvault.science/security-report">forms.chemvault.science/security-report</a> where that channel is available.</p>
+      <p>To help ChemVault identify the relevant account, service, or Organization, a request should include sufficient non-sensitive context. Do not send passwords, API keys, private keys, recovery codes, or other authentication secrets through ordinary email or contact forms.</p>
+    </section>
+
+    <footer>
+      <p>© 2026 ChemVault. Privacy Policy effective 20 July 2026.</p>
+    </footer>
   </main>
 </body>
 </html>

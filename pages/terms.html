@@ -4,93 +4,379 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Terms of Service | ChemVault</title>
-  <meta name="description" content="Draft ChemVault Terms of Service covering accounts, email, file uploads, AI features, beta apps, third-party services and prohibited use." />
-  <meta name="theme-color" content="#07111f" />
-  <script src="/scripts/boot.js?v=20260705a"></script>
+  <meta name="description" content="The terms governing access to and use of ChemVault services." />
+  <meta name="theme-color" content="#ffffff" />
   <link rel="canonical" href="https://chemvault.science/terms" />
   <link rel="icon" href="/favicon.ico?v=20260628a" sizes="any" />
   <link rel="icon" href="/assets/chemvault-logo-mark.png?v=20260628a" type="image/png" sizes="512x512" />
   <link rel="apple-touch-icon" href="/assets/chemvault-apple-touch-icon.png?v=20260628a" />
-  <link rel="manifest" href="/site.webmanifest" />
-  <link rel="stylesheet" href="../assets/styles.css?v=20260717b" />
-  <link rel="stylesheet" href="../assets/portal.css?v=20260702b" />
-  <link rel="stylesheet" href="../assets/academic.css?v=20260705a" />
-  <script src="../data/chem-data.js?v=20260603a" defer></script>
-  <script src="../data/reagent-extension.js?v=20260603a" defer></script>
-  <script src="../data/research-data.js?v=20260603a" defer></script>
-  <script src="../data/dossier-data.js?v=20260603a" defer></script>
-  <script src="../data/method-data.js?v=20260603a" defer></script>
-  <script src="../data/spectroscopy-data.js?v=20260603a" defer></script>
-  <script src="../data/materials-data.js?v=20260603a" defer></script>
-  <script src="../data/database-expansion.js?v=20260603a" defer></script>
-  <script src="../data/reagent-megalibrary.js?v=20260603a" defer></script>
-  <script src="../data/knowledge-expansion.js?v=20260603a" defer></script>
-  <script src="../data/local-catalog-10000.js?v=20260603a" defer></script>
-  <script src="../data/external-sources.js?v=20260603a" defer></script>
-  <script src="../scripts/record-utils.js?v=20260603a" defer></script>
-  <script src="../scripts/search-intent.js?v=20260608a" defer></script>
-  <script src="../scripts/api.js?v=20260603a" defer></script>
-  <script src="../scripts/motion.js?v=20260705a" defer></script>
-  <script src="../scripts/site-shell.js?v=20260716a" defer></script>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: Georgia, "Times New Roman", serif;
+      color: #161616;
+      background: #ffffff;
+      font-synthesis: none;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      background: #ffffff;
+      color: #161616;
+      font-size: 17px;
+      line-height: 1.68;
+    }
+
+    a { color: #173b67; text-underline-offset: 0.14em; }
+    a:hover { color: #0b2543; }
+
+    .skip-link {
+      position: absolute;
+      left: -10000px;
+      top: auto;
+    }
+
+    .skip-link:focus {
+      left: 1rem;
+      top: 1rem;
+      padding: 0.5rem 0.75rem;
+      background: #ffffff;
+      border: 1px solid #161616;
+      z-index: 10;
+    }
+
+    .document {
+      width: min(100% - 2rem, 860px);
+      margin: 0 auto;
+      padding: 3.5rem 0 5rem;
+    }
+
+    .document-header {
+      border-bottom: 1px solid #8c8c8c;
+      padding-bottom: 1.75rem;
+      margin-bottom: 2rem;
+    }
+
+    .brand-line {
+      margin: 0 0 2.25rem;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 0.82rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .brand-line a { color: inherit; text-decoration: none; }
+
+    h1, h2 {
+      color: #111111;
+      font-weight: 600;
+    }
+
+    h1 {
+      margin: 0 0 1rem;
+      font-size: clamp(2.15rem, 5vw, 3.25rem);
+      line-height: 1.12;
+      letter-spacing: -0.025em;
+    }
+
+    h2 {
+      margin: 2.75rem 0 0.85rem;
+      font-size: 1.35rem;
+      line-height: 1.3;
+    }
+
+    p { margin: 0.85rem 0; }
+
+    .dates {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 0.92rem;
+      line-height: 1.65;
+    }
+
+    .intro { font-size: 1.04rem; }
+
+    .contents {
+      margin: 2.25rem 0 2.75rem;
+      padding: 1.5rem 0;
+      border-top: 1px solid #b7b7b7;
+      border-bottom: 1px solid #b7b7b7;
+    }
+
+    .contents h2 {
+      margin: 0 0 0.7rem;
+      font-size: 1.08rem;
+    }
+
+    .contents ol {
+      columns: 2;
+      column-gap: 3rem;
+      margin: 0;
+      padding-left: 1.4rem;
+    }
+
+    .contents li { break-inside: avoid; margin: 0.2rem 0; }
+    .contents a { color: inherit; }
+
+    ul { margin: 0.75rem 0 1rem; padding-left: 1.5rem; }
+    li { margin: 0.35rem 0; }
+
+    .legal-notice {
+      margin-top: 3rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid #8c8c8c;
+    }
+
+    .legal-notice h2 { margin-top: 0; }
+
+    footer {
+      margin-top: 3rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid #b7b7b7;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 0.82rem;
+    }
+
+    @media (max-width: 680px) {
+      body { font-size: 16px; }
+      .document { padding-top: 2rem; }
+      .contents ol { columns: 1; }
+    }
+
+    @media print {
+      @page { margin: 20mm; }
+      body { font-size: 11pt; color: #000000; }
+      .document { width: auto; padding: 0; }
+      .brand-line a, a { color: #000000; text-decoration: none; }
+      .contents { break-after: page; }
+      h2 { break-after: avoid; }
+      p, li { orphans: 3; widows: 3; }
+    }
+  </style>
 </head>
-<body class="page-shell academic-site academic-page" data-boot-label="Terms">
-  <a class="skip-link" href="#main">Skip to content</a>
-  <header class="site-header">
-    <div class="container nav-shell">
-      <a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true"><img src="../assets/chemvault-logo-mark.png" alt="" /></span><span><strong>ChemVault</strong><small>terms</small></span></a>
-      <button class="icon-button menu-toggle" type="button" aria-label="Open navigation" aria-expanded="false"><span></span><span></span><span></span></button>
-      <nav class="site-nav" aria-label="Main navigation"><a href="../index.html">Home</a><a href="search.html">Compound Search</a><a href="platform.html">Platform</a><a href="contact.html">Contact</a></nav>
-      <div class="header-actions"><label class="search-shell" for="shellSearch"><span>Search</span><input id="shellSearch" type="search" placeholder="Search compounds..." /></label><button class="theme-toggle" type="button" data-shell-action="theme" aria-label="Switch theme"><span class="theme-toggle__icon" aria-hidden="true"></span></button></div>
+<body>
+  <a class="skip-link" href="#main">Skip to terms</a>
+  <main class="document" id="main">
+    <header class="document-header">
+      <p class="brand-line"><a href="/">ChemVault</a> / Legal</p>
+      <h1>Terms of Service</h1>
+      <p class="dates"><strong>Effective date:</strong> 20 July 2026<br /><strong>Last updated:</strong> 20 July 2026</p>
+    </header>
+
+    <div class="intro">
+      <p>These Terms of Service (the <strong>“Terms”</strong>) govern access to and use of the ChemVault websites, applications, accounts, communications services, file and documentation services, scientific search and data tools, molecule and research workspaces, artificial-intelligence and extraction features, application programming interfaces, beta or preview releases, and related services (collectively, the <strong>“Services”</strong>).</p>
+      <p>By accessing or using the Services, you agree to these Terms. If you use the Services for an organization, you represent that you have authority to bind that organization, and <strong>“you”</strong> includes that organization. If you do not agree to these Terms, do not access or use the Services.</p>
+      <p>These Terms form the baseline agreement for the Services. An order form, enterprise agreement, data processing agreement, service-specific terms, or other written agreement accepted by ChemVault and you may supplement or replace specified provisions of these Terms. If there is a conflict, the more specific written agreement controls for its stated subject matter.</p>
     </div>
-    <div class="container shell-search-results" id="shellSearchResults" aria-live="polite"></div>
-  </header>
-  <main id="main">
-    <section class="academic-page-hero">
-      <div class="container">
-        <div>
-          <span class="section-kicker">Draft legal document</span>
-          <h1>ChemVault Terms of Service</h1>
-          <p><strong>Draft only. This document is not legal advice and must be reviewed before commercial launch.</strong></p>
-          <p>This page is synchronized from <code>docs/legal/terms-of-service.md</code> for public review.</p>
-          <p>These draft terms are not a final enterprise agreement, regulated-use approval, App Store approval, or legal opinion.</p>
-        </div>
-        <aside class="page-index-panel">
-          <strong>Related policies</strong>
-          <a href="/privacy">Privacy Policy</a>
-          <a href="/security">Security / abuse reporting</a>
-          <a href="/account/delete">Account deletion</a>
-          <a href="/account/export">Data export</a>
-        </aside>
-      </div>
+
+    <nav class="contents" aria-label="Contents">
+      <h2>Contents</h2>
+      <ol>
+        <li><a href="#eligibility">Eligibility and Authority</a></li>
+        <li><a href="#accounts">Accounts and Access</a></li>
+        <li><a href="#authorized-use">Authorized Use</a></li>
+        <li><a href="#prohibited-conduct">Prohibited Conduct</a></li>
+        <li><a href="#organization-accounts">Organization Accounts and Administrators</a></li>
+        <li><a href="#user-content">User Content</a></li>
+        <li><a href="#service-asset-databases">Service or Asset Management Databases and Service Management References</a></li>
+        <li><a href="#files-communications">Files, Communications, and Sharing</a></li>
+        <li><a href="#ai-extraction">Artificial Intelligence and Extraction Features</a></li>
+        <li><a href="#scientific-information">Scientific Information and Research Use</a></li>
+        <li><a href="#availability">Service Availability, Changes, and Backups</a></li>
+        <li><a href="#beta">Beta, Preview, and TestFlight Releases</a></li>
+        <li><a href="#third-party">Third-Party Services and Content</a></li>
+        <li><a href="#intellectual-property">ChemVault Intellectual Property and Feedback</a></li>
+        <li><a href="#privacy-security">Privacy, Security, and Legal Process</a></li>
+        <li><a href="#fees">Fees and Paid Services</a></li>
+        <li><a href="#termination">Suspension and Termination</a></li>
+        <li><a href="#disclaimers">Disclaimers</a></li>
+        <li><a href="#liability">Limitation of Liability</a></li>
+        <li><a href="#changes">Changes to These Terms</a></li>
+        <li><a href="#general">General Terms</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ol>
+    </nav>
+
+    <section id="eligibility">
+      <h2>1. Eligibility and Authority</h2>
+      <p>You may use the Services only if you can lawfully enter into these Terms. If you use the Services on behalf of another person or organization, you are responsible for having all required authority, approvals, and permissions.</p>
+      <p>The Services are not directed to children. You must not permit a child to create or use an account unless the use is expressly supported by ChemVault and is authorized and supervised in accordance with applicable law and institutional requirements.</p>
     </section>
-    <section class="academic-section">
-      <div class="container page-panel">
-        <h2>Accounts and user responsibilities</h2>
-        <p>You are responsible for accurate account information, credential confidentiality, lawful use, rights to uploaded or submitted content, and independent review of scientific or AI outputs.</p>
-        <h2>Prohibited use</h2>
-        <p>Do not use ChemVault for unlawful activity, unauthorized access, service disruption, spam, phishing, impersonation, malware, harmful files, rights infringement, privacy-invasive content, or high-risk decisions without qualified human review.</p>
-        <h2>Regulated and high-risk use</h2>
-        <p>Do not submit protected health information, regulated clinical data, payment card data, children's data, student records, export-controlled data, controlled substances data, or other specially regulated content unless ChemVault has expressly approved that use in writing and the relevant environment is configured for it.</p>
-        <h2>Email service rules</h2>
-        <p>ChemVault Mail may not be used for spam, phishing, sender spoofing, credential theft, malware delivery, unauthorized bulk messaging, or marketing email without required consent, unsubscribe, and legal review. Email deliverability, routing, inbox placement, provider acceptance, spam filtering, and recipient delivery are not guaranteed.</p>
-        <h2>File uploads</h2>
-        <p>You may upload files only if you have the right to do so. ChemVault may impose size, type, scanning, quarantine, sharing, or removal controls for safety, abuse prevention, and compliance. ChemVault should not be treated as the only backup for important files.</p>
-        <h2>AI and scientific extraction</h2>
-        <p>AI and extraction features are assistance tools, not professional advice. Outputs may be inaccurate or incomplete and must be independently verified before research, publication, clinical, regulatory, legal, financial, safety, or operational use.</p>
-        <h2>Beta and TestFlight versions</h2>
-        <p>Beta, preview, staging, and TestFlight builds may be unstable, incomplete, experimental, or changed without notice. Do not use beta builds for critical workflows unless appropriate safeguards are in place. No ChemVault statement should be read as a guarantee of App Store approval.</p>
-        <h2>Third-party services and availability</h2>
-        <p>ChemVault may depend on Cloudflare, Resend, OpenAI, Apple, GitHub, Supabase, OAuth providers, payment processors, and other vendors. Availability, provider terms, and data processing rules may vary.</p>
-        <h2>Suspension, changes, and legal review</h2>
-        <p>ChemVault may restrict or suspend access to address security, abuse, legal, provider, or operational risks. Final liability, dispute, payment, privacy, and consumer terms require qualified legal review before commercial launch.</p>
-        <h2>Disclaimers and limitation of liability</h2>
-        <p>ChemVault services, beta features, AI outputs, extraction results, previews, file previews, mail delivery, notifications, APIs, and documentation are provided on an "as is" and "as available" draft basis unless a final written agreement says otherwise. Final warranty, liability, governing-law, venue, arbitration, and consumer-rights language requires qualified legal review.</p>
-        <h2>Contact</h2>
-        <p>Contact: <a href="mailto:contact@chemvault.science">contact@chemvault.science</a>. Security and abuse reports can use <a href="/security">the security reporting page</a>.</p>
-        <p>Do not send passwords, API keys, private keys, recovery codes, or other secrets through ordinary contact messages.</p>
-        <p><strong>Last updated:</strong> July 8, 2026</p>
-      </div>
+
+    <section id="accounts">
+      <h2>2. Accounts and Access</h2>
+      <p>You must provide accurate account information, keep it current, protect account credentials and authentication factors, and promptly notify ChemVault of suspected unauthorized access. You are responsible for activity performed through your account except to the extent caused by ChemVault’s failure to use reasonable safeguards or as otherwise required by applicable law.</p>
+      <p>You must not share credentials in a manner that bypasses access controls, user limits, licensing terms, security controls, or organization policies. ChemVault may require identity, organization, administrator, or security verification before providing access to particular Services.</p>
     </section>
+
+    <section id="authorized-use">
+      <h2>3. Authorized Use</h2>
+      <p>Subject to these Terms, ChemVault grants you a limited, non-exclusive, non-transferable, revocable right to access and use the Services for your internal, lawful research, educational, operational, or business purposes during the applicable service period.</p>
+      <p>You are responsible for your users, configurations, access permissions, devices, networks, exports, and use of results. You must use the Services in accordance with applicable law, professional obligations, institutional policies, third-party rights, and any documentation or usage limits supplied with the Services.</p>
+    </section>
+
+    <section id="prohibited-conduct">
+      <h2>4. Prohibited Conduct</h2>
+      <p>You must not, and must not permit another person to:</p>
+      <ul>
+        <li>use the Services for unlawful, fraudulent, deceptive, abusive, defamatory, or rights-infringing activity;</li>
+        <li>upload, transmit, or distribute malware, malicious code, unlawfully obtained data, or content intended to facilitate credential theft or unauthorized access;</li>
+        <li>probe, test, scan, disrupt, overload, or circumvent the security or integrity of the Services without ChemVault’s prior written authorization;</li>
+        <li>bypass authentication, authorization, rate limits, usage limits, payment controls, or other technical restrictions;</li>
+        <li>access another user’s account, content, or systems without authorization;</li>
+        <li>impersonate a person or organization, misrepresent affiliation, or falsify source, authorship, provenance, or results;</li>
+        <li>use ChemVault Mail or related communications features for spam, phishing, sender spoofing, credential theft, unlawful marketing, harassment, malware delivery, or unauthorized bulk messaging;</li>
+        <li>scrape, copy, reverse engineer, decompile, or create derivative works from the Services except to the extent such restriction is prohibited by applicable law or expressly permitted in writing; or</li>
+        <li>use outputs from the Services to make high-impact, regulated, clinical, safety-critical, employment, credit, insurance, legal, or similarly consequential decisions without appropriate authority, qualified human review, and independent verification.</li>
+      </ul>
+      <p>You must not submit protected health information, payment card data, children’s data, student records, export-controlled information, controlled-substance information, or other specially regulated content unless ChemVault has expressly agreed in writing to support that use and appropriate contractual, administrative, and technical safeguards are in place.</p>
+    </section>
+
+    <section id="organization-accounts">
+      <h2>5. Organization Accounts and Administrators</h2>
+      <p>If an organization controls your account, its authorized administrators may manage access, permissions, integrations, retention settings, exports, and content in accordance with the organization’s agreement and policies. The organization is responsible for providing notices and obtaining permissions required for administrator access and control.</p>
+      <p>If your access is reassigned, suspended, or terminated by an organization, you may lose access to content controlled by that organization. Questions about an organization-managed account should first be directed to the relevant administrator.</p>
+    </section>
+
+    <section id="user-content">
+      <h2>6. User Content</h2>
+      <p><strong>“User Content”</strong> means data, files, records, communications, prompts, instructions, comments, corrections, datasets, structures, molecule data, documents, attachments, outputs you elect to save, and other material submitted to or stored through the Services by you or your authorized users.</p>
+      <p>As between you and ChemVault, you retain the rights you hold in User Content. You grant ChemVault a limited, worldwide, non-exclusive license to host, copy, store, transmit, format, display, index, analyze, secure, back up, restore, and otherwise process User Content only as reasonably necessary to:</p>
+      <ul>
+        <li>provide, maintain, support, and secure the Services for you and your authorized users;</li>
+        <li>carry out your instructions and enabled integrations;</li>
+        <li>prevent or investigate fraud, abuse, security incidents, and violations of these Terms;</li>
+        <li>comply with applicable law and valid legal process; and</li>
+        <li>enforce the agreement between you and ChemVault.</li>
+      </ul>
+      <p>This license includes the right to engage service providers to perform those activities on ChemVault’s behalf, subject to applicable contractual and confidentiality obligations. It does not transfer ownership of User Content to ChemVault. ChemVault itself will not use private User Content to train a generalized artificial-intelligence model unless you expressly authorize that use or a separate written agreement states otherwise. This restriction applies only to ChemVault’s own model-training activities; it does not override the terms or configured processing settings of a third-party artificial-intelligence provider. Where an AI feature uses such a provider, that provider may process inputs and outputs under its applicable terms and configuration, as described in the <a href="/privacy">Privacy Policy</a>. You must not submit User Content to an AI feature unless you are authorized to have it processed by the applicable provider.</p>
+      <p>You represent and warrant that you have all rights, licenses, permissions, notices, and consents required for ChemVault and its service providers to process User Content as contemplated by these Terms. You are responsible for the accuracy, quality, legality, provenance, and appropriateness of User Content and for resolving claims relating to it.</p>
+    </section>
+
+    <section id="service-asset-databases">
+      <h2>7. Service or Asset Management Databases and Service Management References</h2>
+      <p>Where a Service expressly enables it, you may submit, attach, link, or connect reference data originating from a Service or Asset Management Database or used as a Service Management Reference.</p>
+      <p>For these Terms, a <strong>“Service or Asset Management Database”</strong> means a user-controlled or third-party structured or unstructured collection used to administer services, assets, equipment, facilities, inventory, maintenance, support, operations, or related workflows. Reference data you choose to submit, attach, link, or connect from such a database may include database records, asset registers, equipment details, identifiers, ownership or custody information, service requests, incidents, tickets, work orders, change records, maintenance histories, status records, notes, photographs, attachments, logs, and linked metadata.</p>
+      <p>A <strong>“Service Management Reference”</strong> means material used to inform or support a service or asset-management activity, including manuals, standard operating procedures, maintenance instructions, service histories, vendor materials, safety information, knowledge articles, diagrams, specifications, checklists, and other reference documents.</p>
+      <p>These definitions identify categories and sources of User Content only. They do not represent that ChemVault provides a configuration management database, IT service management or IT asset management system, asset discovery, database synchronization, maintenance scheduling, monitoring, or an authoritative system-of-record function.</p>
+      <p>Reference data from Service or Asset Management Databases, including individual records, related attachments, tickets, work orders, asset information, and Service Management References that you submit to, attach to, link to, or connect with the Services where enabled, are User Content. They remain subject to Section 6, including the limited license required to operate the applicable Service. ChemVault does not acquire ownership of them merely because they are stored, indexed, linked, transformed, or displayed through the Services.</p>
+      <p>You are solely responsible for ensuring that this content is obtained from a lawful source and that you have authority to collect, use, upload, disclose, link, modify, export, and instruct ChemVault to process it. You must maintain required notices, consents, licenses, confidentiality restrictions, access controls, and retention rules. You must not submit content that misappropriates trade secrets, violates confidentiality duties, infringes copyright, patent, trademark, database, privacy, publicity, or other third-party rights, or unlawfully reveals security-sensitive asset or infrastructure information.</p>
+      <p>The Services and any Service Management Reference are organizational and reference tools. They are not a substitute for the original manufacturer’s documentation, an authoritative asset register, qualified inspection, professional judgment, applicable standards, regulatory requirements, emergency procedures, or site-specific safety controls. You must not rely on ChemVault, a database record, an attachment, a ticket, a work order, an automated status, or a Service Management Reference as the sole basis for maintenance, release-to-service, laboratory safety, hazardous-material handling, engineering, clinical, regulatory, emergency, or other professional or safety-critical decisions. You must independently verify accuracy, currency, applicability, permissions, and required approvals before acting.</p>
+      <p>Where supported by the applicable Service, you may export or delete this content using the available account, project, or organization controls. Export formats may not reproduce every relationship, permission, audit event, computed field, or third-party integration. Before termination, you are responsible for completing any required export and maintaining independent copies needed for legal, operational, safety, warranty, audit, or records-management purposes.</p>
+      <p>On account or service termination, access to this content may end. ChemVault may delete or de-identify remaining content in accordance with applicable law, the applicable agreement, published privacy disclosures, configured retention controls, and established retention and deletion processes. Certain content may be retained where permitted or required for security, fraud prevention, legal obligations, dispute resolution, enforcement, backup cycling, or administration of copies controlled by your organization or third parties. Deletion from an active system may not immediately remove residual copies from backups, logs, prior exports, recipients, or connected third-party services.</p>
+    </section>
+
+    <section id="files-communications">
+      <h2>8. Files, Communications, and Sharing</h2>
+      <p>You may upload, send, or share files and communications only when authorized to do so. You are responsible for recipients, sharing links, permissions, downloaded copies, and the contents of messages sent through the Services.</p>
+      <p>ChemVault may apply size and type limits; use automated or manual security controls; quarantine or reject suspected harmful content; disable links; restrict delivery; or remove content where reasonably necessary for security, service operation, legal compliance, or enforcement of these Terms.</p>
+      <p>Email and notification routing, inbox placement, recipient acceptance, provider availability, spam filtering, and delivery timing are not guaranteed. Do not use the Services as the only repository or delivery channel for important or time-sensitive information.</p>
+    </section>
+
+    <section id="ai-extraction">
+      <h2>9. Artificial Intelligence and Extraction Features</h2>
+      <p>Artificial-intelligence, extraction, summarization, classification, search, and generation features are assistance tools. Inputs may be processed by the applicable providers and configurations used to deliver the feature. You must not submit content unless you are authorized to have it processed in that manner.</p>
+      <p>Outputs may be inaccurate, incomplete, outdated, non-deterministic, misleading, or unsuitable for a particular purpose. You must independently review and verify outputs, citations, calculations, classifications, structures, extracted fields, and generated records before using or sharing them.</p>
+      <p>ChemVault does not provide medical, legal, regulatory, patent, engineering, laboratory-safety, hazardous-materials, financial, or other professional advice through these features. Outputs do not replace qualified professional judgment, original sources, required testing, or applicable standards and procedures.</p>
+    </section>
+
+    <section id="scientific-information">
+      <h2>10. Scientific Information and Research Use</h2>
+      <p>Scientific search results, records, identifiers, structures, properties, literature links, methods, safety information, models, and extraction results may contain errors or omissions and may not reflect the latest evidence. Source links and credibility indicators assist review but do not certify accuracy, reproducibility, ownership, safety, or regulatory acceptance.</p>
+      <p>You are responsible for evaluating primary sources, performing appropriate risk assessments, following institutional and legal requirements, and obtaining qualified review before laboratory, clinical, manufacturing, environmental, publication, patent, or regulatory use.</p>
+    </section>
+
+    <section id="availability">
+      <h2>11. Service Availability, Changes, and Backups</h2>
+      <p>ChemVault may maintain, modify, suspend, limit, or discontinue all or part of the Services, including features, integrations, supported formats, usage limits, storage limits, providers, applications, and APIs. ChemVault will provide notice of material changes where reasonably practicable or required by law.</p>
+      <p>The Services may experience interruptions, delays, degradation, errors, or data loss. You are responsible for maintaining appropriate independent backups and records. Unless a separate written agreement expressly provides otherwise, the Services must not be used as the sole system of record for irreplaceable, regulated, safety-critical, publication-critical, litigation-sensitive, or business-critical information.</p>
+    </section>
+
+    <section id="beta">
+      <h2>12. Beta, Preview, and TestFlight Releases</h2>
+      <p>Services identified as beta, preview, experimental, pre-release, staging, or TestFlight may be incomplete, unstable, subject to additional restrictions, or changed or withdrawn without notice. They may contain defects, diagnostic logging, reduced support, compatibility limitations, or heightened risk of data loss.</p>
+      <p>Do not use a pre-release Service for production-critical, regulated, confidential, safety-critical, or irreplaceable workflows unless a separate written agreement expressly supports that use and appropriate safeguards are in place. Availability through TestFlight or an application marketplace is subject to the relevant provider’s terms and review processes and is not a representation of approval, certification, or continuing availability.</p>
+    </section>
+
+    <section id="third-party">
+      <h2>13. Third-Party Services and Content</h2>
+      <p>The Services may interoperate with or depend on third-party identity, hosting, communications, storage, artificial-intelligence, app marketplace, payment, analytics, data-source, and integration providers. Third-party services and content are governed by their own terms, privacy notices, licenses, availability, and security practices.</p>
+      <p>ChemVault is not responsible for third-party services or content outside its control. You authorize ChemVault to exchange User Content with a third-party service when you direct or enable that integration. You are responsible for the legality and configuration of the integration and for any separate account or license it requires.</p>
+    </section>
+
+    <section id="intellectual-property">
+      <h2>14. ChemVault Intellectual Property and Feedback</h2>
+      <p>ChemVault and its licensors retain all rights, title, and interest in the Services, software, interfaces, documentation, designs, logos, trademarks, and related technology. Except for the limited right to use the Services under these Terms, no right or license is granted by implication, estoppel, or otherwise.</p>
+      <p>If you voluntarily provide suggestions or feedback, ChemVault may use them without restriction or compensation, provided that this does not grant ChemVault rights in User Content or identify you publicly without permission.</p>
+    </section>
+
+    <section id="privacy-security">
+      <h2>15. Privacy, Security, and Legal Process</h2>
+      <p>ChemVault’s processing of personal information is described in the <a href="/privacy">Privacy Policy</a>. You are responsible for providing required notices and establishing a lawful basis for personal information contained in User Content.</p>
+      <p>No method of storage or transmission is completely secure. You must use available security controls, restrict access appropriately, and promptly report suspected account compromise, vulnerabilities, abuse, phishing, malicious files, or unauthorized access through the <a href="/security">security reporting page</a> or by email to <a href="mailto:contact@chemvault.science">contact@chemvault.science</a>.</p>
+      <p>ChemVault may preserve, review, or disclose information where reasonably necessary to comply with applicable law or valid legal process; protect users, ChemVault, or others; investigate fraud, abuse, or security incidents; or enforce these Terms. ChemVault will evaluate requests in accordance with applicable law.</p>
+    </section>
+
+    <section id="fees">
+      <h2>16. Fees and Paid Services</h2>
+      <p>If you purchase a paid Service, you agree to pay the fees, taxes, and charges stated in the applicable order or checkout terms. Billing periods, usage allowances, renewal, cancellation, refund eligibility, and payment processing are governed by the terms presented when the purchase is made and any mandatory rights under applicable law.</p>
+      <p>Failure to pay an undisputed amount when due may result in restriction or suspension after any notice or cure period required by the applicable agreement or law.</p>
+    </section>
+
+    <section id="termination">
+      <h2>17. Suspension and Termination</h2>
+      <p>You may stop using the Services at any time. The <a href="/account/delete">account deletion page</a> and <a href="/account/export">data export page</a> are request intake pages. Submitting either form creates a pending request that requires identity verification and administrative review before processing. Submission does not immediately delete data or produce an export, and these processes are not fully automated. The scope, timing, and outcome of a request remain subject to applicable law, organization controls, technical availability, third-party restrictions, and established retention, security, and review procedures.</p>
+      <p>ChemVault may restrict, suspend, or terminate access where reasonably necessary to address a security threat, abuse, non-payment, legal or provider requirement, material breach of these Terms, or risk to the Services, users, or third parties. Where reasonably practicable, ChemVault will provide notice and an opportunity to cure; immediate action may be taken when delay could increase harm or legal exposure.</p>
+      <p>On termination, your right to use the affected Services ends. Provisions that by their nature should survive will continue, including provisions concerning ownership, User Content processing and deletion, payment obligations, disclaimers, liability, enforcement, and general terms.</p>
+    </section>
+
+    <section id="disclaimers">
+      <h2>18. Disclaimers</h2>
+      <p>To the maximum extent permitted by applicable law, the Services are provided <strong>“as is”</strong> and <strong>“as available.”</strong> ChemVault disclaims implied warranties of merchantability, fitness for a particular purpose, non-infringement, and any warranties arising from course of dealing or usage of trade.</p>
+      <p>ChemVault does not warrant that the Services or outputs will be uninterrupted, error-free, secure, accurate, complete, current, suitable for a particular workflow, or free of harmful components. ChemVault does not certify User Content, scientific information, service or asset records, Service Management References, third-party content, or compliance with any professional, regulatory, safety, quality, or industry standard.</p>
+      <p>Nothing in these Terms excludes or limits a warranty, remedy, or other right that cannot lawfully be excluded or limited.</p>
+    </section>
+
+    <section id="liability">
+      <h2>19. Limitation of Liability</h2>
+      <p>To the maximum extent permitted by applicable law, ChemVault and its licensors and service providers will not be liable for indirect, incidental, special, consequential, exemplary, or punitive damages, or for loss of profits, revenue, goodwill, business opportunity, research opportunity, data, or use, arising out of or relating to the Services or these Terms, even if advised that such loss may occur.</p>
+      <p>Liability that cannot lawfully be excluded or limited remains unaffected. Any additional liability allocation, damages cap, service level, indemnity, or remedy applicable to a paid, enterprise, consumer, or regulated offering must be stated in the relevant written agreement or supplied by applicable law.</p>
+    </section>
+
+    <section id="changes">
+      <h2>20. Changes to These Terms</h2>
+      <p>ChemVault may update these Terms to reflect changes in the Services, law, security requirements, or business operations. The updated Terms will state the effective or last-updated date. If a change materially affects your rights or obligations, ChemVault will provide reasonable notice where required by law or practicable in the circumstances.</p>
+      <p>Continued use after the effective date of updated Terms constitutes acceptance to the extent permitted by law. If you do not agree to an update, you must stop using the affected Services.</p>
+    </section>
+
+    <section id="general">
+      <h2>21. General Terms</h2>
+      <p>You may not assign these Terms without ChemVault’s prior written consent, except as permitted by a separate written agreement. ChemVault may assign these Terms in connection with a merger, acquisition, reorganization, or transfer of the relevant business, subject to applicable law.</p>
+      <p>If a provision is held unenforceable, it will be enforced to the maximum extent permitted and the remaining provisions will remain in effect. Failure to enforce a provision is not a waiver. Headings are for convenience only. The English-language version controls to the extent permitted by law if a translation differs.</p>
+      <p>These Terms and any incorporated or applicable written terms constitute the entire agreement concerning their subject matter and replace prior or contemporaneous understandings on that subject. Nothing in these Terms creates a partnership, joint venture, employment, agency, fiduciary, or franchise relationship.</p>
+      <p>No specific governing law, forum, arbitration requirement, or waiver of statutory rights is established by these baseline Terms. Such provisions, when appropriate, must be stated in an applicable written agreement and remain subject to mandatory law.</p>
+    </section>
+
+    <section id="contact">
+      <h2>22. Contact</h2>
+      <p>Questions about these Terms may be sent to:</p>
+      <p>ChemVault<br />Email: <a href="mailto:contact@chemvault.science">contact@chemvault.science</a></p>
+      <p>Do not send passwords, API keys, private keys, recovery codes, or other secrets through ordinary email or contact messages.</p>
+    </section>
+
+    <section class="legal-notice" aria-labelledby="legal-review-notice">
+      <h2 id="legal-review-notice">Legal Review Notice</h2>
+      <p>These Terms should be reviewed by qualified legal counsel before they are used for commercial, enterprise, consumer, jurisdiction-specific, or regulated deployments. This notice does not represent that ChemVault has obtained a certification, regulatory approval, or legal opinion regarding any particular use of the Services.</p>
+    </section>
+
+    <footer>
+      <p><a href="/privacy">Privacy Policy</a> · <a href="/security">Security and abuse reporting</a> · <a href="/">Return to ChemVault</a></p>
+      <p>© 2026 ChemVault.</p>
+    </footer>
   </main>
 </body>
 </html>
